@@ -3724,3 +3724,37 @@ button{
 .invoice-customer{
   grid-template-columns:1.12fr 1fr !important;
 }
+/* =========================================================
+   تكبير خط جدول الفاتورة
+========================================================= */
+
+/* عناوين الجدول */
+.invoice-items-table thead th{
+  font-size:17px !important;
+  font-weight:800 !important;
+}
+
+/* جميع بيانات الجدول */
+.invoice-items-table tbody td{
+  font-size:17px !important;
+  font-weight:700 !important;
+}
+
+/* اسم الصنف */
+.invoice-items-table .invoice-product-name strong{
+  font-size:18px !important;
+  font-weight:800 !important;
+  line-height:1.5 !important;
+}
+
+/* الكمية والسعر والإجمالي */
+.invoice-items-table tbody td:not(.invoice-product-name){
+  font-size:17px !important;
+  font-weight:700 !important;
+}
+
+/* تحسين ارتفاع الصف بعد تكبير الخط */
+.invoice-items-table tbody td{
+  height:82px !important;
+  padding:10px 8px !important;
+}
