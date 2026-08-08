@@ -22,16 +22,19 @@ html{
 
 body{
   margin:0;
+  min-height:100vh;
+
   background:var(--bg);
+
   color:var(--text);
+
   font-family:
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
     Tahoma,
     Arial,
-    sans-serif;
-  min-height:100vh
+    sans-serif
 }
 
 button,
@@ -42,43 +45,52 @@ textarea{
 }
 
 button{
-  -webkit-tap-highlight-color:transparent
+  -webkit-tap-highlight-color:
+    transparent
 }
 
 
-/* =========================
-   الشريط العلوي
-========================= */
+/* أعلى التطبيق */
 
 .topbar{
   position:sticky;
+
   top:0;
+
   z-index:10;
 
   display:flex;
+
   align-items:center;
+
   justify-content:space-between;
 
   gap:12px;
 
   padding:
-    calc(10px + env(safe-area-inset-top))
+    calc(
+      10px +
+      env(safe-area-inset-top)
+    )
     16px
     10px;
 
-  background:rgba(12,17,21,.96);
+  background:
+    rgba(12,17,21,.96);
 
   border-bottom:
     1px solid var(--line);
 
-  backdrop-filter:blur(16px)
+  backdrop-filter:
+    blur(18px)
 }
 
 .brand-title{
   display:flex;
+
   align-items:center;
-  gap:10px;
-  min-width:0
+
+  gap:10px
 }
 
 .top-logo{
@@ -87,47 +99,45 @@ button{
 
   object-fit:contain;
 
-  border-radius:14px;
-
   background:#fff;
 
-  padding:2px;
+  border-radius:14px;
 
-  flex-shrink:0
+  padding:2px
 }
 
 .brand-title h1{
-  font-size:20px;
   margin:0;
-  line-height:1.2
+
+  font-size:20px
 }
 
 .brand-title p{
-  font-size:11px;
+  margin:
+    4px 0 0;
+
   color:var(--muted);
-  margin:4px 0 0;
-  white-space:nowrap
+
+  font-size:11px
 }
 
 .icon-btn{
-  border:0;
-  background:transparent;
-  color:var(--text);
-
   width:42px;
   height:42px;
 
   display:flex;
+
   align-items:center;
+
   justify-content:center;
+
+  border:0;
 
   border-radius:12px;
 
-  padding:8px
-}
+  background:transparent;
 
-.icon-btn:active{
-  background:rgba(255,255,255,.05)
+  color:var(--text)
 }
 
 .svg-icon{
@@ -135,34 +145,34 @@ button{
   height:24px;
 
   fill:none;
+
   stroke:currentColor;
 
   stroke-width:1.9;
 
   stroke-linecap:round;
+
   stroke-linejoin:round
 }
 
 
-/* =========================
-   المحتوى
-========================= */
+/* المحتوى */
 
 .content{
+  max-width:760px;
+
+  margin:auto;
+
   padding:
     16px
     14px
-    calc(112px + var(--safe-bottom));
-
-  max-width:760px;
-  margin:auto
+    calc(
+      112px +
+      var(--safe-bottom)
+    )
 }
 
 .hero{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-
   margin:
     4px
     2px
@@ -170,12 +180,14 @@ button{
 }
 
 .hero h2{
-  font-size:22px;
-  margin:0
+  margin:0;
+
+  font-size:22px
 }
 
 .hero p{
-  margin:5px 0 0;
+  margin:
+    5px 0 0;
 
   color:var(--muted);
 
@@ -183,9 +195,7 @@ button{
 }
 
 
-/* =========================
-   بطاقات الإحصائيات
-========================= */
+/* البطاقات */
 
 .cards{
   display:grid;
@@ -197,43 +207,83 @@ button{
 }
 
 .stat-card{
+  position:relative;
+
+  min-height:116px;
+
+  padding:15px;
+
   background:var(--panel);
 
   border:
     1px solid var(--line);
 
-  border-radius:18px;
-
-  padding:15px;
-
-  min-height:112px;
-
-  box-shadow:
-    0 8px 24px rgba(0,0,0,.08)
+  border-radius:18px
 }
 
 .stat-card .label{
   color:var(--muted);
-  font-size:13px
+
+  font-size:12px
 }
 
 .stat-card .value{
   display:block;
 
-  font-size:24px;
-  font-weight:800;
+  margin-top:11px;
 
-  margin-top:12px
+  font-size:23px;
+
+  font-weight:800
 }
 
-.stat-card .unit{
-  display:block;
+.stat-icon{
+  position:absolute;
 
-  font-size:11px;
+  top:12px;
 
-  color:var(--muted);
+  left:12px;
 
-  margin-top:3px
+  width:28px;
+  height:28px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  border-radius:9px;
+
+  font-size:13px
+}
+
+.green-bg{
+  background:
+    rgba(37,193,111,.13);
+
+  color:var(--green)
+}
+
+.red-bg{
+  background:
+    rgba(240,90,90,.13);
+
+  color:var(--red)
+}
+
+.blue-bg{
+  background:
+    rgba(76,136,255,.13);
+
+  color:var(--blue)
+}
+
+.gold-bg{
+  background:
+    rgba(224,163,57,.14);
+
+  color:var(--gold)
 }
 
 .green{
@@ -253,14 +303,13 @@ button{
 }
 
 
-/* =========================
-   عناوين الأقسام
-========================= */
+/* رؤوس الأقسام */
 
 .section-head{
   display:flex;
 
   align-items:center;
+
   justify-content:space-between;
 
   gap:10px;
@@ -272,8 +321,9 @@ button{
 }
 
 .section-head h3{
-  font-size:18px;
-  margin:0
+  margin:0;
+
+  font-size:18px
 }
 
 .link-btn{
@@ -281,68 +331,99 @@ button{
 
   background:none;
 
-  color:var(--green);
+  color:var(--green)
+}
 
-  padding:6px
+.count-badge{
+  padding:
+    4px
+    9px;
+
+  border-radius:999px;
+
+  background:var(--panel2);
+
+  color:var(--muted);
+
+  font-size:12px
 }
 
 
-/* =========================
-   بطاقات الحجوزات
-========================= */
+/* الحجوزات */
 
 .booking-card,
 .expense-row,
+.invoice-row,
 .device-card,
-.invoice-row{
+.settings-card{
+  margin-bottom:10px;
+
+  padding:14px;
+
   background:var(--panel);
 
   border:
     1px solid var(--line);
 
-  border-radius:17px;
-
-  padding:14px;
-
-  margin-bottom:10px
+  border-radius:17px
 }
 
 .booking-top{
   display:flex;
 
+  align-items:flex-start;
+
   justify-content:space-between;
 
-  gap:12px;
+  gap:12px
+}
 
-  align-items:flex-start
+.booking-info{
+  min-width:0
 }
 
 .booking-name{
-  font-weight:800;
-  font-size:16px
+  font-size:16px;
+
+  font-weight:800
 }
 
 .booking-meta{
-  font-size:12px;
+  margin-top:6px;
 
   color:var(--muted);
 
-  margin-top:5px;
+  font-size:12px;
 
   line-height:1.8
 }
 
 .amount{
-  font-weight:800;
-  font-size:18px;
+  flex-shrink:0;
 
   text-align:left;
 
-  white-space:nowrap
+  font-size:17px;
+
+  font-weight:800
+}
+
+.amount small{
+  display:block;
+
+  margin-top:5px;
+
+  color:var(--muted);
+
+  font-size:10px;
+
+  font-weight:400
 }
 
 .badge{
   display:inline-block;
+
+  margin-top:8px;
 
   padding:
     5px
@@ -350,23 +431,24 @@ button{
 
   border-radius:999px;
 
-  font-size:11px;
-
-  margin-top:8px
+  font-size:10px
 }
 
 .badge.paid{
   background:#163e2b;
+
   color:#77e6a4
 }
 
 .badge.partial{
   background:#463718;
+
   color:#ffd680
 }
 
 .badge.unpaid{
   background:#4b2020;
+
   color:#ff8b8b
 }
 
@@ -381,22 +463,16 @@ button{
 .small-btn{
   flex:1;
 
+  padding:10px;
+
   border:
     1px solid var(--line);
 
-  background:var(--panel2);
-
-  color:var(--text);
-
   border-radius:11px;
 
-  padding:
-    10px
-    8px
-}
+  background:var(--panel2);
 
-.small-btn:active{
-  transform:scale(.98)
+  color:var(--text)
 }
 
 .small-btn.primary{
@@ -404,32 +480,29 @@ button{
 
   border-color:var(--green);
 
-  color:#08110c;
+  color:#06130b;
 
   font-weight:800
 }
 
 .empty{
-  color:var(--muted);
+  padding:
+    45px 12px;
 
   text-align:center;
 
-  padding:
-    42px
-    12px
+  color:var(--muted)
 }
 
 
-/* =========================
-   القائمة السفلية
-========================= */
+/* الشريط السفلي */
 
 .bottom-nav{
   position:fixed;
 
   bottom:0;
-  left:0;
   right:0;
+  left:0;
 
   z-index:20;
 
@@ -439,9 +512,12 @@ button{
     repeat(4,1fr);
 
   padding:
+    7px
     8px
-    8px
-    calc(8px + var(--safe-bottom));
+    calc(
+      7px +
+      var(--safe-bottom)
+    );
 
   background:
     rgba(14,19,23,.97);
@@ -449,63 +525,42 @@ button{
   border-top:
     1px solid var(--line);
 
-  backdrop-filter:blur(20px)
+  backdrop-filter:
+    blur(20px)
 }
 
 .nav-item{
-  border:0;
-
-  background:none;
-
-  color:#78858c;
+  min-height:53px;
 
   display:flex;
 
   flex-direction:column;
 
-  gap:3px;
-
   align-items:center;
 
   justify-content:center;
 
-  padding:
-    4px
-    0;
+  gap:3px;
 
-  min-height:52px;
+  border:0;
 
-  transition:
-    color .18s ease,
-    transform .18s ease
+  background:none;
+
+  color:#78858c
 }
 
 .nav-item b{
-  font-size:10px;
-  font-weight:700
-}
-
-.nav-item.active{
-  color:var(--green)
-}
-
-.nav-item:active{
-  transform:scale(.94)
+  font-size:10px
 }
 
 .nav-icon{
   width:24px;
-  height:24px;
-
-  display:flex;
-
-  align-items:center;
-  justify-content:center
+  height:24px
 }
 
 .nav-icon svg{
-  width:24px;
-  height:24px;
+  width:100%;
+  height:100%;
 
   fill:none;
 
@@ -514,23 +569,16 @@ button{
   stroke-width:1.8;
 
   stroke-linecap:round;
+
   stroke-linejoin:round
 }
 
-.nav-item.active .nav-icon{
-  filter:
-    drop-shadow(
-      0
-      0
-      5px
-      rgba(37,193,111,.35)
-    )
+.nav-item.active{
+  color:var(--green)
 }
 
 
-/* =========================
-   زر الإضافة
-========================= */
+/* زر الإضافة */
 
 .fab{
   position:fixed;
@@ -551,32 +599,28 @@ button{
   width:58px;
   height:58px;
 
-  border-radius:50%;
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  padding:0;
 
   border:
     5px solid var(--bg);
 
-  background:
-    var(--green);
+  border-radius:50%;
+
+  background:var(--green);
 
   color:#06130b;
-
-  display:flex;
-
-  align-items:center;
-  justify-content:center;
 
   box-shadow:
     0
     9px
     25px
     rgba(0,0,0,.55)
-}
-
-.fab:active{
-  transform:
-    translateX(-50%)
-    scale(.96)
 }
 
 .fab-icon{
@@ -587,15 +631,11 @@ button{
 
   stroke:currentColor;
 
-  stroke-width:2;
-
-  stroke-linecap:round
+  stroke-width:2
 }
 
 
-/* =========================
-   القائمة الجانبية
-========================= */
+/* القائمة الجانبية */
 
 .sheet-backdrop,
 .modal-backdrop{
@@ -603,26 +643,28 @@ button{
 
   inset:0;
 
-  background:
-    rgba(0,0,0,.6);
+  z-index:30;
 
-  z-index:30
+  background:
+    rgba(0,0,0,.65)
 }
 
 .side-sheet{
   position:fixed;
 
-  z-index:31;
-
   top:0;
   right:0;
   bottom:0;
+
+  z-index:31;
 
   width:
     min(
       82vw,
       330px
     );
+
+  overflow-y:auto;
 
   padding:
     calc(
@@ -635,164 +677,124 @@ button{
   background:#11181c;
 
   border-left:
-    1px solid var(--line);
-
-  overflow-y:auto
+    1px solid var(--line)
 }
 
 .sheet-head{
   display:flex;
 
-  justify-content:space-between;
-
   align-items:center;
 
-  gap:12px;
+  justify-content:space-between;
 
   margin-bottom:18px
 }
 
 .sheet-logo{
   width:155px;
-  height:88px;
+  height:85px;
 
   object-fit:contain;
 
-  background:#fff;
+  padding:3px;
 
   border-radius:15px;
 
-  padding:4px
+  background:#fff
 }
 
 .side-sheet>button,
 .import-label{
-  display:flex;
-
   width:100%;
+
+  display:flex;
 
   align-items:center;
 
   gap:12px;
 
-  text-align:right;
-
-  background:transparent;
-
-  color:var(--text);
+  padding:
+    15px
+    8px;
 
   border:0;
 
   border-bottom:
     1px solid var(--line);
 
-  padding:
-    15px
-    8px;
+  background:transparent;
 
-  cursor:pointer
-}
+  color:var(--text);
 
-.side-sheet>button:active,
-.import-label:active{
-  background:
-    rgba(255,255,255,.04)
+  text-align:right
 }
 
 .side-icon{
-  width:22px;
-  height:22px;
+  width:25px;
 
-  display:flex;
+  text-align:center;
 
-  align-items:center;
-  justify-content:center;
-
-  flex-shrink:0;
-
-  color:#9ca8af
-}
-
-.side-icon svg{
-  width:22px;
-  height:22px;
-
-  fill:none;
-
-  stroke:currentColor;
-
-  stroke-width:1.8;
-
-  stroke-linecap:round;
-  stroke-linejoin:round
+  color:var(--green)
 }
 
 
-/* =========================
-   النوافذ
-========================= */
+/* النوافذ */
 
 .modal{
   position:fixed;
 
-  z-index:41;
-
-  left:10px;
   right:10px;
-
   bottom:
     calc(
       10px +
       var(--safe-bottom)
     );
+  left:10px;
+
+  z-index:41;
+
+  max-width:640px;
 
   max-height:88vh;
 
   overflow:auto;
+
+  margin:auto;
+
+  padding:16px;
 
   background:#12191e;
 
   border:
     1px solid var(--line);
 
-  border-radius:24px;
-
-  padding:16px;
-
-  max-width:640px;
-
-  margin:auto;
-
-  box-shadow:
-    0
-    22px
-    70px
-    rgba(0,0,0,.55)
+  border-radius:24px
 }
 
 .modal-head{
+  position:sticky;
+
+  top:-16px;
+
+  z-index:2;
+
   display:flex;
 
   align-items:center;
 
   justify-content:space-between;
 
-  position:sticky;
-
-  top:-16px;
-
-  background:#12191e;
-
   padding:
     4px
     0
     8px;
 
-  z-index:2
+  background:#12191e
 }
 
 .modal-head h2{
   margin:0;
+
   font-size:19px
 }
 
@@ -801,13 +803,12 @@ button{
 }
 
 
-/* =========================
-   النماذج
-========================= */
+/* النماذج */
 
 .form-grid{
   display:grid;
-  gap:11px
+
+  gap:12px
 }
 
 .form-grid label{
@@ -815,46 +816,40 @@ button{
 
   gap:6px;
 
-  font-size:12px;
+  color:var(--muted);
 
-  color:var(--muted)
+  font-size:12px
 }
 
 .form-grid input,
 .form-grid select,
-.form-grid textarea{
+.form-grid textarea,
+.report-filters select{
   width:100%;
 
-  background:#0c1216;
+  padding:12px;
 
   border:
     1px solid var(--line);
 
   border-radius:12px;
 
-  color:var(--text);
+  outline:none;
 
-  padding:12px;
+  background:#0c1216;
 
-  outline:none
+  color:var(--text)
 }
 
 .form-grid input:focus,
 .form-grid select:focus,
-.form-grid textarea:focus{
-  border-color:var(--green);
-
-  box-shadow:
-    0
-    0
-    0
-    2px
-    rgba(37,193,111,.12)
+.form-grid textarea:focus,
+.report-filters select:focus{
+  border-color:var(--green)
 }
 
 .form-grid textarea{
-  min-height:82px;
-  resize:vertical
+  min-height:80px
 }
 
 .form-row{
@@ -866,105 +861,95 @@ button{
   gap:10px
 }
 
-.hijri-date-row{
+.hijri-selects{
+  display:grid;
+
   grid-template-columns:
-    .7fr 1.3fr
+    .65fr
+    1.35fr
+    1fr;
+
+  gap:7px
 }
 
 .submit-btn{
   width:100%;
 
+  padding:13px;
+
+  margin-top:4px;
+
   border:0;
 
   border-radius:13px;
-
-  padding:13px;
 
   background:var(--green);
 
   color:#06130b;
 
-  font-weight:900;
-
-  margin-top:6px
-}
-
-.submit-btn:active{
-  transform:scale(.99)
-}
-
-.danger-btn{
-  background:#4a1f1f;
-
-  color:#ff9b9b;
-
-  border:
-    1px solid #6e2c2c
+  font-weight:900
 }
 
 
-/* =========================
-   رسالة صغيرة
-========================= */
+/* التقارير */
 
-.toast{
-  position:fixed;
-
-  z-index:60;
-
-  left:50%;
-
-  bottom:
-    calc(
-      105px +
-      var(--safe-bottom)
-    );
-
-  transform:
-    translateX(-50%);
-
-  background:#e8f8ef;
-
-  color:#123524;
-
-  border-radius:12px;
-
-  padding:
-    10px
-    14px;
-
-  font-weight:700;
-
-  box-shadow:
-    0
-    10px
-    30px
-    rgba(0,0,0,.5);
-
-  white-space:nowrap
+.report-title{
+  margin:
+    4px 2px 15px
 }
 
+.report-title h2{
+  margin:0;
 
-/* =========================
-   التقرير الشهري
-========================= */
+  font-size:22px
+}
+
+.report-title p{
+  margin:
+    4px 0 0;
+
+  color:var(--muted);
+
+  font-size:12px
+}
+
+.report-filters{
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:10px;
+
+  margin-bottom:14px
+}
+
+.report-filters label{
+  display:grid;
+
+  gap:6px;
+
+  color:var(--muted);
+
+  font-size:11px
+}
 
 .report-box{
+  padding:16px;
+
   background:var(--panel);
 
   border:
     1px solid var(--line);
 
-  border-radius:18px;
-
-  padding:16px
+  border-radius:18px
 }
 
 .bar-line{
   display:grid;
 
   grid-template-columns:
-    75px
+    68px
     1fr
     60px;
 
@@ -973,35 +958,125 @@ button{
   gap:8px;
 
   margin:
-    14px
-    0;
+    14px 0;
 
   font-size:11px
 }
 
 .track{
-  height:10px;
+  height:9px;
+
+  overflow:hidden;
 
   border-radius:99px;
 
-  background:#222d33;
-
-  overflow:hidden
+  background:#222d33
 }
 
 .fill{
   height:100%;
 
-  border-radius:99px;
+  border-radius:99px
+}
 
-  transition:
-    width .3s ease
+.report-counts{
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:10px;
+
+  margin-top:12px
+}
+
+.report-counts>div{
+  padding:14px;
+
+  background:var(--panel);
+
+  border:
+    1px solid var(--line);
+
+  border-radius:16px
+}
+
+.report-counts span{
+  display:block;
+
+  color:var(--muted);
+
+  font-size:11px
+}
+
+.report-counts strong{
+  display:block;
+
+  margin-top:6px;
+
+  font-size:22px
 }
 
 
-/* =========================
-   المصاريف والفواتير
-========================= */
+/* تفاصيل الأشهر */
+
+.months-list{
+  display:grid;
+
+  gap:8px
+}
+
+.month-report-card{
+  width:100%;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:10px;
+
+  padding:13px;
+
+  border:
+    1px solid var(--line);
+
+  border-radius:15px;
+
+  background:var(--panel);
+
+  color:var(--text);
+
+  text-align:right
+}
+
+.month-report-card strong{
+  display:block
+}
+
+.month-report-card small{
+  display:block;
+
+  margin-top:4px;
+
+  color:var(--muted);
+
+  font-size:10px
+}
+
+.month-report-money{
+  text-align:left
+}
+
+.month-report-money span{
+  display:block;
+
+  font-weight:800
+}
+
+
+/* المصاريف */
 
 .expense-row,
 .invoice-row{
@@ -1015,29 +1090,143 @@ button{
 }
 
 .expense-row small,
-.invoice-row small{
+.invoice-row small,
+.settings-card small{
   display:block;
+
+  margin-top:4px;
 
   color:var(--muted);
 
-  margin-top:4px;
+  font-size:11px;
 
   line-height:1.7
 }
 
+.expense-value{
+  text-align:left
+}
 
-/* =========================
-   الفاتورة
-========================= */
+.delete-mini{
+  display:block;
+
+  margin-top:5px;
+
+  margin-right:auto;
+
+  border:0;
+
+  background:none;
+
+  color:var(--red);
+
+  font-size:10px
+}
+
+
+/* الأجهزة */
+
+.device-card{
+  display:flex;
+
+  align-items:center;
+
+  gap:12px
+}
+
+.device-icon{
+  width:42px;
+  height:42px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  border-radius:12px;
+
+  background:var(--panel2)
+}
+
+.device-data small{
+  display:block;
+
+  margin-top:4px;
+
+  color:var(--muted)
+}
+
+
+/* التفاصيل */
+
+.detail-list{
+  display:grid;
+
+  gap:1px;
+
+  overflow:hidden;
+
+  border:
+    1px solid var(--line);
+
+  border-radius:14px
+}
+
+.detail-list>div{
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:15px;
+
+  padding:12px;
+
+  background:var(--panel)
+}
+
+.detail-list span{
+  color:var(--muted);
+
+  font-size:11px
+}
+
+.detail-list strong{
+  text-align:left;
+
+  font-size:13px
+}
+
+.delete-full{
+  width:100%;
+
+  margin-top:10px;
+
+  padding:11px;
+
+  border:
+    1px solid #662d2d;
+
+  border-radius:11px;
+
+  background:#3a1b1b;
+
+  color:#ff9292
+}
+
+
+/* الفاتورة */
 
 .invoice-paper{
-  background:#fff;
-
-  color:#172027;
+  padding:18px;
 
   border-radius:14px;
 
-  padding:18px;
+  background:#fff;
+
+  color:#172027;
 
   direction:rtl
 }
@@ -1045,30 +1234,36 @@ button{
 .invoice-brand{
   display:flex;
 
-  justify-content:space-between;
-
   align-items:flex-start;
+
+  justify-content:space-between;
 
   gap:10px;
 
-  border-bottom:
-    1px solid #ddd;
-
   padding-bottom:12px;
 
-  margin-bottom:12px
+  margin-bottom:12px;
+
+  border-bottom:
+    1px solid #ddd
+}
+
+.invoice-brand h2{
+  margin:0
 }
 
 .invoice-brand img{
   width:105px;
 
-  max-height:82px;
+  max-height:80px;
 
   object-fit:contain
 }
 
 .invoice-paper table{
   width:100%;
+
+  margin-top:12px;
 
   border-collapse:collapse;
 
@@ -1077,32 +1272,55 @@ button{
 
 .invoice-paper th,
 .invoice-paper td{
-  border-bottom:
-    1px solid #ddd;
-
   padding:
     8px
     4px;
 
+  border-bottom:
+    1px solid #ddd;
+
   text-align:right
 }
 
+.invoice-money{
+  margin-top:12px
+}
+
+.invoice-money>div{
+  display:flex;
+
+  justify-content:space-between;
+
+  padding:
+    6px 0;
+
+  font-size:12px
+}
+
 .invoice-total{
+  display:flex;
+
+  justify-content:space-between;
+
+  margin-top:10px;
+
+  padding:12px;
+
+  border-radius:8px;
+
   background:#195d3a;
 
   color:#fff;
 
-  border-radius:8px;
+  font-weight:800
+}
 
-  padding:12px;
+.invoice-thanks{
+  margin-bottom:0;
 
-  margin-top:12px;
+  text-align:center;
 
-  font-weight:800;
-
-  display:flex;
-
-  justify-content:space-between
+  font-size:11px
 }
 
 .invoice-actions{
@@ -1119,20 +1337,55 @@ button{
 .invoice-actions button{
   padding:10px;
 
-  border-radius:10px;
-
   border:
     1px solid var(--line);
+
+  border-radius:10px;
 
   background:var(--panel2);
 
   color:var(--text)
 }
 
+.invoice-view-btn{
+  max-width:80px
+}
 
-/* =========================
-   الشاشات الكبيرة
-========================= */
+
+/* Toast */
+
+.toast{
+  position:fixed;
+
+  bottom:
+    calc(
+      105px +
+      var(--safe-bottom)
+    );
+
+  left:50%;
+
+  z-index:60;
+
+  transform:
+    translateX(-50%);
+
+  padding:
+    10px 14px;
+
+  border-radius:12px;
+
+  background:#e8f8ef;
+
+  color:#123524;
+
+  font-weight:700;
+
+  white-space:nowrap
+}
+
+
+/* أجهزة أكبر */
 
 @media(min-width:700px){
 
@@ -1143,21 +1396,13 @@ button{
 
   .modal{
     top:7vh;
-    bottom:auto
-  }
 
-  .fab{
-    left:
-      calc(
-        50% - 260px
-      )
+    bottom:auto
   }
 }
 
 
-/* =========================
-   الشاشات الصغيرة
-========================= */
+/* جوالات صغيرة */
 
 @media(max-width:380px){
 
@@ -1166,29 +1411,25 @@ button{
     height:52px
   }
 
-  .brand-title h1{
-    font-size:18px
-  }
-
   .stat-card .value{
-    font-size:21px
+    font-size:20px
   }
 
-  .amount{
-    font-size:16px
+  .hijri-selects{
+    grid-template-columns:
+      1fr
+  }
+
+  .report-filters{
+    grid-template-columns:
+      1fr
   }
 }
 
 
-/* =========================
-   الطباعة
-========================= */
+/* الطباعة */
 
 @media print{
-
-  body{
-    background:#fff
-  }
 
   body *{
     visibility:hidden!important
@@ -1203,6 +1444,7 @@ button{
     position:absolute;
 
     top:0;
+
     right:0;
 
     width:100%;
