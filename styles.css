@@ -3648,3 +3648,34 @@ button{
   overflow:visible !important;
   font-size:13px !important;
 }
+/* =========================================================
+   إصلاح نوع المناسبة والملاحظات - سطر واحد
+========================================================= */
+
+.customer-extra{
+  padding:18px 12px !important;
+}
+
+.customer-extra .customer-row{
+  grid-template-columns:95px 10px minmax(140px, 1fr) !important;
+  column-gap:5px !important;
+}
+
+.customer-extra .customer-row b,
+.customer-extra .customer-row strong,
+.customer-extra .customer-row span{
+  white-space:nowrap !important;
+  word-break:normal !important;
+  overflow-wrap:normal !important;
+}
+
+/* نوع المناسبة + الملاحظات */
+.customer-row-simple{
+  grid-template-columns:95px 10px minmax(140px, 1fr) !important;
+}
+
+.customer-row-simple b{
+  white-space:nowrap !important;
+  word-break:keep-all !important;
+  overflow-wrap:normal !important;
+}
