@@ -562,7 +562,7 @@ function homeView() {
         </span>
 
         <small class="stat-description">
-          قبل التحصيل
+          الإيرادات ناقص المصاريف
         </small>
 
       </div>
@@ -598,7 +598,7 @@ function homeView() {
         </span>
 
         <small class="stat-description">
-          من العملاء
+          المبالغ المتبقية من العملاء
         </small>
 
       </div>
@@ -852,7 +852,18 @@ function bookingsView() {
       <div class="booking-search-box">
 
         <span class="search-icon">
-          🔍
+
+          <svg viewBox="0 0 24 24">
+
+            <circle
+              cx="11"
+              cy="11"
+              r="7"/>
+
+            <path d="M20 20L16.5 16.5"/>
+
+          </svg>
+
         </span>
 
         <input
@@ -862,6 +873,7 @@ function bookingsView() {
           autocomplete="off"
           autocorrect="off"
           spellcheck="false"
+          enterkeyhint="search"
           placeholder="بحث بالاسم أو رقم الجوال"
           value="${esc(bookingSearch)}">
 
@@ -1687,8 +1699,16 @@ function bindViewEvents() {
     searchInput.addEventListener(
       'input',
       event => {
+
         bookingSearch =
           event.target.value;
+
+        /*
+          مهم:
+          لا نعمل render هنا.
+          لذلك لوحة المفاتيح لا تتغير
+          بعد كل رقم أو حرف.
+        */
 
         refreshBookingResults();
       }
@@ -1833,7 +1853,7 @@ function showDetail(id) {
 
         <div>
           <span>رقم الجوال</span>
-          <strong>
+          <strong dir="ltr">
             ${esc(booking.phone || '-')}
           </strong>
         </div>
@@ -2449,10 +2469,11 @@ function amountInWords(amount) {
 
 
 /* =====================================================
-   الفاتورة الرسمية
+   الفاتورة الجديدة
 ===================================================== */
 
 function showInvoice(id) {
+
   const booking =
     db.bookings.find(
       item =>
@@ -2491,470 +2512,524 @@ function showInvoice(id) {
     '',
     `
 
-      <div class="invoice-preview-scroll">
+    <div class="invoice-preview-scroll">
 
-        <div
-          class="invoice-a4"
-          id="invoicePaper">
-
-
-          <!-- الإطار الداخلي -->
-
-          <div class="invoice-inner-frame">
+      <div
+        id="invoicePaper"
+        class="invoice-a4">
 
 
-            <!-- الموجات -->
+        <div class="invoice-frame">
 
-            <div class="invoice-sound-wave wave-a">
-              <span></span><span></span><span></span>
-              <span></span><span></span><span></span>
-              <span></span><span></span><span></span>
-              <span></span><span></span><span></span>
-              <span></span><span></span><span></span>
+
+          <!-- تموجات الصوت -->
+
+          <div class="sound-wave wave-left">
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+          </div>
+
+
+          <div class="sound-wave wave-right">
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+          </div>
+
+
+          <!-- الشعار -->
+
+          <header class="invoice-header">
+
+            <img
+              src="logo.png?v=60"
+              class="invoice-logo"
+              alt="Winter Camp">
+
+
+            <div class="invoice-brand-en">
+              Winter Camp
             </div>
 
 
-            <div class="invoice-sound-wave wave-b">
-              <span></span><span></span><span></span>
-              <span></span><span></span><span></span>
-              <span></span><span></span><span></span>
-              <span></span><span></span><span></span>
-              <span></span><span></span><span></span>
+            <div class="invoice-brand-ar">
+              للصوتيات والإنتاج الصوتي
             </div>
 
 
-            <!-- الشعار -->
+            <div class="invoice-title">
 
-            <header class="invoice-main-header">
+              <span>
+                )))
+              </span>
 
-              <img
-                src="wintercamp_icon.png"
-                alt="Winter Camp"
-                class="invoice-main-logo">
+              <strong>
+                فاتورة
+              </strong>
+
+              <span>
+                (((
+              </span>
+
+            </div>
+
+          </header>
 
 
-              <div class="invoice-company-en">
-                Winter Camp
-              </div>
+          <!-- معلومات الفاتورة -->
+
+          <section class="invoice-info">
 
 
-              <div class="invoice-company-ar">
-                للصوتيات والإنتاج الصوتي
-              </div>
+            <div class="invoice-info-row">
+
+              <span class="invoice-info-icon">
+                ▣
+              </span>
+
+              <strong class="invoice-info-label">
+                رقم الفاتورة
+              </strong>
+
+              <span>
+                :
+              </span>
+
+              <b class="invoice-info-value invoice-number-value">
+                ${invoiceNumber}
+              </b>
+
+            </div>
 
 
-              <div class="invoice-title-pill">
+            <div class="invoice-info-row">
 
-                <span class="invoice-title-wave">
-                  )))
+              <span class="invoice-info-icon">
+                ▦
+              </span>
+
+              <strong class="invoice-info-label">
+                التاريخ الهجري
+              </strong>
+
+              <span>
+                :
+              </span>
+
+              <b class="invoice-info-value">
+                ${hijriFull(booking.date)}
+              </b>
+
+            </div>
+
+
+            <div class="invoice-info-row">
+
+              <span class="invoice-info-icon">
+                ◷
+              </span>
+
+              <strong class="invoice-info-label">
+                اليوم
+              </strong>
+
+              <span>
+                :
+              </span>
+
+              <b class="invoice-info-value">
+                ${dayName(booking.date)}
+              </b>
+
+            </div>
+
+          </section>
+
+
+          <!-- بيانات العميل -->
+
+          <section class="invoice-customer">
+
+
+            <div class="customer-main">
+
+
+              <div class="customer-row">
+
+                <span class="customer-symbol">
+                  ●
                 </span>
 
                 <strong>
-                  فاتورة
+                  اسم العميل
                 </strong>
 
-                <span class="invoice-title-wave">
-                  (((
-                </span>
-
-              </div>
-
-            </header>
-
-
-            <!-- بيانات الفاتورة -->
-
-            <section class="invoice-meta">
-
-              <div class="meta-row">
-
-                <span class="meta-icon">
-                  ▣
-                </span>
-
-                <span class="meta-label">
-                  رقم الفاتورة
-                </span>
-
-                <span class="meta-colon">
+                <span>
                   :
                 </span>
 
-                <strong class="meta-value">
-                  ${invoiceNumber}
-                </strong>
+                <b>
+                  ${esc(booking.name)}
+                </b>
 
               </div>
 
 
-              <div class="meta-row">
+              <div class="customer-row">
 
-                <span class="meta-icon">
-                  ◫
+                <span class="customer-symbol">
+                  ☎
                 </span>
 
-                <span class="meta-label">
-                  التاريخ الهجري
-                </span>
+                <strong>
+                  رقم التواصل
+                </strong>
 
-                <span class="meta-colon">
+                <span>
                   :
                 </span>
 
-                <strong class="meta-value">
-                  ${hijriFull(booking.date)}
-                </strong>
+                <b
+                  class="customer-phone"
+                  dir="ltr">
+
+                  ${esc(
+                    booking.phone || '-'
+                  )}
+
+                </b>
 
               </div>
 
 
-              <div class="meta-row">
+              <div class="customer-row">
 
-                <span class="meta-icon">
-                  ◷
+                <span class="customer-symbol">
+                  ●
                 </span>
 
-                <span class="meta-label">
-                  اليوم
-                </span>
+                <strong>
+                  الموقع
+                </strong>
 
-                <span class="meta-colon">
+                <span>
                   :
                 </span>
 
-                <strong class="meta-value">
-                  ${dayName(booking.date)}
+                <b>
+                  ${esc(booking.location)}
+                </b>
+
+              </div>
+
+            </div>
+
+
+            <div class="customer-extra">
+
+
+              <div class="customer-row customer-row-simple">
+
+                <strong>
+                  نوع المناسبة
                 </strong>
 
-              </div>
+                <span>
+                  :
+                </span>
 
-            </section>
-
-
-            <!-- العميل -->
-
-            <section class="invoice-client-box">
-
-
-              <div class="invoice-client-right">
-
-
-                <div class="client-field">
-
-                  <span class="client-icon">
-                    ♙
-                  </span>
-
-                  <span class="client-label">
-                    اسم العميل
-                  </span>
-
-                  <span>:</span>
-
-                  <strong>
-                    ${esc(booking.name)}
-                  </strong>
-
-                </div>
-
-
-                <div class="client-field">
-
-                  <span class="client-icon">
-                    ☎
-                  </span>
-
-                  <span class="client-label">
-                    رقم التواصل
-                  </span>
-
-                  <span>:</span>
-
-                  <strong dir="ltr">
-                    ${esc(booking.phone || '-')}
-                  </strong>
-
-                </div>
-
-
-                <div class="client-field">
-
-                  <span class="client-icon">
-                    ●
-                  </span>
-
-                  <span class="client-label">
-                    الموقع
-                  </span>
-
-                  <span>:</span>
-
-                  <strong>
-                    ${esc(booking.location)}
-                  </strong>
-
-                </div>
+                <b>
+                  ${esc(
+                    booking.eventType || '-'
+                  )}
+                </b>
 
               </div>
 
 
-              <div class="invoice-client-left">
+              <div class="customer-row customer-row-simple">
 
+                <strong>
+                  ملاحظات
+                </strong>
 
-                <div class="client-field">
+                <span>
+                  :
+                </span>
 
-                  <span class="client-label">
-                    نوع المناسبة
-                  </span>
-
-                  <span>:</span>
-
-                  <strong>
-                    ${esc(booking.eventType || '-')}
-                  </strong>
-
-                </div>
-
-
-                <div class="client-field">
-
-                  <span class="client-label">
-                    ملاحظات
-                  </span>
-
-                  <span>:</span>
-
-                  <strong>
-                    ${esc(
-                      booking.notes ||
-                      'شكراً لثقتكم بنا'
-                    )}
-                  </strong>
-
-                </div>
+                <b>
+                  ${esc(
+                    booking.notes ||
+                    'شكراً لثقتكم بنا'
+                  )}
+                </b>
 
               </div>
 
-            </section>
+            </div>
+
+          </section>
 
 
-            <!-- جدول الأصناف -->
+          <!-- جدول الصنف -->
 
-            <section class="invoice-items-wrap">
+          <table class="invoice-products">
 
-              <table class="invoice-items-table">
+            <thead>
 
-                <thead>
+              <tr>
 
-                  <tr>
+                <th class="invoice-no">
+                  م
+                </th>
 
-                    <th class="col-no">
-                      م
-                    </th>
+                <th>
+                  الصنف
+                </th>
 
-                    <th>
-                      الصنف
-                    </th>
+                <th class="invoice-qty">
+                  الكمية
+                </th>
 
-                    <th class="col-qty">
-                      الكمية
-                    </th>
+                <th class="invoice-price">
+                  سعر الوحدة
+                </th>
 
-                    <th class="col-price">
-                      سعر الوحدة
-                    </th>
+                <th class="invoice-price">
+                  الإجمالي
+                </th>
 
-                    <th class="col-total">
-                      الإجمالي
-                    </th>
+              </tr>
 
-                  </tr>
-
-                </thead>
+            </thead>
 
 
-                <tbody>
+            <tbody>
 
-                  <tr>
+              <tr>
 
-                    <td>
-                      1
-                    </td>
+                <td>
+                  1
+                </td>
 
-                    <td class="invoice-product-name">
-
-                      <strong>
-                        ${esc(booking.device)}
-                      </strong>
-
-                      <small>
-                        خدمة صوتية
-                      </small>
-
-                    </td>
-
-                    <td>
-                      1
-                    </td>
-
-                    <td>
-                      ${money(agreed)}
-                    </td>
-
-                    <td>
-                      ${money(agreed)}
-                    </td>
-
-                  </tr>
-
-                </tbody>
-
-              </table>
-
-            </section>
-
-
-            <!-- الجزء السفلي -->
-
-            <section class="invoice-bottom-grid">
-
-
-              <!-- المبالغ -->
-
-              <div class="invoice-summary">
-
-                <div class="summary-row">
-
-                  <span>
-                    المبلغ المتفق عليه
-                  </span>
+                <td class="product-title">
 
                   <strong>
-                    ${money(agreed)}
+                    ${esc(booking.device)}
                   </strong>
 
-                </div>
+                  <small>
+                    خدمة صوتية
+                  </small>
+
+                </td>
+
+                <td>
+                  1
+                </td>
+
+                <td>
+                  ${money(agreed)}
+                </td>
+
+                <td>
+                  ${money(agreed)}
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
 
 
-                <div class="summary-row">
+          <!-- أسفل الفاتورة -->
 
-                  <span>
-                    الواصل
-                  </span>
-
-                  <strong>
-                    ${money(paid)}
-                  </strong>
-
-                </div>
+          <section class="invoice-lower">
 
 
-                <div class="summary-row">
+            <!-- المبلغ بالحروف والختم -->
 
-                  <span>
-                    المتبقي
-                  </span>
+            <div class="invoice-words-side">
 
-                  <strong class="summary-remaining">
-                    ${money(remaining)}
-                  </strong>
-
-                </div>
+              <strong class="amount-words-label">
+                المبلغ بالحروف :
+              </strong>
 
 
-                <div class="summary-row summary-total">
+              <div class="amount-words-box">
 
-                  <span>
-                    الإجمالي
-                  </span>
-
-                  <strong>
-                    ${money(agreed)}
-                  </strong>
-
-                </div>
+                ${amountInWords(agreed)}
 
               </div>
 
 
-              <!-- الحروف والختم -->
-
-              <div class="invoice-words-area">
-
-                <div class="words-label">
-                  المبلغ بالحروف :
-                </div>
-
-                <div class="words-box">
-                  ${amountInWords(agreed)}
-                </div>
-
+              <div class="stamp-holder">
 
                 <img
-                  src="stamp.png"
-                  alt="ختم Winter Camp"
-                  class="invoice-stamp">
+                  src="stamp.png?v=60"
+                  class="invoice-full-stamp"
+                  alt="ختم Winter Camp">
 
               </div>
 
-            </section>
+            </div>
 
 
-            <!-- التذييل -->
+            <!-- الحسابات -->
 
-            <footer class="invoice-footer">
+            <div class="invoice-totals">
 
-              <div>
-                ☎
-                <span dir="ltr">
-                  0573757275
+
+              <div class="total-row">
+
+                <span>
+                  المبلغ المتفق عليه
                 </span>
+
+                <strong>
+                  ${money(agreed)}
+                </strong>
+
               </div>
 
-              <div>
-                ● أبها - المملكة العربية السعودية
+
+              <div class="total-row">
+
+                <span>
+                  الواصل
+                </span>
+
+                <strong>
+                  ${money(paid)}
+                </strong>
+
               </div>
 
-              <div>
-                Winter Camp
+
+              <div class="total-row">
+
+                <span>
+                  المتبقي
+                </span>
+
+                <strong class="remaining-number">
+                  ${money(remaining)}
+                </strong>
+
               </div>
 
-            </footer>
+
+              <div class="total-row grand-total">
+
+                <span>
+                  الإجمالي
+                </span>
+
+                <strong>
+                  ${money(agreed)}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </section>
 
 
-          </div>
+          <!-- أسفل الصفحة -->
+
+          <footer class="invoice-green-footer">
+
+
+            <div>
+
+              ☎
+
+              <span dir="ltr">
+                0573757275
+              </span>
+
+            </div>
+
+
+            <div>
+              ● أبها - المملكة العربية السعودية
+            </div>
+
+
+            <div>
+              Winter Camp
+            </div>
+
+
+          </footer>
+
 
         </div>
 
       </div>
 
+    </div>
 
-      <div class="invoice-actions">
 
-        <button
-          id="printInvoice">
-          طباعة
-        </button>
+    <div class="invoice-actions">
 
-        <button
-          id="shareInvoice"
-          class="invoice-share-btn">
-          مشاركة PDF
-        </button>
 
-        <button
-          id="closeInvoice">
-          إغلاق
-        </button>
+      <button
+        id="shareInvoice"
+        class="invoice-share-btn">
 
-      </div>
+        مشاركة PDF
+
+      </button>
+
+
+      <button
+        id="printInvoice">
+
+        طباعة
+
+      </button>
+
+
+      <button
+        id="closeInvoice">
+
+        إغلاق
+
+      </button>
+
+
+    </div>
+
     `
   );
-
-
-  $('#printInvoice').onclick =
-    () =>
-      window.print();
 
 
   $('#shareInvoice').onclick =
@@ -2962,6 +3037,11 @@ function showInvoice(id) {
       shareInvoicePDF(
         booking
       );
+
+
+  $('#printInvoice').onclick =
+    () =>
+      window.print();
 
 
   $('#closeInvoice').onclick =
@@ -2995,8 +3075,12 @@ function loadExternalScript(url) {
         );
 
       script.src = url;
-      script.onload = resolve;
-      script.onerror = reject;
+
+      script.onload =
+        resolve;
+
+      script.onerror =
+        reject;
 
       document.head.appendChild(
         script
@@ -3007,13 +3091,16 @@ function loadExternalScript(url) {
 
 
 async function ensurePDFLibraries() {
+
   if (!window.html2canvas) {
+
     await loadExternalScript(
       'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
     );
   }
 
   if (!window.jspdf) {
+
     await loadExternalScript(
       'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
     );
@@ -3022,6 +3109,7 @@ async function ensurePDFLibraries() {
 
 
 async function waitForImages(element) {
+
   const images =
     [
       ...element.querySelectorAll(
@@ -3059,6 +3147,7 @@ async function waitForImages(element) {
 async function shareInvoicePDF(
   booking
 ) {
+
   const paper =
     $('#invoicePaper');
 
@@ -3074,31 +3163,57 @@ async function shareInvoicePDF(
     'مشاركة PDF';
 
   try {
+
     if (button) {
+
       button.disabled = true;
+
       button.textContent =
         'جاري تجهيز الفاتورة...';
     }
 
+
+    toast(
+      'جاري تجهيز PDF'
+    );
+
+
     await ensurePDFLibraries();
-    await waitForImages(paper);
+
+    await waitForImages(
+      paper
+    );
+
+
+    /*
+      مهم:
+      الفاتورة في الجوال مصغرة بـ transform.
+      html2canvas نأخذ المقاس الأصلي 794 × 1123
+      وليس المقاس الظاهر المصغر.
+    */
 
     const canvas =
       await window.html2canvas(
         paper,
         {
-          scale: 2.2,
-          backgroundColor:
-            '#ffffff',
+          scale: 2,
+          width: 794,
+          height: 1123,
+          backgroundColor: '#ffffff',
           useCORS: true,
-          logging: false
+          allowTaint: false,
+          logging: false,
+          scrollX: 0,
+          scrollY: 0
         }
       );
+
 
     const {
       jsPDF
     } =
       window.jspdf;
+
 
     const pdf =
       new jsPDF({
@@ -3108,8 +3223,13 @@ async function shareInvoicePDF(
         compress: true
       });
 
-    const pageWidth = 210;
-    const pageHeight = 297;
+
+    const pageWidth =
+      210;
+
+    const pageHeight =
+      297;
+
 
     pdf.addImage(
       canvas.toDataURL(
@@ -3125,16 +3245,20 @@ async function shareInvoicePDF(
       'FAST'
     );
 
+
     const blob =
       pdf.output('blob');
+
 
     const invoiceNumber =
       String(
         booking.id
       ).slice(-8);
 
+
     const fileName =
       `WinterCamp-Invoice-${invoiceNumber}.pdf`;
+
 
     const file =
       new File(
@@ -3146,6 +3270,7 @@ async function shareInvoicePDF(
         }
       );
 
+
     if (
       navigator.share &&
       navigator.canShare &&
@@ -3153,6 +3278,7 @@ async function shareInvoicePDF(
         files: [file]
       })
     ) {
+
       await navigator.share({
         files: [file],
         title:
@@ -3162,25 +3288,35 @@ async function shareInvoicePDF(
       return;
     }
 
+
     const url =
       URL.createObjectURL(
         blob
       );
+
 
     const link =
       document.createElement(
         'a'
       );
 
-    link.href = url;
-    link.download = fileName;
+
+    link.href =
+      url;
+
+    link.download =
+      fileName;
+
 
     document.body.appendChild(
       link
     );
 
+
     link.click();
+
     link.remove();
+
 
     setTimeout(
       () =>
@@ -3190,7 +3326,14 @@ async function shareInvoicePDF(
       2000
     );
 
+
+    toast(
+      'تم تجهيز الفاتورة'
+    );
+
+
   } catch (error) {
+
     console.error(error);
 
     alert(
@@ -3198,8 +3341,12 @@ async function shareInvoicePDF(
     );
 
   } finally {
+
     if (button) {
-      button.disabled = false;
+
+      button.disabled =
+        false;
+
       button.textContent =
         previous;
     }
@@ -3247,6 +3394,7 @@ function exportData() {
   );
 
   link.click();
+
   link.remove();
 
   setTimeout(
@@ -3330,32 +3478,40 @@ $$('.nav-item')
   );
 
 if ($('#fabBtn')) {
+
   $('#fabBtn').onclick =
     () => {
+
       if (
         currentPage ===
         'expenses'
       ) {
+
         openExpenseForm();
+
       } else {
+
         openBookingForm();
       }
     };
 }
 
 if ($('#menuBtn')) {
+
   $('#menuBtn').onclick =
     () =>
       toggleMenu(true);
 }
 
 if ($('#closeMenu')) {
+
   $('#closeMenu').onclick =
     () =>
       toggleMenu(false);
 }
 
 if ($('#sheetBackdrop')) {
+
   $('#sheetBackdrop').onclick =
     () =>
       toggleMenu(false);
@@ -3366,6 +3522,7 @@ $$('[data-sheet-page]')
     button => {
       button.onclick =
         () => {
+
           toggleMenu(false);
 
           go(
@@ -3397,10 +3554,11 @@ if ($('#backupBtn')) {
 
 
 /* =====================================================
-   استيراد نسخة
+   استيراد نسخة احتياطية
 ===================================================== */
 
 if ($('#importInput')) {
+
   $('#importInput').onchange =
     async event => {
 
@@ -3412,6 +3570,7 @@ if ($('#importInput')) {
       }
 
       try {
+
         const imported =
           JSON.parse(
             await file.text()
@@ -3425,6 +3584,7 @@ if ($('#importInput')) {
             imported.expenses
           )
         ) {
+
           throw new Error();
         }
 
@@ -3433,26 +3593,46 @@ if ($('#importInput')) {
             imported.devices
           )
         ) {
+
           imported.devices =
             clone(seed.devices);
         }
 
-        db = imported;
+        db =
+          imported;
 
         save();
+
         render();
-        toggleMenu(false);
+
+        toggleMenu(
+          false
+        );
 
         toast(
           'تم استيراد البيانات'
         );
 
       } catch {
+
         alert(
           'ملف النسخة الاحتياطية غير صالح'
         );
       }
     };
+}
+
+
+/* =====================================================
+   تاريخ اليوم في الأعلى
+===================================================== */
+
+if ($('#hijriToday')) {
+
+  $('#hijriToday').textContent =
+    hijriWithDay(
+      todayISO()
+    );
 }
 
 
@@ -3463,12 +3643,14 @@ if ($('#importInput')) {
 if (
   'serviceWorker' in navigator
 ) {
+
   window.addEventListener(
     'load',
     () => {
+
       navigator.serviceWorker
         .register(
-          './sw.js?v=51'
+          './sw.js?v=60'
         )
         .catch(
           console.error
@@ -3476,5 +3658,10 @@ if (
     }
   );
 }
+
+
+/* =====================================================
+   تشغيل البرنامج
+===================================================== */
 
 render();
