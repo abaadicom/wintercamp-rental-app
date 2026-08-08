@@ -2842,11 +2842,6 @@ function showInvoice(id) {
                   <strong>
                     ${esc(booking.device)}
                   </strong>
-
-                  <small>
-                    خدمة صوتية
-                  </small>
-
                 </td>
 
                 <td>
