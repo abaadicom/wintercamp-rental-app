@@ -28,32 +28,55 @@ const seed = {
 };
 
 let db = load();
+
 let currentPage = 'home';
 
 let reportMonth = 'all';
 let reportYear = String(currentHijri().year);
 
-const $ = selector => document.querySelector(selector);
-const $$ = selector => [...document.querySelectorAll(selector)];
+let bookingSearch = '';
+let bookingFilter = 'all';
 
-/* =========================================
-   حفظ وقراءة البيانات
-========================================= */
+const $ = selector =>
+  document.querySelector(selector);
+
+const $$ = selector =>
+  [...document.querySelectorAll(selector)];
+
+
+/* =========================
+   التخزين
+========================= */
 
 function clone(object) {
-  return JSON.parse(JSON.stringify(object));
+  return JSON.parse(
+    JSON.stringify(object)
+  );
 }
 
 function load() {
   try {
-    const saved = localStorage.getItem(DB_KEY);
+
+    const saved =
+      localStorage.getItem(DB_KEY);
 
     if (saved) {
-      const data = JSON.parse(saved);
 
-      if (!data.bookings) data.bookings = [];
-      if (!data.expenses) data.expenses = [];
-      if (!data.devices) data.devices = clone(seed.devices);
+      const data =
+        JSON.parse(saved);
+
+      if (!data.bookings) {
+        data.bookings = [];
+      }
+
+      if (!data.expenses) {
+        data.expenses = [];
+      }
+
+      if (!data.devices) {
+        data.devices =
+          clone(seed.devices);
+      }
 
       return data;
     }
@@ -61,51 +84,67 @@ function load() {
     return clone(seed);
 
   } catch (error) {
+
     return clone(seed);
   }
 }
 
 function save() {
+
   localStorage.setItem(
     DB_KEY,
     JSON.stringify(db)
   );
 }
 
-/* =========================================
-   تنسيق المبالغ
-========================================= */
+
+/* =========================
+   المبالغ
+========================= */
 
 function money(value) {
-  return new Intl.NumberFormat('ar-SA').format(
+
+  return new Intl.NumberFormat(
+    'ar-SA'
+  ).format(
     Number(value || 0)
   ) + ' ر.س';
 }
 
-/* =========================================
+
+/* =========================
    التاريخ
-========================================= */
+========================= */
 
 function todayISO() {
-  const date = new Date();
 
-  const year = date.getFullYear();
-  const month = String(
-    date.getMonth() + 1
-  ).padStart(2, '0');
+  const date =
+    new Date();
 
-  const day = String(
-    date.getDate()
-  ).padStart(2, '0');
+  const year =
+    date.getFullYear();
+
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(2, '0');
+
+  const day =
+    String(
+      date.getDate()
+    ).padStart(2, '0');
 
   return `${year}-${month}-${day}`;
 }
 
 function getHijriParts(isoDate) {
+
   try {
-    const date = new Date(
-      isoDate + 'T12:00:00'
-    );
+
+    const date =
+      new Date(
+        isoDate + 'T12:00:00'
+      );
 
     const formatter =
       new Intl.DateTimeFormat(
@@ -124,24 +163,28 @@ function getHijriParts(isoDate) {
     return {
       day: Number(
         parts.find(
-          item => item.type === 'day'
+          item =>
+            item.type === 'day'
         )?.value
       ),
 
       month: Number(
         parts.find(
-          item => item.type === 'month'
+          item =>
+            item.type === 'month'
         )?.value
       ),
 
       year: Number(
         parts.find(
-          item => item.type === 'year'
+          item =>
+            item.type === 'year'
         )?.value
       )
     };
 
-  } catch (error) {
+  } catch {
+
     return {
       day: 1,
       month: 1,
@@ -151,12 +194,14 @@ function getHijriParts(isoDate) {
 }
 
 function currentHijri() {
+
   return getHijriParts(
     todayISO()
   );
 }
 
 function hijriFull(isoDate) {
+
   const hijri =
     getHijriParts(isoDate);
 
@@ -167,19 +212,10 @@ function hijriFull(isoDate) {
   );
 }
 
-function hijriShort(isoDate) {
-  const hijri =
-    getHijriParts(isoDate);
-
-  return (
-    `${hijri.day}/` +
-    `${hijri.month}/` +
-    `${hijri.year} هـ`
-  );
-}
-
 function dayName(isoDate) {
+
   try {
+
     return new Intl.DateTimeFormat(
       'ar-SA',
       {
@@ -192,28 +228,25 @@ function dayName(isoDate) {
       )
     );
 
-  } catch (error) {
+  } catch {
+
     return '';
   }
 }
 
 function hijriWithDay(isoDate) {
+
   return (
     `${dayName(isoDate)} ` +
     `${hijriFull(isoDate)}`
   );
 }
 
-function hijriMonthTitle(month, year) {
-  return (
-    `${HIJRI_MONTHS[month]} ` +
-    `${year} هـ`
-  );
-}
 
-/* =========================================
-   تحويل هجري إلى ميلادي داخلي
-========================================= */
+/* =========================
+   تحويل هجري إلى ميلادي
+   داخلي فقط
+========================= */
 
 function hijriToGregorian(
   hijriYear,
@@ -221,9 +254,14 @@ function hijriToGregorian(
   hijriDay
 ) {
 
-  hijriYear = Number(hijriYear);
-  hijriMonth = Number(hijriMonth);
-  hijriDay = Number(hijriDay);
+  hijriYear =
+    Number(hijriYear);
+
+  hijriMonth =
+    Number(hijriMonth);
+
+  hijriDay =
+    Number(hijriDay);
 
   const estimatedYear =
     Math.floor(
@@ -231,14 +269,15 @@ function hijriToGregorian(
       621.5774
     );
 
-  const start = new Date(
-    estimatedYear - 1,
-    0,
-    1,
-    12,
-    0,
-    0
-  );
+  const start =
+    new Date(
+      estimatedYear - 1,
+      0,
+      1,
+      12,
+      0,
+      0
+    );
 
   for (
     let offset = 0;
@@ -250,7 +289,8 @@ function hijriToGregorian(
       new Date(start);
 
     date.setDate(
-      start.getDate() + offset
+      start.getDate() +
+      offset
     );
 
     const iso =
@@ -277,9 +317,10 @@ function hijriToGregorian(
   return null;
 }
 
-/* =========================================
-   حقول اختيار التاريخ الهجري
-========================================= */
+
+/* =========================
+   حقول التاريخ الهجري
+========================= */
 
 function hijriDateFields(
   isoDate = todayISO(),
@@ -299,6 +340,7 @@ function hijriDateFields(
     day <= 30;
     day++
   ) {
+
     days += `
       <option
         value="${day}"
@@ -319,6 +361,7 @@ function hijriDateFields(
     month <= 12;
     month++
   ) {
+
     months += `
       <option
         value="${month}"
@@ -335,13 +378,15 @@ function hijriDateFields(
   let years = '';
 
   const startYear = 1446;
-  const endYear = current.year + 5;
+  const endYear =
+    current.year + 5;
 
   for (
     let year = startYear;
     year <= endYear;
     year++
   ) {
+
     years += `
       <option
         value="${year}"
@@ -356,7 +401,7 @@ function hijriDateFields(
   }
 
   return `
-    <label class="hijri-field">
+    <label>
 
       التاريخ الهجري
 
@@ -386,9 +431,10 @@ function hijriDateFields(
   `;
 }
 
-/* =========================================
-   الحسابات المالية
-========================================= */
+
+/* =========================
+   الحسابات
+========================= */
 
 function totals(
   bookings = db.bookings,
@@ -430,21 +476,27 @@ function totals(
     paid,
     remaining:
       revenue - paid,
-
     expenses:
       expensesTotal,
-
     profit:
       revenue - expensesTotal
   };
 }
 
 function status(booking) {
-  const remaining =
-    Number(booking.agreed || 0) -
-    Number(booking.paid || 0);
 
-  if (remaining <= 0) {
+  const remaining =
+    Number(
+      booking.agreed || 0
+    ) -
+    Number(
+      booking.paid || 0
+    );
+
+  if (
+    remaining <= 0
+  ) {
+
     return [
       'مدفوعة بالكامل',
       'paid'
@@ -452,8 +504,11 @@ function status(booking) {
   }
 
   if (
-    Number(booking.paid || 0) > 0
+    Number(
+      booking.paid || 0
+    ) > 0
   ) {
+
     return [
       'مدفوعة جزئياً',
       'partial'
@@ -466,9 +521,10 @@ function status(booking) {
   ];
 }
 
-/* =========================================
+
+/* =========================
    الرئيسية
-========================================= */
+========================= */
 
 function homeView() {
 
@@ -479,7 +535,8 @@ function homeView() {
     [...db.bookings]
       .filter(
         booking =>
-          booking.date >= todayISO()
+          booking.date >=
+          todayISO()
       )
       .sort(
         (a, b) =>
@@ -514,10 +571,6 @@ function homeView() {
 
       <div class="stat-card">
 
-        <div class="stat-icon green-bg">
-          <span>↗</span>
-        </div>
-
         <span class="label">
           إجمالي الإيرادات
         </span>
@@ -532,10 +585,6 @@ function homeView() {
 
 
       <div class="stat-card">
-
-        <div class="stat-icon red-bg">
-          <span>↘</span>
-        </div>
 
         <span class="label">
           إجمالي المصاريف
@@ -552,10 +601,6 @@ function homeView() {
 
       <div class="stat-card">
 
-        <div class="stat-icon blue-bg">
-          <span>◆</span>
-        </div>
-
         <span class="label">
           صافي الربح
         </span>
@@ -570,10 +615,6 @@ function homeView() {
 
 
       <div class="stat-card">
-
-        <div class="stat-icon gold-bg">
-          <span>◷</span>
-        </div>
 
         <span class="label">
           المتبقي للتحصيل
@@ -599,7 +640,9 @@ function homeView() {
       <button
         class="link-btn"
         data-go="bookings">
+
         عرض الكل
+
       </button>
 
     </div>
@@ -609,7 +652,9 @@ function homeView() {
       upcoming.length
 
         ? upcoming
-            .map(bookingCard)
+            .map(
+              bookingCard
+            )
             .join('')
 
         : `
@@ -618,20 +663,23 @@ function homeView() {
           </div>
         `
     }
-
   `;
 }
 
-/* =========================================
-   بطاقة الحجز
-========================================= */
 
-function bookingCard(booking) {
+/* =========================
+   بطاقة الحجز
+========================= */
+
+function bookingCard(
+  booking
+) {
 
   const [
     statusText,
     statusClass
-  ] = status(booking);
+  ] =
+    status(booking);
 
   const remaining =
     Math.max(
@@ -650,11 +698,16 @@ function bookingCard(booking) {
 
       <div class="booking-top">
 
-        <div class="booking-info">
+        <div>
 
           <div class="booking-name">
-            ${esc(booking.name)}
+
+            ${esc(
+              booking.name
+            )}
+
           </div>
+
 
           <div class="booking-meta">
 
@@ -679,7 +732,21 @@ function bookingCard(booking) {
               )}
             </div>
 
+            ${
+              booking.phone
+                ? `
+                  <div>
+                    ☎
+                    ${esc(
+                      booking.phone
+                    )}
+                  </div>
+                `
+                : ''
+            }
+
           </div>
+
 
           <span
             class="badge ${statusClass}">
@@ -737,35 +804,189 @@ function bookingCard(booking) {
       </div>
 
     </article>
-
   `;
 }
 
-/* =========================================
-   الحجوزات
-========================================= */
+
+/* =========================
+   البحث في الحجوزات
+========================= */
+
+function getFilteredBookings() {
+
+  let bookings =
+    [...db.bookings];
+
+  const today =
+    todayISO();
+
+  if (
+    bookingFilter ===
+    'upcoming'
+  ) {
+
+    bookings =
+      bookings.filter(
+        booking =>
+          booking.date >= today
+      );
+  }
+
+  if (
+    bookingFilter ===
+    'past'
+  ) {
+
+    bookings =
+      bookings.filter(
+        booking =>
+          booking.date < today
+      );
+  }
+
+  const search =
+    bookingSearch
+      .trim()
+      .toLowerCase();
+
+  if (search) {
+
+    bookings =
+      bookings.filter(
+        booking => {
+
+          const name =
+            String(
+              booking.name || ''
+            )
+              .toLowerCase();
+
+          const phone =
+            String(
+              booking.phone || ''
+            )
+              .replace(/\s+/g, '');
+
+          const cleanSearch =
+            search.replace(
+              /\s+/g,
+              ''
+            );
+
+          return (
+            name.includes(
+              search
+            ) ||
+            phone.includes(
+              cleanSearch
+            )
+          );
+        }
+      );
+  }
+
+  bookings.sort(
+    (a, b) =>
+      b.date.localeCompare(
+        a.date
+      )
+  );
+
+  return bookings;
+}
+
+
+/* =========================
+   صفحة الحجوزات
+========================= */
 
 function bookingsView() {
 
   const bookings =
-    [...db.bookings]
-      .sort(
-        (a, b) =>
-          b.date.localeCompare(
-            a.date
-          )
-      );
+    getFilteredBookings();
 
   return `
+
+    <div class="bookings-tools">
+
+      <div class="booking-search-box">
+
+        <span class="search-icon">
+          ⌕
+        </span>
+
+        <input
+          id="bookingSearch"
+          type="search"
+          placeholder="بحث بالاسم أو رقم الجوال"
+          value="${esc(
+            bookingSearch
+          )}">
+
+      </div>
+
+
+      <div class="booking-filter-tabs">
+
+        <button
+          data-booking-filter="all"
+          class="${
+            bookingFilter === 'all'
+              ? 'active'
+              : ''
+          }">
+
+          الكل
+
+        </button>
+
+        <button
+          data-booking-filter="upcoming"
+          class="${
+            bookingFilter === 'upcoming'
+              ? 'active'
+              : ''
+          }">
+
+          القادمة
+
+        </button>
+
+        <button
+          data-booking-filter="past"
+          class="${
+            bookingFilter === 'past'
+              ? 'active'
+              : ''
+          }">
+
+          السابقة
+
+        </button>
+
+      </div>
+
+    </div>
+
 
     <div class="section-head">
 
       <h3>
-        جميع الحجوزات
+
+        ${
+          bookingFilter === 'upcoming'
+            ? 'الحجوزات القادمة'
+            : bookingFilter === 'past'
+              ? 'الحجوزات السابقة'
+              : 'جميع الحجوزات'
+        }
+
       </h3>
 
       <span class="count-badge">
+
         ${bookings.length}
+
       </span>
 
     </div>
@@ -775,22 +996,26 @@ function bookingsView() {
       bookings.length
 
         ? bookings
-            .map(bookingCard)
+            .map(
+              bookingCard
+            )
             .join('')
 
         : `
           <div class="empty">
-            لا توجد حجوزات
+
+            لا توجد نتائج مطابقة
+
           </div>
         `
     }
-
   `;
 }
 
-/* =========================================
+
+/* =========================
    المصاريف
-========================================= */
+========================= */
 
 function expensesView() {
 
@@ -812,9 +1037,11 @@ function expensesView() {
       </h3>
 
       <strong class="red">
+
         ${money(
           totals().expenses
         )}
+
       </strong>
 
     </div>
@@ -831,21 +1058,25 @@ function expensesView() {
                 <div>
 
                   <strong>
+
                     ${esc(
                       expense.item
                     )}
+
                   </strong>
 
                   <small>
+
                     ${hijriWithDay(
                       expense.date
                     )}
+
                   </small>
 
                 </div>
 
 
-                <div class="expense-value">
+                <div>
 
                   <strong class="red">
 
@@ -876,13 +1107,13 @@ function expensesView() {
           </div>
         `
     }
-
   `;
 }
 
-/* =========================================
-   سنوات التقارير من 1446 هـ
-========================================= */
+
+/* =========================
+   سنوات التقارير
+========================= */
 
 function getAvailableHijriYears() {
 
@@ -892,10 +1123,7 @@ function getAvailableHijriYears() {
   const startYear = 1446;
 
   const endYear =
-    Math.max(
-      currentYear + 5,
-      startYear
-    );
+    currentYear + 5;
 
   const years = [];
 
@@ -904,15 +1132,17 @@ function getAvailableHijriYears() {
     year <= endYear;
     year++
   ) {
+
     years.push(year);
   }
 
   return years;
 }
 
-/* =========================================
-   فلترة الشهر والسنة
-========================================= */
+
+/* =========================
+   فلترة التقارير
+========================= */
 
 function filterByHijriPeriod(
   items,
@@ -952,42 +1182,47 @@ function reportPeriodTitle() {
     reportMonth === 'all' &&
     reportYear === 'all'
   ) {
+
     return (
-      'جميع الأشهر ' +
-      'وجميع السنوات'
+      'جميع الأشهر وجميع السنوات'
     );
   }
 
   if (
     reportMonth === 'all'
   ) {
+
     return (
-      `جميع أشهر سنة ` +
-      `${reportYear} هـ`
+      `جميع أشهر سنة ${reportYear} هـ`
     );
   }
 
   if (
     reportYear === 'all'
   ) {
+
     return (
       `${HIJRI_MONTHS[
-        Number(reportMonth)
+        Number(
+          reportMonth
+        )
       ]} - جميع السنوات`
     );
   }
 
   return (
     `${HIJRI_MONTHS[
-      Number(reportMonth)
-    ]} ` +
-    `${reportYear} هـ`
+      Number(
+        reportMonth
+      )
+    ]} ${reportYear} هـ`
   );
 }
 
-/* =========================================
-   تفاصيل الأشهر لكل سنة
-========================================= */
+
+/* =========================
+   تفاصيل أشهر السنة
+========================= */
 
 function monthlyBreakdownView() {
 
@@ -1003,13 +1238,13 @@ function monthlyBreakdownView() {
     <div class="section-head">
 
       <h3>
-        أشهر سنة ${reportYear} هـ
+        أشهر سنة
+        ${reportYear} هـ
       </h3>
 
     </div>
 
     <div class="months-list">
-
   `;
 
   for (
@@ -1087,7 +1322,6 @@ function monthlyBreakdownView() {
         </div>
 
       </button>
-
     `;
   }
 
@@ -1098,9 +1332,10 @@ function monthlyBreakdownView() {
   return html;
 }
 
-/* =========================================
-   صفحة التقارير
-========================================= */
+
+/* =========================
+   التقارير
+========================= */
 
 function reportsView() {
 
@@ -1122,18 +1357,6 @@ function reportsView() {
 
   const years =
     getAvailableHijriYears();
-
-  const max =
-    Math.max(
-      reportTotals.revenue,
-      reportTotals.expenses,
-      reportTotals.remaining,
-      Math.max(
-        0,
-        reportTotals.profit
-      ),
-      1
-    );
 
   return `
 
@@ -1194,7 +1417,6 @@ function reportsView() {
                       ${month}
 
                     </option>
-
                   `;
                 }
               )
@@ -1241,7 +1463,6 @@ function reportsView() {
                   ${year} هـ
 
                 </option>
-
               `
             ).join('')
           }
@@ -1262,11 +1483,9 @@ function reportsView() {
         </span>
 
         <span class="value green">
-
           ${money(
             reportTotals.revenue
           )}
-
         </span>
 
       </div>
@@ -1279,11 +1498,9 @@ function reportsView() {
         </span>
 
         <span class="value red">
-
           ${money(
             reportTotals.expenses
           )}
-
         </span>
 
       </div>
@@ -1296,11 +1513,9 @@ function reportsView() {
         </span>
 
         <span class="value blue">
-
           ${money(
             reportTotals.profit
           )}
-
         </span>
 
       </div>
@@ -1313,86 +1528,10 @@ function reportsView() {
         </span>
 
         <span class="value gold">
-
           ${money(
             reportTotals.remaining
           )}
-
         </span>
-
-      </div>
-
-    </div>
-
-
-    <div class="section-head">
-
-      <h3>
-        الرسم المالي
-      </h3>
-
-    </div>
-
-
-    <div class="report-box">
-
-      ${reportLine(
-        'الإيرادات',
-        reportTotals.revenue,
-        max,
-        'var(--green)'
-      )}
-
-      ${reportLine(
-        'المصاريف',
-        reportTotals.expenses,
-        max,
-        'var(--red)'
-      )}
-
-      ${reportLine(
-        'صافي الربح',
-        Math.max(
-          0,
-          reportTotals.profit
-        ),
-        max,
-        'var(--blue)'
-      )}
-
-      ${reportLine(
-        'المتبقي',
-        reportTotals.remaining,
-        max,
-        'var(--gold)'
-      )}
-
-    </div>
-
-
-    <div class="report-counts">
-
-      <div>
-
-        <span>
-          الحجوزات
-        </span>
-
-        <strong>
-          ${bookings.length}
-        </strong>
-
-      </div>
-
-      <div>
-
-        <span>
-          المصاريف
-        </span>
-
-        <strong>
-          ${expenses.length}
-        </strong>
 
       </div>
 
@@ -1400,57 +1539,13 @@ function reportsView() {
 
 
     ${monthlyBreakdownView()}
-
   `;
 }
 
-function reportLine(
-  title,
-  value,
-  max,
-  color
-) {
 
-  const percentage =
-    Math.max(
-      0,
-      Number(value || 0)
-    ) /
-    max *
-    100;
-
-  return `
-
-    <div class="bar-line">
-
-      <span>
-        ${title}
-      </span>
-
-      <div class="track">
-
-        <div
-          class="fill"
-          style="
-            width:${percentage}%;
-            background:${color};
-          ">
-        </div>
-
-      </div>
-
-      <b>
-        ${money(value)}
-      </b>
-
-    </div>
-
-  `;
-}
-
-/* =========================================
+/* =========================
    الأجهزة
-========================================= */
+========================= */
 
 function devicesView() {
 
@@ -1464,21 +1559,17 @@ function devicesView() {
 
     </div>
 
-
     ${
-      db.devices.map(
-        device => `
+      db.devices
+        .map(
+          device => `
 
-          <div class="device-card">
-
-            <div class="device-icon">
-              🔊
-            </div>
-
-            <div class="device-data">
+            <div class="device-card">
 
               <strong>
-                ${esc(device.name)}
+                ${esc(
+                  device.name
+                )}
               </strong>
 
               <small>
@@ -1487,19 +1578,17 @@ function devicesView() {
               </small>
 
             </div>
-
-          </div>
-
-        `
-      ).join('')
+          `
+        )
+        .join('')
     }
-
   `;
 }
 
-/* =========================================
-   الفواتير
-========================================= */
+
+/* =========================
+   قائمة الفواتير
+========================= */
 
 function invoicesView() {
 
@@ -1522,7 +1611,6 @@ function invoicesView() {
 
     </div>
 
-
     ${
       bookings.length
 
@@ -1534,10 +1622,12 @@ function invoicesView() {
                 <div>
 
                   <strong>
+
                     فاتورة
                     #${String(
                       booking.id
                     ).slice(-6)}
+
                   </strong>
 
                   <small>
@@ -1556,9 +1646,8 @@ function invoicesView() {
 
                 </div>
 
-
                 <button
-                  class="small-btn primary invoice-view-btn"
+                  class="small-btn primary"
                   data-invoice="${booking.id}">
 
                   عرض
@@ -1566,7 +1655,6 @@ function invoicesView() {
                 </button>
 
               </div>
-
             `
           ).join('')
 
@@ -1576,13 +1664,13 @@ function invoicesView() {
           </div>
         `
     }
-
   `;
 }
 
-/* =========================================
+
+/* =========================
    الإعدادات
-========================================= */
+========================= */
 
 function settingsView() {
 
@@ -1604,20 +1692,7 @@ function settingsView() {
       </strong>
 
       <small>
-        هجري - تقويم أم القرى
-      </small>
-
-    </div>
-
-
-    <div class="settings-card">
-
-      <strong>
-        سنوات التقارير
-      </strong>
-
-      <small>
-        تبدأ من 1446 هـ
+        هجري - أم القرى
       </small>
 
     </div>
@@ -1630,27 +1705,27 @@ function settingsView() {
       </strong>
 
       <small>
-        يتم حفظ البيانات
-        داخل الآيفون
+        البيانات محفوظة
+        داخل الجهاز
       </small>
 
     </div>
 
 
     <button
-      class="submit-btn"
-      id="settingsExport">
+      id="settingsExport"
+      class="submit-btn">
 
       تصدير نسخة احتياطية
 
     </button>
-
   `;
 }
 
-/* =========================================
-   تشغيل الصفحات
-========================================= */
+
+/* =========================
+   عرض الصفحات
+========================= */
 
 function render() {
 
@@ -1698,65 +1773,141 @@ function render() {
   bindViewEvents();
 }
 
-/* =========================================
-   أحداث الصفحات
-========================================= */
+function go(page) {
+
+  currentPage = page;
+
+  render();
+}
+
+
+/* =========================
+   الأحداث
+========================= */
 
 function bindViewEvents() {
 
-  $$('[data-go]').forEach(
-    button => {
+  $$('[data-go]')
+    .forEach(
+      button => {
 
-      button.onclick = () =>
-        go(
-          button.dataset.go
-        );
-    }
-  );
+        button.onclick = () => {
 
-  $$('[data-detail]').forEach(
-    button => {
+          go(
+            button.dataset.go
+          );
+        };
+      }
+    );
 
-      button.onclick = () =>
-        showDetail(
-          Number(
-            button.dataset.detail
-          )
-        );
-    }
-  );
 
-  $$('[data-invoice]').forEach(
-    button => {
+  $$('[data-detail]')
+    .forEach(
+      button => {
 
-      button.onclick = () =>
-        showInvoice(
-          Number(
-            button.dataset.invoice
-          )
-        );
-    }
-  );
+        button.onclick = () => {
 
-  $$('[data-del-expense]').forEach(
-    button => {
+          showDetail(
+            Number(
+              button.dataset.detail
+            )
+          );
+        };
+      }
+    );
 
-      button.onclick = () =>
-        deleteExpense(
-          Number(
-            button.dataset.delExpense
-          )
-        );
-    }
-  );
 
-  const exportButton =
-    $('#settingsExport');
+  $$('[data-invoice]')
+    .forEach(
+      button => {
 
-  if (exportButton) {
-    exportButton.onclick =
-      exportData;
+        button.onclick = () => {
+
+          showInvoice(
+            Number(
+              button.dataset.invoice
+            )
+          );
+        };
+      }
+    );
+
+
+  $$('[data-del-expense]')
+    .forEach(
+      button => {
+
+        button.onclick = () => {
+
+          deleteExpense(
+            Number(
+              button.dataset.delExpense
+            )
+          );
+        };
+      }
+    );
+
+
+  const searchInput =
+    $('#bookingSearch');
+
+  if (searchInput) {
+
+    searchInput.oninput =
+      event => {
+
+        bookingSearch =
+          event.target.value;
+
+        const value =
+          bookingSearch;
+
+        const position =
+          event.target
+            .selectionStart;
+
+        render();
+
+        const newInput =
+          $('#bookingSearch');
+
+        if (newInput) {
+
+          newInput.focus();
+
+          newInput.value =
+            value;
+
+          try {
+
+            newInput.setSelectionRange(
+              position,
+              position
+            );
+
+          } catch {}
+        }
+      };
   }
+
+
+  $$('[data-booking-filter]')
+    .forEach(
+      button => {
+
+        button.onclick =
+          () => {
+
+            bookingFilter =
+              button.dataset
+                .bookingFilter;
+
+            render();
+          };
+      }
+    );
+
 
   const monthFilter =
     $('#reportMonthFilter');
@@ -1773,6 +1924,7 @@ function bindViewEvents() {
       };
   }
 
+
   const yearFilter =
     $('#reportYearFilter');
 
@@ -1788,30 +1940,38 @@ function bindViewEvents() {
       };
   }
 
+
   $$('[data-report-month]')
     .forEach(
       button => {
 
-        button.onclick = () => {
+        button.onclick =
+          () => {
 
-          reportMonth =
-            button.dataset
-              .reportMonth;
+            reportMonth =
+              button.dataset
+                .reportMonth;
 
-          render();
-        };
+            render();
+          };
       }
     );
+
+
+  const exportButton =
+    $('#settingsExport');
+
+  if (exportButton) {
+
+    exportButton.onclick =
+      exportData;
+  }
 }
 
-function go(page) {
-  currentPage = page;
-  render();
-}
 
-/* =========================================
-   تنظيف النصوص
-========================================= */
+/* =========================
+   تنظيف النص
+========================= */
 
 function esc(text = '') {
 
@@ -1827,54 +1987,55 @@ function esc(text = '') {
   );
 }
 
-/* =========================================
+
+/* =========================
    النوافذ
-========================================= */
+========================= */
 
 function openModal(
   title,
   content
 ) {
 
-  $('#modalTitle').textContent =
+  $('#modalTitle')
+    .textContent =
     title;
 
-  $('#modalBody').innerHTML =
+  $('#modalBody')
+    .innerHTML =
     content;
 
   $('#modalBackdrop')
-    .classList.remove(
-      'hidden'
-    );
+    .classList
+    .remove('hidden');
 
   $('#modal')
-    .classList.remove(
-      'hidden'
-    );
+    .classList
+    .remove('hidden');
 }
 
 function closeModal() {
 
   $('#modalBackdrop')
-    .classList.add(
-      'hidden'
-    );
+    .classList
+    .add('hidden');
 
   $('#modal')
-    .classList.add(
-      'hidden'
-    );
+    .classList
+    .add('hidden');
 }
 
-/* =========================================
+
+/* =========================
    تفاصيل الحجز
-========================================= */
+========================= */
 
 function showDetail(id) {
 
   const booking =
     db.bookings.find(
-      item => item.id === id
+      item =>
+        item.id === id
     );
 
   if (!booking) {
@@ -1894,56 +2055,88 @@ function showDetail(id) {
 
   openModal(
     'تفاصيل الحجز',
+
     `
 
       <div class="detail-list">
 
         <div>
-          <span>اسم العميل</span>
+
+          <span>
+            اسم العميل
+          </span>
+
           <strong>
             ${esc(
               booking.name
             )}
           </strong>
+
         </div>
 
+
         <div>
-          <span>رقم التواصل</span>
+
+          <span>
+            رقم التواصل
+          </span>
+
           <strong>
             ${esc(
               booking.phone || '-'
             )}
           </strong>
+
         </div>
 
+
         <div>
-          <span>الجهاز</span>
+
+          <span>
+            الجهاز
+          </span>
+
           <strong>
             ${esc(
               booking.device
             )}
           </strong>
+
         </div>
 
+
         <div>
-          <span>الموقع</span>
+
+          <span>
+            الموقع
+          </span>
+
           <strong>
             ${esc(
               booking.location
             )}
           </strong>
+
         </div>
 
+
         <div>
-          <span>التاريخ</span>
+
+          <span>
+            التاريخ
+          </span>
+
           <strong>
             ${hijriWithDay(
               booking.date
             )}
           </strong>
+
         </div>
 
+
         <div>
+
           <span>
             المتفق عليه
           </span>
@@ -1953,9 +2146,12 @@ function showDetail(id) {
               booking.agreed
             )}
           </strong>
+
         </div>
 
+
         <div>
+
           <span>
             الواصل
           </span>
@@ -1965,9 +2161,12 @@ function showDetail(id) {
               booking.paid
             )}
           </strong>
+
         </div>
 
+
         <div>
+
           <span>
             المتبقي
           </span>
@@ -1977,6 +2176,7 @@ function showDetail(id) {
               remaining
             )}
           </strong>
+
         </div>
 
       </div>
@@ -2010,21 +2210,23 @@ function showDetail(id) {
         حذف الحجز
 
       </button>
-
     `
   );
 
-  $('#detailInvoice').onclick =
+  $('#detailInvoice')
+    .onclick =
     () =>
       showInvoice(id);
 
-  $('#editBooking').onclick =
+  $('#editBooking')
+    .onclick =
     () =>
       openBookingForm(
         booking
       );
 
-  $('#deleteBooking').onclick =
+  $('#deleteBooking')
+    .onclick =
     () => {
 
       if (
@@ -2040,7 +2242,9 @@ function showDetail(id) {
           );
 
         save();
+
         closeModal();
+
         render();
 
         toast(
@@ -2050,9 +2254,10 @@ function showDetail(id) {
     };
 }
 
-/* =========================================
-   إضافة / تعديل الحجز
-========================================= */
+
+/* =========================
+   نموذج الحجز
+========================= */
 
 function openBookingForm(
   existing = null
@@ -2064,6 +2269,7 @@ function openBookingForm(
       phone: '',
       device: '',
       location: '',
+      eventType: '',
       date: todayISO(),
       agreed: '',
       paid: '',
@@ -2091,15 +2297,14 @@ function openBookingForm(
             required
             value="${esc(
               booking.name
-            )}"
-            placeholder="اسم العميل">
+            )}">
 
         </label>
 
 
         <label>
 
-          رقم التواصل
+          رقم الجوال
 
           <input
             name="phone"
@@ -2114,68 +2319,29 @@ function openBookingForm(
 
         <label>
 
-          نوع الجهاز
+          نوع المناسبة
 
-          <select
+          <input
+            name="eventType"
+            value="${esc(
+              booking.eventType || ''
+            )}"
+            placeholder="مثال: زواج">
+
+        </label>
+
+
+        <label>
+
+          نوع الجهاز / الباقة
+
+          <input
             name="device"
-            required>
-
-            <option value="">
-              اختر الجهاز
-            </option>
-
-            ${
-              db.devices.map(
-                device => `
-
-                  <option
-                    value="${esc(
-                      device.name
-                    )}"
-                    ${
-                      booking.device ===
-                      device.name
-                        ? 'selected'
-                        : ''
-                    }>
-
-                    ${esc(
-                      device.name
-                    )}
-
-                  </option>
-
-                `
-              ).join('')
-            }
-
-            <option
-              value="2 سماعات"
-              ${
-                booking.device ===
-                '2 سماعات'
-                  ? 'selected'
-                  : ''
-              }>
-
-              2 سماعات
-
-            </option>
-
-            <option
-              value="باقة كاملة"
-              ${
-                booking.device ===
-                'باقة كاملة'
-                  ? 'selected'
-                  : ''
-              }>
-
-              باقة كاملة
-
-            </option>
-
-          </select>
+            required
+            value="${esc(
+              booking.device || ''
+            )}"
+            placeholder="مثال: 2 سماعات">
 
         </label>
 
@@ -2188,9 +2354,8 @@ function openBookingForm(
             name="location"
             required
             value="${esc(
-              booking.location
-            )}"
-            placeholder="مثال: أبها - حي العرين">
+              booking.location || ''
+            )}">
 
         </label>
 
@@ -2205,12 +2370,11 @@ function openBookingForm(
 
           <label>
 
-            السعر المتفق عليه
+            المبلغ المتفق عليه
 
             <input
               name="agreed"
               type="number"
-              inputmode="decimal"
               min="0"
               required
               value="${booking.agreed}">
@@ -2225,7 +2389,6 @@ function openBookingForm(
             <input
               name="paid"
               type="number"
-              inputmode="decimal"
               min="0"
               value="${booking.paid}">
 
@@ -2239,8 +2402,7 @@ function openBookingForm(
           ملاحظات
 
           <textarea
-            name="notes"
-            placeholder="ملاحظات اختيارية">${esc(
+            name="notes">${esc(
               booking.notes || ''
             )}</textarea>
 
@@ -2260,11 +2422,11 @@ function openBookingForm(
         </button>
 
       </form>
-
     `
   );
 
-  $('#bookingForm').onsubmit =
+  $('#bookingForm')
+    .onsubmit =
     event => {
 
       event.preventDefault();
@@ -2326,7 +2488,9 @@ function openBookingForm(
       }
 
       save();
+
       closeModal();
+
       render();
 
       toast(
@@ -2337,14 +2501,16 @@ function openBookingForm(
     };
 }
 
-/* =========================================
-   إضافة المصروف
-========================================= */
+
+/* =========================
+   إضافة مصروف
+========================= */
 
 function openExpenseForm() {
 
   openModal(
     'إضافة مصروف',
+
     `
 
       <form
@@ -2357,8 +2523,7 @@ function openExpenseForm() {
 
           <input
             name="item"
-            required
-            placeholder="مثال: وقود">
+            required>
 
         </label>
 
@@ -2371,8 +2536,7 @@ function openExpenseForm() {
             name="amount"
             type="number"
             min="0"
-            required
-            inputmode="decimal">
+            required>
 
         </label>
 
@@ -2392,16 +2556,16 @@ function openExpenseForm() {
         </button>
 
       </form>
-
     `
   );
 
-  $('#expenseForm').onsubmit =
+  $('#expenseForm')
+    .onsubmit =
     event => {
 
       event.preventDefault();
 
-      const formData =
+      const data =
         Object.fromEntries(
           new FormData(
             event.currentTarget
@@ -2410,9 +2574,9 @@ function openExpenseForm() {
 
       const date =
         hijriToGregorian(
-          formData.expense_year,
-          formData.expense_month,
-          formData.expense_day
+          data.expense_year,
+          data.expense_month,
+          data.expense_day
         );
 
       if (!date) {
@@ -2424,27 +2588,29 @@ function openExpenseForm() {
         return;
       }
 
-      delete formData.expense_day;
-      delete formData.expense_month;
-      delete formData.expense_year;
+      delete data.expense_day;
+      delete data.expense_month;
+      delete data.expense_year;
 
-      formData.date =
+      data.date =
         date;
 
-      formData.id =
+      data.id =
         Date.now();
 
-      formData.amount =
+      data.amount =
         Number(
-          formData.amount || 0
+          data.amount || 0
         );
 
       db.expenses.push(
-        formData
+        data
       );
 
       save();
+
       closeModal();
+
       render();
 
       toast(
@@ -2468,6 +2634,7 @@ function deleteExpense(id) {
       );
 
     save();
+
     render();
 
     toast(
@@ -2476,9 +2643,34 @@ function deleteExpense(id) {
   }
 }
 
-/* =========================================
-   الفاتورة
-========================================= */
+
+/* =========================
+   تحويل الرقم للحروف
+========================= */
+
+function amountInWords(
+  amount
+) {
+
+  const value =
+    Number(amount || 0);
+
+  if (value === 0) {
+
+    return (
+      'صفر ريال سعودي فقط لا غير'
+    );
+  }
+
+  return (
+    `${money(value)} فقط لا غير`
+  );
+}
+
+
+/* =========================
+   الفاتورة الجديدة
+========================= */
 
 function showInvoice(id) {
 
@@ -2503,83 +2695,206 @@ function showInvoice(id) {
       )
     );
 
+  const invoiceNumber =
+    String(
+      booking.id
+    ).slice(-6);
+
   openModal(
     'الفاتورة',
+
     `
 
       <div
-        class="invoice-paper"
+        class="wc-invoice"
         id="invoicePaper">
 
 
-        <div class="invoice-brand">
+        <div class="invoice-wave wave-left">
+        </div>
 
-          <div>
+        <div class="invoice-wave wave-right">
+        </div>
 
-            <h2>
-              فاتورة
-            </h2>
 
-            <small>
+        <div class="wc-invoice-header">
 
-              رقم الفاتورة
-              #${String(
-                booking.id
-              ).slice(-6)}
+          <img
+            src="wintercamp_icon.png"
+            class="wc-invoice-logo"
+            alt="Winter Camp">
 
-              <br>
 
-              ${hijriWithDay(
-                booking.date
-              )}
+          <div class="wc-brand-en">
+            Winter Camp
+          </div>
 
-            </small>
+
+          <div class="wc-brand-ar">
+
+            للصوتيات والإنتاج الصوتي
 
           </div>
 
 
-          <img
-            src="wintercamp_icon.png"
-            alt="Winter Camp">
+          <div class="wc-invoice-title">
+
+            فاتورة
+
+          </div>
 
         </div>
 
 
-        <div class="invoice-customer">
+        <div class="wc-invoice-number">
 
-          <p>
-            <b>العميل:</b>
-            ${esc(
-              booking.name
-            )}
-          </p>
+          <div>
 
-          <p>
-            <b>الموقع:</b>
-            ${esc(
-              booking.location
-            )}
-          </p>
+            <span>
+              رقم الفاتورة
+            </span>
+
+            <strong>
+              INV-${invoiceNumber}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              التاريخ الهجري
+            </span>
+
+            <strong>
+              ${hijriFull(
+                booking.date
+              )}
+            </strong>
+
+          </div>
 
         </div>
 
 
-        <table>
+        <div class="wc-client-box">
+
+          <div>
+
+            <p>
+
+              <span>
+                اسم العميل :
+              </span>
+
+              <strong>
+                ${esc(
+                  booking.name
+                )}
+              </strong>
+
+            </p>
+
+
+            <p>
+
+              <span>
+                رقم التواصل :
+              </span>
+
+              <strong>
+                ${esc(
+                  booking.phone || '-'
+                )}
+              </strong>
+
+            </p>
+
+
+            <p>
+
+              <span>
+                الموقع :
+              </span>
+
+              <strong>
+                ${esc(
+                  booking.location
+                )}
+              </strong>
+
+            </p>
+
+          </div>
+
+
+          <div>
+
+            <p>
+
+              <span>
+                نوع المناسبة :
+              </span>
+
+              <strong>
+
+                ${esc(
+                  booking.eventType ||
+                  '-'
+                )}
+
+              </strong>
+
+            </p>
+
+
+            <p>
+
+              <span>
+                ملاحظات :
+              </span>
+
+              <strong>
+
+                ${esc(
+                  booking.notes ||
+                  'شكراً لثقتكم بنا'
+                )}
+
+              </strong>
+
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <table class="wc-items-table">
 
           <thead>
 
             <tr>
 
               <th>
+                م
+              </th>
+
+              <th>
                 الصنف
               </th>
 
               <th>
-                العدد
+                الكمية
               </th>
 
               <th>
-                السعر
+                سعر الوحدة
+              </th>
+
+              <th>
+                الإجمالي
               </th>
 
             </tr>
@@ -2590,6 +2905,10 @@ function showInvoice(id) {
           <tbody>
 
             <tr>
+
+              <td>
+                1
+              </td>
 
               <td>
                 ${esc(
@@ -2607,6 +2926,12 @@ function showInvoice(id) {
                 )}
               </td>
 
+              <td>
+                ${money(
+                  booking.agreed
+                )}
+              </td>
+
             </tr>
 
           </tbody>
@@ -2614,76 +2939,124 @@ function showInvoice(id) {
         </table>
 
 
-        <div class="invoice-money">
+        <div class="wc-invoice-bottom">
 
-          <div>
 
-            <span>
-              المتفق عليه
-            </span>
+          <div class="wc-summary-table">
 
-            <strong>
-              ${money(
-                booking.agreed
-              )}
-            </strong>
+            <div>
+
+              <span>
+                المبلغ المتفق عليه
+              </span>
+
+              <strong>
+                ${money(
+                  booking.agreed
+                )}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                الواصل
+              </span>
+
+              <strong>
+                ${money(
+                  booking.paid
+                )}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                المتبقي
+              </span>
+
+              <strong class="red">
+
+                ${money(
+                  remaining
+                )}
+
+              </strong>
+
+            </div>
+
+
+            <div class="wc-total">
+
+              <span>
+                الإجمالي
+              </span>
+
+              <strong>
+                ${money(
+                  booking.agreed
+                )}
+              </strong>
+
+            </div>
 
           </div>
 
 
-          <div>
+          <div class="wc-words-stamp">
 
-            <span>
-              الواصل
-            </span>
+            <div>
 
-            <strong>
-              ${money(
-                booking.paid
-              )}
-            </strong>
+              <p class="wc-words-title">
 
-          </div>
+                المبلغ بالحروف :
+
+              </p>
+
+              <div class="wc-amount-words">
+
+                ${amountInWords(
+                  booking.agreed
+                )}
+
+              </div>
+
+            </div>
 
 
-          <div>
-
-            <span>
-              المتبقي
-            </span>
-
-            <strong>
-              ${money(
-                remaining
-              )}
-            </strong>
+            <img
+              src="stamp.png"
+              class="wc-stamp"
+              alt="ختم Winter Camp"
+              onerror="
+                this.style.display='none'
+              ">
 
           </div>
 
         </div>
 
 
-        <div class="invoice-total">
+        <div class="wc-footer">
 
           <span>
-            الإجمالي
+            ☎ 0573757275
           </span>
 
           <span>
-            ${money(
-              booking.agreed
-            )}
+            📍 أبها - المملكة العربية السعودية
+          </span>
+
+          <span>
+            Winter Camp
           </span>
 
         </div>
-
-
-        <p class="invoice-thanks">
-
-          شكراً لتعاملكم مع
-          Winter Camp
-
-        </p>
 
       </div>
 
@@ -2692,36 +3065,49 @@ function showInvoice(id) {
 
         <button
           id="printInvoice">
+
           طباعة
+
         </button>
 
         <button
           id="shareInvoice">
+
           مشاركة
+
         </button>
 
         <button
           id="closeInvoice">
+
           إغلاق
+
         </button>
 
       </div>
-
     `
   );
 
-  $('#printInvoice').onclick =
+  $('#printInvoice')
+    .onclick =
     () => window.print();
 
-  $('#shareInvoice').onclick =
+  $('#shareInvoice')
+    .onclick =
     () =>
       shareBooking(
         booking
       );
 
-  $('#closeInvoice').onclick =
+  $('#closeInvoice')
+    .onclick =
     closeModal;
 }
+
+
+/* =========================
+   مشاركة الفاتورة
+========================= */
 
 function shareBooking(
   booking
@@ -2740,16 +3126,27 @@ function shareBooking(
 
   const text = `
 Winter Camp
+للصوتيات والإنتاج الصوتي
 
-العميل: ${booking.name}
+العميل:
+${booking.name}
+
+رقم الجوال:
+${booking.phone || '-'}
 
 التاريخ:
 ${hijriWithDay(booking.date)}
 
-الجهاز:
+الموقع:
+${booking.location}
+
+المناسبة:
+${booking.eventType || '-'}
+
+الصنف:
 ${booking.device}
 
-المبلغ المتفق عليه:
+المبلغ:
 ${money(booking.agreed)}
 
 الواصل:
@@ -2759,11 +3156,13 @@ ${money(booking.paid)}
 ${money(remaining)}
 `;
 
-  if (navigator.share) {
+  if (
+    navigator.share
+  ) {
 
     navigator.share({
       title:
-        'Winter Camp',
+        'فاتورة Winter Camp',
       text
     });
 
@@ -2778,9 +3177,10 @@ ${money(remaining)}
   }
 }
 
-/* =========================================
-   النسخ الاحتياطي
-========================================= */
+
+/* =========================
+   النسخة الاحتياطية
+========================= */
 
 function exportData() {
 
@@ -2830,11 +3230,14 @@ function exportData() {
   );
 }
 
-/* =========================================
-   إشعار
-========================================= */
 
-function toast(message) {
+/* =========================
+   إشعار
+========================= */
+
+function toast(
+  message
+) {
 
   const element =
     $('#toast');
@@ -2862,9 +3265,10 @@ function toast(message) {
   );
 }
 
-/* =========================================
-   القائمة
-========================================= */
+
+/* =========================
+   القائمة الجانبية
+========================= */
 
 function toggleMenu(show) {
 
@@ -2881,19 +3285,23 @@ function toggleMenu(show) {
     );
 }
 
-/* =========================================
+
+/* =========================
    الأزرار الرئيسية
-========================================= */
+========================= */
 
-$$('.nav-item').forEach(
-  button => {
+$$('.nav-item')
+  .forEach(
+    button => {
 
-    button.onclick = () =>
-      go(
-        button.dataset.page
-      );
-  }
-);
+      button.onclick =
+        () =>
+          go(
+            button.dataset.page
+          );
+    }
+  );
+
 
 $('#fabBtn').onclick =
   () => {
@@ -2911,46 +3319,62 @@ $('#fabBtn').onclick =
     }
   };
 
+
 $('#menuBtn').onclick =
   () =>
     toggleMenu(true);
+
 
 $('#closeMenu').onclick =
   () =>
     toggleMenu(false);
 
+
 $('#sheetBackdrop').onclick =
   () =>
     toggleMenu(false);
 
-$$('[data-sheet-page]').forEach(
-  button => {
 
-    button.onclick = () => {
+$$('[data-sheet-page]')
+  .forEach(
+    button => {
 
-      toggleMenu(false);
+      button.onclick =
+        () => {
 
-      go(
-        button.dataset
-          .sheetPage
-      );
-    };
-  }
-);
+          toggleMenu(false);
+
+          go(
+            button.dataset
+              .sheetPage
+          );
+        };
+    }
+  );
+
 
 $('#modalClose').onclick =
   closeModal;
 
+
 $('#modalBackdrop').onclick =
   closeModal;
+
 
 $('#exportBtn').onclick =
   exportData;
 
+
 $('#backupBtn').onclick =
   exportData;
 
-$('#importInput').onchange =
+
+/* =========================
+   استيراد نسخة
+========================= */
+
+$('#importInput')
+  .onchange =
   async event => {
 
     const file =
@@ -2975,27 +3399,34 @@ $('#importInput').onchange =
           imported.expenses
         )
       ) {
+
         throw new Error();
       }
 
-      if (!imported.devices) {
+      if (
+        !imported.devices
+      ) {
+
         imported.devices =
           clone(
             seed.devices
           );
       }
 
-      db = imported;
+      db =
+        imported;
 
       save();
+
       render();
+
       toggleMenu(false);
 
       toast(
         'تم استيراد البيانات'
       );
 
-    } catch (error) {
+    } catch {
 
       alert(
         'ملف النسخة الاحتياطية غير صالح'
@@ -3003,21 +3434,26 @@ $('#importInput').onchange =
     }
   };
 
-/* =========================================
-   التاريخ في الأعلى
-========================================= */
 
-if ($('#hijriToday')) {
+/* =========================
+   تاريخ الأعلى
+========================= */
 
-  $('#hijriToday').textContent =
+if (
+  $('#hijriToday')
+) {
+
+  $('#hijriToday')
+    .textContent =
     hijriWithDay(
       todayISO()
     );
 }
 
-/* =========================================
+
+/* =========================
    Service Worker
-========================================= */
+========================= */
 
 if (
   'serviceWorker'
@@ -3031,16 +3467,14 @@ if (
       navigator
         .serviceWorker
         .register(
-          './sw.js?v=21'
+          './sw.js?v=30'
         )
         .catch(
-          error =>
-            console.log(
-              error
-            )
+          console.error
         );
     }
   );
 }
+
 
 render();
