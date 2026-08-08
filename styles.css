@@ -60,7 +60,6 @@ button{
   display:flex;
   align-items:center;
   justify-content:space-between;
-
   gap:12px;
 
   padding:
@@ -69,7 +68,6 @@ button{
     10px;
 
   background:rgba(12,17,21,.96);
-
   border-bottom:1px solid var(--line);
 
   backdrop-filter:blur(18px);
@@ -94,22 +92,18 @@ button{
   padding:2px;
 
   background:#fff;
-
   border-radius:14px;
 }
 
 .brand-title h1{
   margin:0;
-
   font-size:20px;
   line-height:1.2;
 }
 
 .brand-title p{
   margin:4px 0 0;
-
   color:var(--muted);
-
   font-size:11px;
 }
 
@@ -129,7 +123,6 @@ button{
   border-radius:12px;
 
   background:transparent;
-
   color:var(--text);
 }
 
@@ -156,7 +149,6 @@ button{
 
 .content{
   width:100%;
-
   max-width:760px;
 
   margin:auto;
@@ -173,15 +165,12 @@ button{
 
 .hero h2{
   margin:0;
-
   font-size:22px;
 }
 
 .hero p{
   margin:5px 0 0;
-
   color:var(--muted);
-
   font-size:13px;
 }
 
@@ -192,9 +181,7 @@ button{
 
 .cards{
   display:grid;
-
   grid-template-columns:1fr 1fr;
-
   gap:10px;
 }
 
@@ -215,16 +202,13 @@ button{
 
 .stat-card-top{
   display:flex;
-
   align-items:center;
   justify-content:space-between;
-
   gap:8px;
 }
 
 .stat-card .label{
   color:var(--muted);
-
   font-size:12px;
 }
 
@@ -248,25 +232,14 @@ button{
   line-height:1.4;
 }
 
-.green{
-  color:var(--green);
-}
-
-.red{
-  color:var(--red);
-}
-
-.blue{
-  color:var(--blue);
-}
-
-.gold{
-  color:var(--gold);
-}
+.green{color:var(--green);}
+.red{color:var(--red);}
+.blue{color:var(--blue);}
+.gold{color:var(--gold);}
 
 
 /* =========================================================
-   أيقونات بطاقات الرئيسية
+   أيقونات الرئيسية
 ========================================================= */
 
 .dashboard-icon{
@@ -325,7 +298,6 @@ button{
 
 .section-head{
   display:flex;
-
   align-items:center;
   justify-content:space-between;
 
@@ -341,11 +313,8 @@ button{
 
 .link-btn{
   padding:6px;
-
   border:0;
-
   background:none;
-
   color:var(--green);
 }
 
@@ -383,7 +352,6 @@ button{
 
 .booking-top{
   display:flex;
-
   align-items:flex-start;
   justify-content:space-between;
 
@@ -453,9 +421,7 @@ button{
 
 .card-actions{
   display:flex;
-
   gap:8px;
-
   margin-top:12px;
 }
 
@@ -468,13 +434,11 @@ button{
   border-radius:11px;
 
   background:var(--panel2);
-
   color:var(--text);
 }
 
 .small-btn.primary{
   background:var(--green);
-
   border-color:var(--green);
 
   color:#06130b;
@@ -516,7 +480,6 @@ button{
 
 .booking-search-box{
   display:flex;
-
   align-items:center;
 
   gap:9px;
@@ -533,16 +496,12 @@ button{
   border-color:var(--green);
 
   box-shadow:
-    0
-    0
-    0
-    2px
+    0 0 0 2px
     rgba(37,193,111,.08);
 }
 
 .search-icon{
   display:flex;
-
   align-items:center;
   justify-content:center;
 
@@ -556,7 +515,6 @@ button{
   height:21px;
 
   fill:none;
-
   stroke:currentColor;
 
   stroke-width:2;
@@ -585,7 +543,6 @@ button{
 
 .booking-filter-tabs{
   display:grid;
-
   grid-template-columns:repeat(3,1fr);
 
   gap:7px;
@@ -624,7 +581,6 @@ button{
 .expense-row,
 .invoice-row{
   display:flex;
-
   align-items:center;
   justify-content:space-between;
 
@@ -683,7 +639,6 @@ button{
 
 .report-filters{
   display:grid;
-
   grid-template-columns:1fr 1fr;
 
   gap:10px;
@@ -729,7 +684,6 @@ button{
   width:100%;
 
   display:flex;
-
   align-items:center;
   justify-content:space-between;
 
@@ -776,7 +730,6 @@ button{
   z-index:30;
 
   display:grid;
-
   grid-template-columns:repeat(4,1fr);
 
   min-height:78px;
@@ -798,7 +751,6 @@ button{
   min-height:57px;
 
   display:flex;
-
   flex-direction:column;
 
   align-items:center;
@@ -820,7 +772,6 @@ button{
   height:27px;
 
   display:flex;
-
   align-items:center;
   justify-content:center;
 
@@ -854,9 +805,7 @@ button{
 .nav-item.active .nav-icon{
   filter:
     drop-shadow(
-      0
-      0
-      6px
+      0 0 6px
       rgba(37,193,111,.28)
     );
 }
@@ -871,8 +820,7 @@ button{
 
   z-index:35;
 
-  bottom:
-    calc(70px + var(--safe-bottom));
+  bottom:calc(70px + var(--safe-bottom));
 
   left:50%;
 
@@ -882,7 +830,6 @@ button{
   height:60px;
 
   display:flex;
-
   align-items:center;
   justify-content:center;
 
@@ -896,9 +843,7 @@ button{
   color:#06130b;
 
   box-shadow:
-    0
-    9px
-    26px
+    0 9px 26px
     rgba(0,0,0,.55);
 }
 
@@ -922,7 +867,7 @@ button{
 
 
 /* =========================================================
-   خلفيات القوائم والنوافذ
+   القائمة الجانبية
 ========================================================= */
 
 .sheet-backdrop,
@@ -961,7 +906,6 @@ button{
 
 .sheet-head{
   display:flex;
-
   align-items:center;
   justify-content:space-between;
 
@@ -988,7 +932,6 @@ button{
   width:100%;
 
   display:flex;
-
   align-items:center;
 
   gap:12px;
@@ -1012,7 +955,6 @@ button{
   height:24px;
 
   display:flex;
-
   align-items:center;
   justify-content:center;
 
@@ -1063,9 +1005,7 @@ button{
   border-radius:20px;
 
   box-shadow:
-    0
-    25px
-    80px
+    0 25px 80px
     rgba(0,0,0,.55);
 }
 
@@ -1077,7 +1017,6 @@ button{
   z-index:10;
 
   display:flex;
-
   align-items:center;
   justify-content:space-between;
 
@@ -1090,7 +1029,6 @@ button{
 
 .modal-head h2{
   margin:0;
-
   font-size:18px;
 }
 
@@ -1105,13 +1043,11 @@ button{
 
 .form-grid{
   display:grid;
-
   gap:12px;
 }
 
 .form-grid label{
   display:grid;
-
   gap:6px;
 
   color:var(--muted);
@@ -1142,24 +1078,18 @@ button{
   border-color:var(--green);
 
   box-shadow:
-    0
-    0
-    0
-    2px
+    0 0 0 2px
     rgba(37,193,111,.08);
 }
 
 .form-grid textarea{
   min-height:80px;
-
   resize:vertical;
 }
 
 .form-row{
   display:grid;
-
   grid-template-columns:1fr 1fr;
-
   gap:10px;
 }
 
@@ -1219,13 +1149,11 @@ button{
 
 .detail-list span{
   color:var(--muted);
-
   font-size:11px;
 }
 
 .detail-list strong{
   text-align:left;
-
   font-size:13px;
 }
 
@@ -1238,7 +1166,6 @@ button{
   width:100%;
 
   display:flex;
-
   justify-content:center;
 
   overflow:hidden;
@@ -1254,9 +1181,6 @@ button{
 
   min-width:794px!important;
   min-height:1123px!important;
-
-  max-width:794px!important;
-  max-height:1123px!important;
 
   flex:none;
 
@@ -1276,13 +1200,12 @@ button{
     sans-serif;
 
   box-shadow:
-    0
-    10px
-    34px
+    0 10px 34px
     rgba(0,0,0,.20);
 }
 
-.invoice-frame{
+.invoice-frame,
+.invoice-inner-frame{
   position:absolute;
 
   inset:12px;
@@ -1290,9 +1213,9 @@ button{
   overflow:hidden;
 
   padding:
-    22px
+    25px
     29px
-    62px;
+    68px;
 
   background:#fff;
 
@@ -1305,16 +1228,16 @@ button{
    موجات الفاتورة
 ========================================================= */
 
-.sound-wave{
+.sound-wave,
+.invoice-sound-wave{
   position:absolute;
 
-  top:40px;
+  top:45px;
 
   width:185px;
   height:100px;
 
   display:flex;
-
   align-items:center;
   justify-content:center;
 
@@ -1323,15 +1246,18 @@ button{
   opacity:.10;
 }
 
-.wave-left{
+.wave-left,
+.wave-a{
   left:18px;
 }
 
-.wave-right{
+.wave-right,
+.wave-b{
   right:18px;
 }
 
-.sound-wave i{
+.sound-wave i,
+.invoice-sound-wave span{
   display:block;
 
   width:3px;
@@ -1342,173 +1268,233 @@ button{
 }
 
 .sound-wave i:nth-child(1),
-.sound-wave i:nth-child(15){
+.sound-wave i:nth-child(15),
+.invoice-sound-wave span:nth-child(1),
+.invoice-sound-wave span:nth-child(15){
   height:12px;
 }
 
 .sound-wave i:nth-child(2),
-.sound-wave i:nth-child(14){
+.sound-wave i:nth-child(14),
+.invoice-sound-wave span:nth-child(2),
+.invoice-sound-wave span:nth-child(14){
   height:20px;
 }
 
 .sound-wave i:nth-child(3),
-.sound-wave i:nth-child(13){
+.sound-wave i:nth-child(13),
+.invoice-sound-wave span:nth-child(3),
+.invoice-sound-wave span:nth-child(13){
   height:32px;
 }
 
 .sound-wave i:nth-child(4),
-.sound-wave i:nth-child(12){
+.sound-wave i:nth-child(12),
+.invoice-sound-wave span:nth-child(4),
+.invoice-sound-wave span:nth-child(12){
   height:45px;
 }
 
 .sound-wave i:nth-child(5),
-.sound-wave i:nth-child(11){
+.sound-wave i:nth-child(11),
+.invoice-sound-wave span:nth-child(5),
+.invoice-sound-wave span:nth-child(11){
   height:61px;
 }
 
 .sound-wave i:nth-child(6),
-.sound-wave i:nth-child(10){
+.sound-wave i:nth-child(10),
+.invoice-sound-wave span:nth-child(6),
+.invoice-sound-wave span:nth-child(10){
   height:80px;
 }
 
 .sound-wave i:nth-child(7),
-.sound-wave i:nth-child(9){
+.sound-wave i:nth-child(9),
+.invoice-sound-wave span:nth-child(7),
+.invoice-sound-wave span:nth-child(9){
   height:58px;
 }
 
-.sound-wave i:nth-child(8){
+.sound-wave i:nth-child(8),
+.invoice-sound-wave span:nth-child(8){
   height:94px;
 }
 
 
 /* =========================================================
-   رأس الفاتورة - التصميم النهائي
+   رأس الفاتورة
 ========================================================= */
 
-.invoice-header{
+.invoice-header,
+.invoice-main-header{
   position:relative;
 
   z-index:3;
 
   display:flex;
-
   flex-direction:column;
 
   align-items:center;
+  justify-content:flex-start;
+
+  width:100%;
 
   text-align:center;
 }
 
 
-/* الشعار أكبر وأعرض بدون تشويه */
+/* =========================================================
+   الشعار - الشكل النهائي
+========================================================= */
 
-.invoice-logo{
-  display:block;
+.invoice-logo-wrap{
+  width:100%;
+  height:145px;
 
-  width:375px!important;
-  height:135px!important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
-  max-width:none!important;
-  max-height:none!important;
+  overflow:visible;
+
+  margin:0;
+}
+
+
+/*
+  مهم:
+  object-fit:contain يحافظ على نسبة الشعار الأصلية
+  ولا يسمح بتمديده أو ضغطه.
+*/
+
+.invoice-logo,
+.invoice-main-logo{
+  display:block!important;
+
+  width:390px!important;
+  height:140px!important;
+
+  max-width:390px!important;
+  max-height:140px!important;
 
   margin:0 auto!important;
   padding:0!important;
 
   object-fit:contain!important;
-  object-position:center!important;
+  object-position:center center!important;
 
   background:transparent!important;
 
   border:0!important;
   border-radius:0!important;
+
+  box-shadow:none!important;
+
+  transform:none!important;
+
+  clip-path:none!important;
 }
 
 
-.invoice-brand-en{
-  margin-top:-4px;
+/* Winter Camp */
+
+.invoice-brand-en,
+.invoice-company-en{
+  margin-top:0;
 
   direction:ltr;
 
   color:#121714;
 
-  font-size:22px;
+  font-size:20px;
+  font-weight:400;
 
   letter-spacing:6px;
-
-  line-height:1.15;
-}
-
-
-.invoice-brand-ar{
-  margin-top:7px;
-
-  color:#075039;
-
-  font-size:19px;
-  font-weight:700;
 
   line-height:1.2;
 }
 
 
-.invoice-title{
-  min-width:315px;
-  height:78px;
+/* للصوتيات والإنتاج الصوتي */
 
-  margin-top:20px;
+.invoice-brand-ar,
+.invoice-company-ar{
+  margin-top:7px;
+
+  color:#075039;
+
+  font-size:17px;
+  font-weight:700;
+
+  line-height:1.4;
+}
+
+
+/* عنوان فاتورة */
+
+.invoice-title,
+.invoice-title-pill{
+  min-width:320px;
+  height:76px;
+
+  margin-top:17px;
 
   display:flex;
-
   align-items:center;
   justify-content:center;
 
-  gap:28px;
+  gap:25px;
 
-  padding:0 34px;
+  padding:0 35px;
 
   background:
     linear-gradient(
       180deg,
-      #08704c,
-      #03482f
+      #08704c 0%,
+      #005c3d 55%,
+      #03482f 100%
     );
 
-  border-radius:44px;
+  border-radius:40px;
 
   color:#fff;
 
   box-shadow:
-    0
-    5px
-    12px
-    rgba(0,70,45,.16);
+    0 5px 12px
+    rgba(0,70,45,.15);
 }
 
-.invoice-title strong{
-  font-size:36px;
+.invoice-title strong,
+.invoice-title-pill strong{
+  font-size:34px;
   font-weight:800;
+
+  line-height:1;
 }
 
-.invoice-title span{
-  color:#97beb0;
+.invoice-title span,
+.invoice-title-wave{
+  color:#9ac8b7;
 
-  font-size:21px;
+  font-size:22px;
 
   letter-spacing:-5px;
 }
 
 
 /* =========================================================
-   بيانات رقم الفاتورة
+   معلومات الفاتورة
 ========================================================= */
 
-.invoice-info{
-  width:365px;
+.invoice-info,
+.invoice-meta{
+  width:360px;
 
   margin:
-    19px
+    21px
     0
-    15px
+    17px
     auto;
 
   direction:rtl;
@@ -1516,8 +1502,9 @@ button{
   text-align:right;
 }
 
-.invoice-info-row{
-  min-height:31px;
+.invoice-info-row,
+.meta-row{
+  min-height:33px;
 
   display:grid;
 
@@ -1533,10 +1520,11 @@ button{
 
   direction:rtl;
 
-  font-size:14px;
+  font-size:13px;
 }
 
-.invoice-info-icon{
+.invoice-info-icon,
+.meta-icon{
   color:#07583d;
 
   text-align:center;
@@ -1544,18 +1532,18 @@ button{
   font-size:17px;
 }
 
-.invoice-info-label{
+.invoice-info-label,
+.meta-label{
   text-align:right;
 
   font-weight:700;
 }
 
-.invoice-info-value{
+.invoice-info-value,
+.meta-value{
   text-align:right;
 
   white-space:nowrap;
-
-  font-size:14px;
 }
 
 .invoice-number-value{
@@ -1571,10 +1559,11 @@ button{
    بيانات العميل
 ========================================================= */
 
-.invoice-customer{
+.invoice-customer,
+.invoice-client-box{
   width:100%;
 
-  min-height:145px;
+  min-height:155px;
 
   display:grid;
 
@@ -1589,16 +1578,20 @@ button{
 }
 
 .customer-main,
-.customer-extra{
-  padding:16px 20px;
+.customer-extra,
+.invoice-client-right,
+.invoice-client-left{
+  padding:18px 20px;
 }
 
-.customer-extra{
+.customer-extra,
+.invoice-client-left{
   border-right:1px solid #d7dcda;
 }
 
-.customer-row{
-  min-height:37px;
+.customer-row,
+.client-field{
+  min-height:39px;
 
   display:grid;
 
@@ -1612,7 +1605,7 @@ button{
 
   column-gap:6px;
 
-  font-size:14px;
+  font-size:13px;
 }
 
 .customer-row-simple{
@@ -1622,7 +1615,8 @@ button{
     1fr;
 }
 
-.customer-symbol{
+.customer-symbol,
+.client-icon{
   color:#07583d;
 
   text-align:center;
@@ -1630,14 +1624,9 @@ button{
   font-size:15px;
 }
 
-.customer-row strong{
+.customer-row strong,
+.client-field strong{
   font-weight:700;
-}
-
-.customer-row b{
-  overflow-wrap:anywhere;
-
-  font-weight:600;
 }
 
 .customer-phone{
@@ -1650,15 +1639,14 @@ button{
 
 
 /* =========================================================
-   جدول الصنف - متناسق وأوضح
+   جدول الأصناف
 ========================================================= */
 
-.invoice-products{
+.invoice-products,
+.invoice-items-table{
   width:100%;
 
-  margin-top:18px;
-
-  table-layout:fixed;
+  margin-top:20px;
 
   overflow:hidden;
 
@@ -1670,13 +1658,18 @@ button{
   border:1px solid #bdc6c1;
   border-radius:9px;
 
-  font-size:15px;
+  font-size:14px;
 }
 
-.invoice-products thead th{
-  height:46px;
+.invoice-items-wrap{
+  width:100%;
+}
 
-  padding:7px 5px;
+.invoice-products thead th,
+.invoice-items-table thead th{
+  height:48px;
+
+  padding:7px;
 
   background:
     linear-gradient(
@@ -1693,16 +1686,15 @@ button{
 
   text-align:center;
 
-  font-size:15px;
+  font-size:14px;
   font-weight:700;
-
-  line-height:1.15;
 }
 
-.invoice-products tbody td{
-  height:78px;
+.invoice-products tbody td,
+.invoice-items-table tbody td{
+  height:88px;
 
-  padding:7px 5px;
+  padding:8px;
 
   background:#fff;
 
@@ -1714,69 +1706,69 @@ button{
 
   vertical-align:middle;
 
-  font-size:15px;
-  font-weight:600;
-
-  line-height:1.25;
+  font-size:14px;
 }
 
 .invoice-products th:last-child,
-.invoice-products td:last-child{
+.invoice-products td:last-child,
+.invoice-items-table th:last-child,
+.invoice-items-table td:last-child{
   border-left:0;
 }
 
-.invoice-no{
-  width:8%;
+.invoice-no,
+.col-no{
+  width:60px;
 }
 
-.invoice-products th:nth-child(2),
-.invoice-products td:nth-child(2){
-  width:38%;
+.invoice-qty,
+.col-qty{
+  width:100px;
 }
 
-.invoice-qty{
-  width:13%;
+.invoice-price,
+.col-price{
+  width:142px;
 }
 
-.invoice-price{
-  width:20.5%;
+.col-total{
+  width:145px;
 }
 
-.product-title strong{
+.product-title strong,
+.invoice-product-name strong{
   display:block;
 
-  font-size:16px;
-  font-weight:700;
+  font-size:15px;
 }
 
-.product-title small{
+.product-title small,
+.invoice-product-name small{
   display:block;
 
-  margin-top:5px;
+  margin-top:7px;
 
   color:#69726d;
 
-  font-size:10px;
-  font-weight:400;
+  font-size:11px;
 }
 
 
 /* =========================================================
-   أسفل الفاتورة
+   الجزء السفلي
 ========================================================= */
 
-.invoice-lower{
+.invoice-lower,
+.invoice-bottom-grid{
   display:grid;
 
   grid-template-columns:1.15fr .95fr;
 
-  gap:24px;
+  gap:25px;
 
   align-items:start;
 
-  margin-top:21px;
-
-  margin-bottom:55px;
+  margin-top:22px;
 }
 
 
@@ -1784,35 +1776,37 @@ button{
    المبلغ بالحروف
 ========================================================= */
 
-.invoice-words-side{
+.invoice-words-side,
+.invoice-words-area{
   position:relative;
 
-  min-height:250px;
+  min-height:290px;
 }
 
-.amount-words-label{
+.amount-words-label,
+.words-label{
   display:block;
 
   margin:
     0
     4px
-    7px;
+    8px;
 
-  font-size:15px;
+  font-size:14px;
   font-weight:700;
 }
 
-.amount-words-box{
+.amount-words-box,
+.words-box{
   width:100%;
 
-  min-height:64px;
+  min-height:70px;
 
   display:flex;
-
   align-items:center;
   justify-content:center;
 
-  padding:10px 15px;
+  padding:12px 18px;
 
   background:#fff;
 
@@ -1826,52 +1820,51 @@ button{
   font-size:14px;
   font-weight:700;
 
-  line-height:1.6;
+  line-height:1.7;
 }
 
 
 /* =========================================================
-   الختم - أصغر ويظهر كامل
+   الختم - الشكل النهائي
 ========================================================= */
 
 .stamp-holder{
-  width:100%;
+  width:100%!important;
+  height:190px!important;
 
-  height:155px;
+  display:flex!important;
 
-  display:flex;
+  align-items:center!important;
+  justify-content:center!important;
 
-  align-items:center;
-  justify-content:center;
+  margin-top:5px!important;
 
-  margin-top:6px;
-
-  overflow:visible;
+  overflow:visible!important;
 }
 
-.invoice-full-stamp{
+.invoice-full-stamp,
+.invoice-stamp{
   display:block!important;
 
-  width:142px!important;
-  height:142px!important;
+  width:165px!important;
+  height:165px!important;
 
-  min-width:142px!important;
-  min-height:142px!important;
+  max-width:165px!important;
+  max-height:165px!important;
 
-  max-width:142px!important;
-  max-height:142px!important;
-
-  margin:0 auto!important;
+  margin:5px auto 0!important;
   padding:0!important;
 
   object-fit:contain!important;
-  object-position:center!important;
+  object-position:center center!important;
 
-  opacity:1!important;
+  background:transparent!important;
 
   transform:none!important;
 
   clip-path:none!important;
+
+  opacity:1!important;
 }
 
 
@@ -1879,7 +1872,8 @@ button{
    الإجماليات
 ========================================================= */
 
-.invoice-totals{
+.invoice-totals,
+.invoice-summary{
   overflow:hidden;
 
   background:#fff;
@@ -1888,8 +1882,9 @@ button{
   border-radius:10px;
 }
 
-.total-row{
-  min-height:49px;
+.total-row,
+.summary-row{
+  min-height:53px;
 
   display:grid;
 
@@ -1902,26 +1897,29 @@ button{
   border-bottom:1px solid #d4d9d6;
 }
 
-.total-row:last-child{
+.total-row:last-child,
+.summary-row:last-child{
   border-bottom:0;
 }
 
 .total-row span,
-.total-row strong{
+.total-row strong,
+.summary-row span,
+.summary-row strong{
   display:flex;
 
   align-items:center;
 
-  padding:10px 12px;
-
-  font-size:14px;
+  padding:12px 14px;
 }
 
-.total-row span{
+.total-row span,
+.summary-row span{
   justify-content:flex-start;
 }
 
-.total-row strong{
+.total-row strong,
+.summary-row strong{
   justify-content:center;
 
   direction:ltr;
@@ -1929,15 +1927,15 @@ button{
   border-right:1px solid #d4d9d6;
 
   text-align:center;
-
-  font-size:15px;
 }
 
-.remaining-number{
+.remaining-number,
+.summary-remaining{
   color:#e12c2c;
 }
 
-.grand-total{
+.grand-total,
+.summary-total{
   background:
     linear-gradient(
       180deg,
@@ -1950,7 +1948,8 @@ button{
   font-size:15px;
 }
 
-.grand-total strong{
+.grand-total strong,
+.summary-total strong{
   border-right:
     1px solid
     rgba(255,255,255,.35);
@@ -1958,10 +1957,11 @@ button{
 
 
 /* =========================================================
-   الشريط الأخضر أسفل الفاتورة
+   الشريط السفلي للفاتورة
 ========================================================= */
 
-.invoice-green-footer{
+.invoice-green-footer,
+.invoice-footer{
   position:absolute;
 
   right:18px;
@@ -1990,15 +1990,22 @@ button{
       #03472f
     );
 
-  border-radius:18px;
+  border-radius:16px;
 
   color:#fff;
 
   text-align:center;
 
   font-size:12px;
+}
 
-  z-index:10;
+
+/* =========================================================
+   الصور داخل الفاتورة
+========================================================= */
+
+#invoicePaper img{
+  flex-shrink:0;
 }
 
 
@@ -2045,42 +2052,68 @@ button{
 
 
 /* =========================================================
-   معاينة الفاتورة على الآيفون
+   معاينة الفاتورة على الجوال
 ========================================================= */
 
 @media screen and (max-width:850px){
 
   .invoice-preview-scroll{
-    width:100%;
+    width:100%!important;
 
-    display:flex;
+    display:flex!important;
 
-    justify-content:center;
+    justify-content:center!important;
 
-    overflow:hidden;
+    overflow:hidden!important;
   }
 
   .invoice-a4{
-    transform:scale(.46);
+    width:794px!important;
+    height:1123px!important;
 
-    transform-origin:top center;
+    min-width:794px!important;
+    min-height:1123px!important;
 
-    margin-bottom:-600px;
+    transform:scale(.46)!important;
+
+    transform-origin:top center!important;
+
+    margin-bottom:-600px!important;
   }
 
+  .invoice-logo,
+  .invoice-main-logo{
+    width:390px!important;
+    height:140px!important;
+
+    max-width:390px!important;
+    max-height:140px!important;
+
+    object-fit:contain!important;
+  }
+
+  .invoice-full-stamp,
+  .invoice-stamp{
+    width:165px!important;
+    height:165px!important;
+
+    max-width:165px!important;
+    max-height:165px!important;
+
+    object-fit:contain!important;
+  }
 }
 
 
 @media screen and (max-width:430px){
 
   .invoice-a4{
-    transform:scale(.43);
+    transform:scale(.43)!important;
 
-    transform-origin:top center;
+    transform-origin:top center!important;
 
-    margin-bottom:-640px;
+    margin-bottom:-640px!important;
   }
-
 }
 
 
@@ -2127,7 +2160,6 @@ button{
       1.35fr
       1fr;
   }
-
 }
 
 
@@ -2145,7 +2177,6 @@ button{
     top:5vh;
     bottom:auto;
   }
-
 }
 
 
@@ -2193,9 +2224,6 @@ button{
     min-width:210mm!important;
     min-height:297mm!important;
 
-    max-width:210mm!important;
-    max-height:297mm!important;
-
     margin:0!important;
     padding:0!important;
 
@@ -2206,23 +2234,30 @@ button{
     overflow:hidden!important;
   }
 
-  .invoice-frame{
+  .invoice-frame,
+  .invoice-inner-frame{
     position:absolute!important;
 
     inset:3mm!important;
+
+    width:auto!important;
+    height:auto!important;
+
+    margin:0!important;
 
     overflow:hidden!important;
   }
 
   .invoice-preview-scroll{
-    width:auto!important;
-
     display:block!important;
+
+    width:auto!important;
 
     overflow:visible!important;
   }
 
-  .modal{
+  .modal,
+  .modal-body{
     position:static!important;
 
     width:auto!important;
@@ -2249,35 +2284,43 @@ button{
     display:none!important;
   }
 
-  .invoice-logo{
-    width:99mm!important;
-    height:36mm!important;
-
-    object-fit:contain!important;
-  }
-
-  .invoice-full-stamp{
-    width:37mm!important;
+  .invoice-logo,
+  .invoice-main-logo{
+    width:103mm!important;
     height:37mm!important;
 
-    min-width:37mm!important;
-    min-height:37mm!important;
-
-    max-width:37mm!important;
+    max-width:103mm!important;
     max-height:37mm!important;
 
     object-fit:contain!important;
+
+    transform:none!important;
+  }
+
+  .invoice-full-stamp,
+  .invoice-stamp{
+    width:44mm!important;
+    height:44mm!important;
+
+    max-width:44mm!important;
+    max-height:44mm!important;
+
+    object-fit:contain!important;
+
+    transform:none!important;
   }
 
   .invoice-title,
+  .invoice-title-pill,
   .invoice-products thead th,
+  .invoice-items-table thead th,
   .grand-total,
-  .invoice-green-footer{
+  .summary-total,
+  .invoice-green-footer,
+  .invoice-footer{
     -webkit-print-color-adjust:exact!important;
-
     print-color-adjust:exact!important;
   }
-
 }
 
 
@@ -2309,9 +2352,7 @@ button{
   color:#123524;
 
   box-shadow:
-    0
-    10px
-    30px
+    0 10px 30px
     rgba(0,0,0,.4);
 
   white-space:nowrap;
