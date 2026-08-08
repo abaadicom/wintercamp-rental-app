@@ -4028,5 +4028,348 @@ if (
 /* =====================================================
    تشغيل البرنامج
 ===================================================== */
+/* =====================================================
+   تعديل المصاريف - النسخة النهائية
+   ضع هذا الكود قبل render(); مباشرة
+===================================================== */
 
+
+/* =====================================================
+   صفحة المصاريف
+===================================================== */
+
+function expensesView() {
+
+  const expenses =
+    [...db.expenses]
+      .sort(
+        (a, b) =>
+          b.date.localeCompare(
+            a.date
+          )
+      );
+
+  return `
+
+    <div class="section-head">
+
+      <h3>
+        المصاريف
+      </h3>
+
+      <strong class="red">
+        ${money(totals().expenses)}
+      </strong>
+
+    </div>
+
+
+    ${
+      expenses.length
+
+        ? expenses.map(
+            expense => `
+
+              <div class="expense-row">
+
+                <div>
+
+                  <strong>
+                    ${esc(expense.item)}
+                  </strong>
+
+                  <small>
+                    ${hijriWithDay(expense.date)}
+                  </small>
+
+                </div>
+
+
+                <div>
+
+                  <strong class="red">
+                    ${money(expense.amount)}
+                  </strong>
+
+
+                  <div
+                    style="
+                      display:flex;
+                      align-items:center;
+                      gap:16px;
+                      margin-top:7px;
+                    ">
+
+                    <button
+                      type="button"
+                      onclick="editExpense(${Number(expense.id)})"
+                      style="
+                        border:0;
+                        padding:2px 0;
+                        background:none;
+                        color:#25c16f;
+                        font-size:11px;
+                        cursor:pointer;
+                      ">
+                      تعديل
+                    </button>
+
+
+                    <button
+                      type="button"
+                      class="delete-mini"
+                      data-del-expense="${expense.id}">
+                      حذف
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            `
+          ).join('')
+
+        : `
+
+          <div class="empty">
+            لا توجد مصاريف
+          </div>
+
+        `
+    }
+  `;
+}
+
+
+/* =====================================================
+   إضافة / تعديل مصروف
+===================================================== */
+
+function openExpenseForm(existing = null) {
+
+  const isEdit =
+    Boolean(existing);
+
+  const expense =
+    existing || {
+      item: '',
+      amount: '',
+      date: todayISO()
+    };
+
+
+  openModal(
+
+    isEdit
+      ? 'تعديل المصروف'
+      : 'إضافة مصروف',
+
+    `
+
+      <form
+        id="expenseForm"
+        class="form-grid">
+
+
+        <label>
+          بند المصروف
+
+          <input
+            name="item"
+            required
+            value="${esc(expense.item || '')}">
+        </label>
+
+
+        <label>
+          المبلغ
+
+          <input
+            name="amount"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            required
+            value="${esc(expense.amount || '')}">
+        </label>
+
+
+        ${hijriDateFields(
+          expense.date || todayISO(),
+          'expense'
+        )}
+
+
+        <button
+          class="submit-btn"
+          type="submit">
+
+          ${
+            isEdit
+              ? 'حفظ التعديلات'
+              : 'حفظ المصروف'
+          }
+
+        </button>
+
+      </form>
+
+    `
+  );
+
+
+  const form =
+    $('#expenseForm');
+
+
+  if (!form) {
+    return;
+  }
+
+
+  form.onsubmit =
+    event => {
+
+      event.preventDefault();
+
+
+      const data =
+        Object.fromEntries(
+          new FormData(
+            event.currentTarget
+          ).entries()
+        );
+
+
+      const date =
+        hijriToGregorian(
+          data.expense_year,
+          data.expense_month,
+          data.expense_day
+        );
+
+
+      if (!date) {
+
+        alert(
+          'التاريخ الهجري غير صحيح'
+        );
+
+        return;
+      }
+
+
+      const item =
+        String(
+          data.item || ''
+        ).trim();
+
+
+      const amount =
+        Number(
+          data.amount || 0
+        );
+
+
+      if (!item) {
+
+        alert(
+          'يرجى كتابة بند المصروف'
+        );
+
+        return;
+      }
+
+
+      if (
+        !Number.isFinite(amount) ||
+        amount < 0
+      ) {
+
+        alert(
+          'المبلغ غير صحيح'
+        );
+
+        return;
+      }
+
+
+      if (isEdit) {
+
+        existing.item =
+          item;
+
+        existing.amount =
+          amount;
+
+        existing.date =
+          date;
+
+      } else {
+
+        db.expenses.push({
+
+          id:
+            Date.now(),
+
+          item,
+
+          amount,
+
+          date
+
+        });
+
+      }
+
+
+      save();
+
+      closeModal();
+
+      render();
+
+
+      toast(
+        isEdit
+          ? 'تم تعديل المصروف'
+          : 'تم حفظ المصروف'
+      );
+
+    };
+
+}
+
+
+/* =====================================================
+   فتح المصروف للتعديل
+===================================================== */
+
+function editExpense(id) {
+
+  const expense =
+    db.expenses.find(
+      item =>
+        Number(item.id) ===
+        Number(id)
+    );
+
+
+  if (!expense) {
+
+    alert(
+      'لم يتم العثور على المصروف'
+    );
+
+    return;
+  }
+
+
+  openExpenseForm(
+    expense
+  );
+
+}
 render();
