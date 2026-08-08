@@ -3144,9 +3144,7 @@ async function waitForImages(element) {
 }
 
 
-async function shareInvoicePDF(
-  booking
-) {
+async function shareInvoicePDF(booking) {
 
   const paper =
     $('#invoicePaper');
@@ -3158,9 +3156,15 @@ async function shareInvoicePDF(
     return;
   }
 
-  const previous =
-    button?.textContent ||
-    'مشاركة PDF';
+
+  const oldButtonText =
+    button
+      ? button.textContent
+      : 'مشاركة PDF';
+
+
+  let exportContainer = null;
+
 
   try {
 
@@ -3174,7 +3178,7 @@ async function shareInvoicePDF(
 
 
     toast(
-      'جاري تجهيز PDF'
+      'جاري تجهيز الفاتورة PDF'
     );
 
 
@@ -3185,29 +3189,209 @@ async function shareInvoicePDF(
     );
 
 
+    /* =============================================
+       نصنع نسخة خاصة بالـ PDF
+       بدون تصغير شاشة الجوال
+    ============================================= */
+
+    exportContainer =
+      document.createElement(
+        'div'
+      );
+
+
+    exportContainer.style.position =
+      'fixed';
+
+    exportContainer.style.left =
+      '-10000px';
+
+    exportContainer.style.top =
+      '0';
+
+    exportContainer.style.width =
+      '794px';
+
+    exportContainer.style.height =
+      '1123px';
+
+    exportContainer.style.background =
+      '#ffffff';
+
+    exportContainer.style.zIndex =
+      '-9999';
+
+    exportContainer.style.overflow =
+      'hidden';
+
+
+    const exportPaper =
+      paper.cloneNode(
+        true
+      );
+
+
+    exportPaper.removeAttribute(
+      'id'
+    );
+
+
+    exportPaper.style.setProperty(
+      'width',
+      '794px',
+      'important'
+    );
+
+    exportPaper.style.setProperty(
+      'height',
+      '1123px',
+      'important'
+    );
+
+    exportPaper.style.setProperty(
+      'min-width',
+      '794px',
+      'important'
+    );
+
+    exportPaper.style.setProperty(
+      'min-height',
+      '1123px',
+      'important'
+    );
+
+    exportPaper.style.setProperty(
+      'max-width',
+      '794px',
+      'important'
+    );
+
+    exportPaper.style.setProperty(
+      'max-height',
+      '1123px',
+      'important'
+    );
+
+    exportPaper.style.setProperty(
+      'margin',
+      '0',
+      'important'
+    );
+
+    exportPaper.style.setProperty(
+      'padding',
+      '0',
+      'important'
+    );
+
+    exportPaper.style.setProperty(
+      'transform',
+      'none',
+      'important'
+    );
+
+    exportPaper.style.setProperty(
+      'transform-origin',
+      'top left',
+      'important'
+    );
+
+    exportPaper.style.setProperty(
+      'position',
+      'relative',
+      'important'
+    );
+
+    exportPaper.style.setProperty(
+      'overflow',
+      'hidden',
+      'important'
+    );
+
+    exportPaper.style.setProperty(
+      'box-shadow',
+      'none',
+      'important'
+    );
+
+
+    exportContainer.appendChild(
+      exportPaper
+    );
+
+
+    document.body.appendChild(
+      exportContainer
+    );
+
+
     /*
-      مهم:
-      الفاتورة في الجوال مصغرة بـ transform.
-      html2canvas نأخذ المقاس الأصلي 794 × 1123
-      وليس المقاس الظاهر المصغر.
+      ننتظر تحميل الشعار والختم
+      داخل نسخة الـ PDF أيضًا
     */
+
+    await waitForImages(
+      exportPaper
+    );
+
+
+    /*
+      مهلة بسيطة للآيفون حتى
+      يطبق جميع تنسيقات CSS
+    */
+
+    await new Promise(
+      resolve =>
+        setTimeout(
+          resolve,
+          150
+        )
+    );
+
+
+    /* =============================================
+       تحويل الفاتورة كاملة إلى صورة
+    ============================================= */
 
     const canvas =
       await window.html2canvas(
-        paper,
+        exportPaper,
         {
+
           scale: 2,
+
           width: 794,
+
           height: 1123,
-          backgroundColor: '#ffffff',
+
+          windowWidth: 794,
+
+          windowHeight: 1123,
+
+          backgroundColor:
+            '#ffffff',
+
           useCORS: true,
+
           allowTaint: false,
+
           logging: false,
+
           scrollX: 0,
-          scrollY: 0
+
+          scrollY: 0,
+
+          x: 0,
+
+          y: 0
+
         }
       );
 
+
+    /* =============================================
+       إنشاء PDF A4
+    ============================================= */
 
     const {
       jsPDF
@@ -3217,37 +3401,55 @@ async function shareInvoicePDF(
 
     const pdf =
       new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: true
+
+        orientation:
+          'portrait',
+
+        unit:
+          'mm',
+
+        format:
+          'a4',
+
+        compress:
+          true
+
       });
 
 
-    const pageWidth =
-      210;
-
-    const pageHeight =
-      297;
-
+    /*
+      الصفحة A4:
+      210 × 297 mm
+    */
 
     pdf.addImage(
+
       canvas.toDataURL(
         'image/jpeg',
-        0.97
+        0.98
       ),
+
       'JPEG',
+
       0,
+
       0,
-      pageWidth,
-      pageHeight,
+
+      210,
+
+      297,
+
       undefined,
+
       'FAST'
+
     );
 
 
     const blob =
-      pdf.output('blob');
+      pdf.output(
+        'blob'
+      );
 
 
     const invoiceNumber =
@@ -3262,32 +3464,56 @@ async function shareInvoicePDF(
 
     const file =
       new File(
+
         [blob],
+
         fileName,
+
         {
           type:
             'application/pdf'
         }
+
       );
 
 
+    /* =============================================
+       مشاركة الآيفون
+    ============================================= */
+
     if (
+
       navigator.share &&
+
       navigator.canShare &&
+
       navigator.canShare({
         files: [file]
       })
+
     ) {
 
       await navigator.share({
-        files: [file],
+
+        files:
+          [file],
+
         title:
-          'فاتورة Winter Camp'
+          'فاتورة Winter Camp',
+
+        text:
+          `فاتورة ${booking.name || ''}`
+
       });
+
 
       return;
     }
 
+
+    /* =============================================
+       إذا لم تدعم مشاركة الملفات
+    ============================================= */
 
     const url =
       URL.createObjectURL(
@@ -3315,32 +3541,56 @@ async function shareInvoicePDF(
 
     link.click();
 
+
     link.remove();
 
 
     setTimeout(
-      () =>
+      () => {
+
         URL.revokeObjectURL(
           url
-        ),
+        );
+
+      },
       2000
     );
 
 
     toast(
-      'تم تجهيز الفاتورة'
+      'تم تجهيز الفاتورة PDF'
     );
 
 
   } catch (error) {
 
-    console.error(error);
-
-    alert(
-      'تعذر تجهيز الفاتورة PDF. تأكد من اتصال الإنترنت وحاول مرة أخرى.'
+    console.error(
+      'PDF Error:',
+      error
     );
 
+
+    alert(
+      'تعذر تجهيز الفاتورة PDF، حاول مرة أخرى.'
+    );
+
+
   } finally {
+
+
+    /* حذف نسخة التصدير */
+
+    if (
+      exportContainer &&
+      exportContainer.parentNode
+    ) {
+
+      exportContainer.parentNode
+        .removeChild(
+          exportContainer
+        );
+    }
+
 
     if (button) {
 
@@ -3348,11 +3598,12 @@ async function shareInvoicePDF(
         false;
 
       button.textContent =
-        previous;
+        oldButtonText;
     }
-  }
-}
 
+  }
+
+}
 
 /* =====================================================
    النسخة الاحتياطية
