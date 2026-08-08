@@ -3593,3 +3593,45 @@ button{
 #invoicePaper .invoice-full-stamp{
   object-fit:contain !important;
 }
+/* =========================================================
+   شعار الفاتورة الأصلي
+========================================================= */
+
+.invoice-main-logo{
+  display:block !important;
+
+  width:330px !important;
+  height:auto !important;
+
+  max-width:none !important;
+  max-height:none !important;
+
+  margin:0 auto 5px !important;
+  padding:0 !important;
+
+  object-fit:contain !important;
+  object-position:center !important;
+
+  background:transparent !important;
+
+  border:0 !important;
+  border-radius:0 !important;
+
+  box-shadow:none !important;
+
+  transform:none !important;
+}
+
+/* الطباعة و PDF */
+@media print{
+  .invoice-main-logo{
+    width:87mm !important;
+    height:auto !important;
+    max-width:none !important;
+
+    margin-left:auto !important;
+    margin-right:auto !important;
+
+    object-fit:contain !important;
+  }
+}
