@@ -3635,3 +3635,16 @@ button{
     object-fit:contain !important;
   }
 }
+/* =========================================================
+   إبقاء نوع المناسبة في سطر واحد
+========================================================= */
+
+.invoice-client-left .client-field{
+  grid-template-columns:105px 12px minmax(0,1fr) !important;
+}
+
+.invoice-client-left .client-field strong{
+  white-space:nowrap !important;
+  overflow:visible !important;
+  font-size:13px !important;
+}
