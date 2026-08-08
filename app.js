@@ -2567,7 +2567,7 @@ function showInvoice(id) {
           <header class="invoice-header">
 
             <img
-              src="logo.png?v=60"
+              src="invoice_logo.png"
               class="invoice-logo"
               alt="Winter Camp">
 
