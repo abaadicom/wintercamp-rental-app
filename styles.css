@@ -3758,3 +3758,24 @@ button{
   height:82px !important;
   padding:10px 8px !important;
 }
+/* =========================================================
+   توحيد خط بيانات جدول الفاتورة مع اسم الصنف
+========================================================= */
+
+.invoice-products tbody td,
+.invoice-products tbody td strong,
+.invoice-products tbody td:nth-child(1),
+.invoice-products tbody td:nth-child(2),
+.invoice-products tbody td:nth-child(3),
+.invoice-products tbody td:nth-child(4),
+.invoice-products tbody td:nth-child(5){
+    font-size:15px !important;
+    font-weight:700 !important;
+    line-height:1.5 !important;
+}
+
+/* اسم الصنف */
+.invoice-products .product-title strong{
+    font-size:15px !important;
+    font-weight:700 !important;
+}
