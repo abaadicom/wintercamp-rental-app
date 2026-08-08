@@ -3679,3 +3679,48 @@ button{
   word-break:keep-all !important;
   overflow-wrap:normal !important;
 }
+/* =========================================================
+   إصلاح نهائي: نوع المناسبة والملاحظات في سطر واحد
+========================================================= */
+
+.customer-extra{
+  padding:18px 12px !important;
+}
+
+.customer-extra .customer-row,
+.customer-extra .customer-row-simple{
+  display:grid !important;
+
+  grid-template-columns:
+    90px
+    10px
+    minmax(0, 1fr) !important;
+
+  column-gap:4px !important;
+
+  align-items:center !important;
+}
+
+.customer-extra .customer-row strong,
+.customer-extra .customer-row b,
+.customer-extra .customer-row span,
+.customer-extra .customer-row div{
+  white-space:nowrap !important;
+  word-break:normal !important;
+  overflow-wrap:normal !important;
+  line-height:1.4 !important;
+}
+
+/* القيمة نفسها: حفل تخرج / شكراً لثقتكم بنا */
+.customer-extra .customer-row > *:last-child{
+  white-space:nowrap !important;
+  word-break:keep-all !important;
+  overflow-wrap:normal !important;
+
+  font-size:12px !important;
+}
+
+/* نعطي جهة المناسبة والملاحظات مساحة أكبر */
+.invoice-customer{
+  grid-template-columns:1.12fr 1fr !important;
+}
