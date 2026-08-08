@@ -1,15 +1,22 @@
 {
-  "name": "Winter Camp إدارة التأجير",
+  "name": "Winter Camp - إدارة التأجير",
   "short_name": "Winter Camp",
-  "start_url": "./",
+  "description": "نظام إدارة حجوزات وتأجير أجهزة Winter Camp",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html?v=10",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0c1115",
   "theme_color": "#0c1115",
-  "lang": "ar",
-  "dir": "rtl",
   "icons": [
+    {
+      "src": "wintercamp_icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "wintercamp_icon.png",
       "sizes": "512x512",
