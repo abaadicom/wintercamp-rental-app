@@ -213,7 +213,6 @@ function hijriMonthTitle(month, year) {
 
 /* =========================================
    تحويل هجري إلى ميلادي داخلي
-   المستخدم لا يرى الميلادي
 ========================================= */
 
 function hijriToGregorian(
@@ -335,9 +334,12 @@ function hijriDateFields(
 
   let years = '';
 
+  const startYear = 1446;
+  const endYear = current.year + 5;
+
   for (
-    let year = current.year - 3;
-    year <= current.year + 5;
+    let year = startYear;
+    year <= endYear;
     year++
   ) {
     years += `
@@ -465,7 +467,7 @@ function status(booking) {
 }
 
 /* =========================================
-   الصفحة الرئيسية
+   الرئيسية
 ========================================= */
 
 function homeView() {
@@ -612,9 +614,7 @@ function homeView() {
 
         : `
           <div class="empty">
-
             لا توجد حجوزات قادمة
-
           </div>
         `
     }
@@ -881,55 +881,38 @@ function expensesView() {
 }
 
 /* =========================================
-   فلترة التقارير
+   سنوات التقارير من 1446 هـ
 ========================================= */
 
 function getAvailableHijriYears() {
 
-  const years =
-    new Set();
+  const currentYear =
+    currentHijri().year;
 
-  db.bookings.forEach(
-    booking => {
+  const startYear = 1446;
 
-      const hijri =
-        getHijriParts(
-          booking.date
-        );
-
-      if (hijri.year) {
-        years.add(
-          hijri.year
-        );
-      }
-    }
-  );
-
-  db.expenses.forEach(
-    expense => {
-
-      const hijri =
-        getHijriParts(
-          expense.date
-        );
-
-      if (hijri.year) {
-        years.add(
-          hijri.year
-        );
-      }
-    }
-  );
-
-  years.add(
-    currentHijri().year
-  );
-
-  return [...years]
-    .sort(
-      (a, b) => b - a
+  const endYear =
+    Math.max(
+      currentYear + 5,
+      startYear
     );
+
+  const years = [];
+
+  for (
+    let year = startYear;
+    year <= endYear;
+    year++
+  ) {
+    years.push(year);
+  }
+
+  return years;
 }
+
+/* =========================================
+   فلترة الشهر والسنة
+========================================= */
 
 function filterByHijriPeriod(
   items,
@@ -1003,7 +986,7 @@ function reportPeriodTitle() {
 }
 
 /* =========================================
-   تفصيل الأشهر
+   تفاصيل الأشهر لكل سنة
 ========================================= */
 
 function monthlyBreakdownView() {
@@ -1020,7 +1003,7 @@ function monthlyBreakdownView() {
     <div class="section-head">
 
       <h3>
-        تفاصيل الأشهر
+        أشهر سنة ${reportYear} هـ
       </h3>
 
     </div>
@@ -1064,16 +1047,12 @@ function monthlyBreakdownView() {
         <div>
 
           <strong>
-
             ${HIJRI_MONTHS[month]}
-
           </strong>
 
           <small>
-
             ${monthBookings.length}
             حجز
-
           </small>
 
         </div>
@@ -1091,7 +1070,14 @@ function monthlyBreakdownView() {
 
           <small>
 
-            صافي:
+            المصاريف:
+            ${money(
+              monthTotals.expenses
+            )}
+
+            <br>
+
+            الصافي:
             ${money(
               monthTotals.profit
             )}
@@ -1168,7 +1154,7 @@ function reportsView() {
 
       <label>
 
-        الشهر
+        الشهر الهجري
 
         <select
           id="reportMonthFilter">
@@ -1222,7 +1208,7 @@ function reportsView() {
 
       <label>
 
-        السنة
+        السنة الهجرية
 
         <select
           id="reportYearFilter">
@@ -1586,9 +1572,7 @@ function invoicesView() {
 
         : `
           <div class="empty">
-
             لا توجد فواتير
-
           </div>
         `
     }
@@ -1629,6 +1613,19 @@ function settingsView() {
     <div class="settings-card">
 
       <strong>
+        سنوات التقارير
+      </strong>
+
+      <small>
+        تبدأ من 1446 هـ
+      </small>
+
+    </div>
+
+
+    <div class="settings-card">
+
+      <strong>
         حفظ البيانات
       </strong>
 
@@ -1652,7 +1649,7 @@ function settingsView() {
 }
 
 /* =========================================
-   تشغيل الصفحة
+   تشغيل الصفحات
 ========================================= */
 
 function render() {
@@ -2054,7 +2051,7 @@ function showDetail(id) {
 }
 
 /* =========================================
-   إضافة وتعديل الحجز
+   إضافة / تعديل الحجز
 ========================================= */
 
 function openBookingForm(
@@ -2287,6 +2284,7 @@ function openBookingForm(
         );
 
       if (!date) {
+
         alert(
           'التاريخ الهجري غير صحيح'
         );
@@ -2694,23 +2692,17 @@ function showInvoice(id) {
 
         <button
           id="printInvoice">
-
           طباعة
-
         </button>
 
         <button
           id="shareInvoice">
-
           مشاركة
-
         </button>
 
         <button
           id="closeInvoice">
-
           إغلاق
-
         </button>
 
       </div>
@@ -3039,7 +3031,7 @@ if (
       navigator
         .serviceWorker
         .register(
-          './sw.js?v=20'
+          './sw.js?v=21'
         )
         .catch(
           error =>
@@ -3050,7 +3042,5 @@ if (
     }
   );
 }
-
-/* تشغيل التطبيق */
 
 render();
