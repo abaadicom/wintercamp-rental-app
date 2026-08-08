@@ -1,102 +1,596 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0c1115" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Winter Camp" />
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="wintercamp_icon.png">
-  <link rel="stylesheet" href="styles.css?v=3">
-  <title>Winter Camp - إدارة التأجير</title>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <meta
+    name="theme-color"
+    content="#0c1115">
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes">
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent">
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="Winter Camp">
+
+  <title>
+    Winter Camp - إدارة التأجير
+  </title>
+
+  <link
+    rel="manifest"
+    href="manifest.webmanifest?v=10">
+
+  <link
+    rel="apple-touch-icon"
+    href="wintercamp_icon.png?v=10">
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="wintercamp_icon.png?v=10">
+
+  <link
+    rel="stylesheet"
+    href="styles.css?v=10">
+
 </head>
+
+
 <body>
-  <div id="app">
-    <header class="topbar">
-      <button class="icon-btn" id="menuBtn" aria-label="القائمة">☰</button>
-      <div class="brand-title">
-        <img src="wintercamp_icon.png" alt="Winter Camp">
-        <div><h1 id="pageTitle">الرئيسية</h1><p id="hijriToday"></p></div>
-      </div>
-      <button class="icon-btn" id="backupBtn" aria-label="نسخة احتياطية">⇩</button>
-    </header>
 
-    <main id="mainContent" class="content"></main>
 
-    <button class="fab" id="fabBtn" aria-label="إضافة">＋</button>
+<!-- =========================
+     الشريط العلوي
+========================= -->
 
-    <nav class="bottom-nav" aria-label="التنقل الرئيسي">
+<header class="topbar">
 
-  <button data-page="home" class="nav-item active">
-    <span class="nav-svg">
-      <svg viewBox="0 0 24 24">
+  <div class="brand-title">
+
+    <img
+      src="wintercamp_icon.png?v=10"
+      alt="Winter Camp"
+      class="top-logo">
+
+    <div>
+
+      <h1 id="pageTitle">
+        الرئيسية
+      </h1>
+
+      <p id="hijriToday">
+        التاريخ الهجري
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <button
+    id="menuBtn"
+    class="icon-btn menu-btn"
+    aria-label="القائمة">
+
+    <svg
+      viewBox="0 0 24 24"
+      class="svg-icon">
+
+      <path d="M4 6h16"/>
+      <path d="M4 12h16"/>
+      <path d="M4 18h16"/>
+
+    </svg>
+
+  </button>
+
+</header>
+
+
+
+<!-- =========================
+     محتوى البرنامج
+========================= -->
+
+<main
+  id="mainContent"
+  class="content">
+</main>
+
+
+
+<!-- =========================
+     زر الإضافة
+========================= -->
+
+<button
+  id="fabBtn"
+  class="fab"
+  aria-label="إضافة">
+
+  <svg
+    viewBox="0 0 24 24"
+    class="fab-icon">
+
+    <path d="M12 5v14"/>
+    <path d="M5 12h14"/>
+
+  </svg>
+
+</button>
+
+
+
+<!-- =========================
+     القائمة السفلية
+========================= -->
+
+<nav
+  class="bottom-nav"
+  aria-label="التنقل الرئيسي">
+
+
+  <!-- الرئيسية -->
+
+  <button
+    class="nav-item active"
+    data-page="home">
+
+    <span class="nav-icon">
+
+      <svg
+        viewBox="0 0 24 24">
+
         <path d="M3 10.5L12 3l9 7.5"/>
         <path d="M5 9.5V21h14V9.5"/>
         <path d="M9 21v-7h6v7"/>
+
       </svg>
+
     </span>
-    <b>الرئيسية</b>
+
+    <b>
+      الرئيسية
+    </b>
+
   </button>
 
-  <button data-page="bookings" class="nav-item">
-    <span class="nav-svg">
-      <svg viewBox="0 0 24 24">
-        <rect x="3" y="5" width="18" height="16" rx="2"/>
-        <path d="M8 3v4M16 3v4M3 10h18"/>
-        <path d="M8 15h3M8 18h6"/>
+
+
+  <!-- الحجوزات -->
+
+  <button
+    class="nav-item"
+    data-page="bookings">
+
+    <span class="nav-icon">
+
+      <svg
+        viewBox="0 0 24 24">
+
+        <rect
+          x="3"
+          y="5"
+          width="18"
+          height="16"
+          rx="2"/>
+
+        <path d="M8 3v4"/>
+        <path d="M16 3v4"/>
+        <path d="M3 10h18"/>
+        <path d="M8 15h3"/>
+        <path d="M8 18h6"/>
+
       </svg>
+
     </span>
-    <b>الحجوزات</b>
+
+    <b>
+      الحجوزات
+    </b>
+
   </button>
 
-  <button data-page="expenses" class="nav-item">
-    <span class="nav-svg">
-      <svg viewBox="0 0 24 24">
-        <rect x="3" y="6" width="18" height="14" rx="2"/>
+
+
+  <!-- المصاريف -->
+
+  <button
+    class="nav-item"
+    data-page="expenses">
+
+    <span class="nav-icon">
+
+      <svg
+        viewBox="0 0 24 24">
+
+        <rect
+          x="3"
+          y="6"
+          width="18"
+          height="14"
+          rx="2"/>
+
         <path d="M3 10h18"/>
         <path d="M7 15h4"/>
+
       </svg>
+
     </span>
-    <b>المصاريف</b>
+
+    <b>
+      المصاريف
+    </b>
+
   </button>
 
-  <button data-page="reports" class="nav-item">
-    <span class="nav-svg">
-      <svg viewBox="0 0 24 24">
+
+
+  <!-- التقارير -->
+
+  <button
+    class="nav-item"
+    data-page="reports">
+
+    <span class="nav-icon">
+
+      <svg
+        viewBox="0 0 24 24">
+
         <path d="M4 20V11"/>
         <path d="M10 20V5"/>
         <path d="M16 20v-8"/>
         <path d="M22 20H2"/>
+
       </svg>
+
     </span>
-    <b>التقارير</b>
+
+    <b>
+      التقارير
+    </b>
+
   </button>
 
 </nav>
+
+
+
+<!-- =========================
+     خلفية القائمة الجانبية
+========================= -->
+
+<div
+  id="sheetBackdrop"
+  class="sheet-backdrop hidden">
+</div>
+
+
+
+<!-- =========================
+     القائمة الجانبية
+========================= -->
+
+<aside
+  id="sideSheet"
+  class="side-sheet hidden">
+
+
+  <div class="sheet-head">
+
+    <img
+      src="wintercamp_icon.png?v=10"
+      alt="Winter Camp"
+      class="sheet-logo">
+
+    <button
+      id="closeMenu"
+      class="icon-btn"
+      aria-label="إغلاق">
+
+      <svg
+        viewBox="0 0 24 24"
+        class="svg-icon">
+
+        <path d="M6 6l12 12"/>
+        <path d="M18 6L6 18"/>
+
+      </svg>
+
+    </button>
+
   </div>
 
-  <div class="sheet-backdrop hidden" id="sheetBackdrop"></div>
-  <aside class="side-sheet hidden" id="sideSheet">
-    <div class="sheet-head">
-      <img src="logo.png" alt="Winter Camp" class="sheet-logo" />
-      <button class="icon-btn" id="closeMenu">×</button>
-    </div>
-    <button data-sheet-page="devices">الأجهزة</button>
-    <button data-sheet-page="invoices">الفواتير</button>
-    <button data-sheet-page="settings">الإعدادات</button>
-    <button id="exportBtn">تصدير نسخة احتياطية</button>
-    <label class="import-label">استيراد نسخة<input id="importInput" type="file" accept="application/json" hidden /></label>
-  </aside>
 
-  <div class="modal-backdrop hidden" id="modalBackdrop"></div>
-  <section class="modal hidden" id="modal" role="dialog" aria-modal="true">
-    <div class="modal-head"><h2 id="modalTitle"></h2><button id="modalClose" class="icon-btn">×</button></div>
-    <div id="modalBody"></div>
-  </section>
 
-  <div id="toast" class="toast hidden"></div>
-  <script src="app.js?v=3"></script>
+  <!-- الأجهزة -->
+
+  <button
+    data-sheet-page="devices">
+
+    <span class="side-icon">
+
+      <svg viewBox="0 0 24 24">
+
+        <rect
+          x="6"
+          y="3"
+          width="12"
+          height="18"
+          rx="2"/>
+
+        <circle
+          cx="12"
+          cy="15"
+          r="3"/>
+
+        <circle
+          cx="12"
+          cy="8"
+          r="1"/>
+
+      </svg>
+
+    </span>
+
+    الأجهزة
+
+  </button>
+
+
+
+  <!-- الفواتير -->
+
+  <button
+    data-sheet-page="invoices">
+
+    <span class="side-icon">
+
+      <svg viewBox="0 0 24 24">
+
+        <path d="M6 2h9l4 4v16H6z"/>
+        <path d="M14 2v5h5"/>
+        <path d="M9 12h6"/>
+        <path d="M9 16h6"/>
+
+      </svg>
+
+    </span>
+
+    الفواتير
+
+  </button>
+
+
+
+  <!-- الإعدادات -->
+
+  <button
+    data-sheet-page="settings">
+
+    <span class="side-icon">
+
+      <svg viewBox="0 0 24 24">
+
+        <circle
+          cx="12"
+          cy="12"
+          r="3"/>
+
+        <path
+          d="
+          M19.4 15
+          a1.7 1.7 0 0 0 .3 1.9
+          l.1.1
+          -2.8 2.8
+          -.1-.1
+          a1.7 1.7 0 0 0-1.9-.3
+          1.7 1.7 0 0 0-1 1.6
+          v.2
+          h-4
+          V21
+          a1.7 1.7 0 0 0-1-1.6
+          1.7 1.7 0 0 0-1.9.3
+          l-.1.1
+          L4.2 17
+          l.1-.1
+          a1.7 1.7 0 0 0 .3-1.9
+          A1.7 1.7 0 0 0 3 14
+          h-.2
+          v-4
+          H3
+          a1.7 1.7 0 0 0 1.6-1
+          1.7 1.7 0 0 0-.3-1.9
+          L4.2 7
+          7 4.2
+          l.1.1
+          a1.7 1.7 0 0 0 1.9.3
+          A1.7 1.7 0 0 0 10 3
+          v-.2
+          h4
+          V3
+          a1.7 1.7 0 0 0 1 1.6
+          1.7 1.7 0 0 0 1.9-.3
+          l.1-.1
+          L19.8 7
+          l-.1.1
+          a1.7 1.7 0 0 0-.3 1.9
+          A1.7 1.7 0 0 0 21 10
+          h.2
+          v4
+          H21
+          a1.7 1.7 0 0 0-1.6 1z
+          "/>
+
+      </svg>
+
+    </span>
+
+    الإعدادات
+
+  </button>
+
+
+
+  <!-- نسخة احتياطية -->
+
+  <button
+    id="backupBtn">
+
+    <span class="side-icon">
+
+      <svg viewBox="0 0 24 24">
+
+        <path d="M12 3v12"/>
+        <path d="M7 10l5 5 5-5"/>
+        <path d="M5 21h14"/>
+
+      </svg>
+
+    </span>
+
+    نسخة احتياطية
+
+  </button>
+
+
+
+  <!-- تصدير البيانات -->
+
+  <button
+    id="exportBtn">
+
+    <span class="side-icon">
+
+      <svg viewBox="0 0 24 24">
+
+        <path d="M12 3v12"/>
+        <path d="M7 10l5 5 5-5"/>
+        <path d="M5 21h14"/>
+
+      </svg>
+
+    </span>
+
+    تصدير البيانات
+
+  </button>
+
+
+
+  <!-- استيراد البيانات -->
+
+  <label class="import-label">
+
+    <span class="side-icon">
+
+      <svg viewBox="0 0 24 24">
+
+        <path d="M12 21V9"/>
+        <path d="M7 14l5-5 5 5"/>
+        <path d="M5 3h14"/>
+
+      </svg>
+
+    </span>
+
+    استيراد نسخة احتياطية
+
+    <input
+      id="importInput"
+      type="file"
+      accept=".json,application/json"
+      hidden>
+
+  </label>
+
+</aside>
+
+
+
+<!-- =========================
+     خلفية النافذة
+========================= -->
+
+<div
+  id="modalBackdrop"
+  class="modal-backdrop hidden">
+</div>
+
+
+
+<!-- =========================
+     النوافذ المنبثقة
+========================= -->
+
+<section
+  id="modal"
+  class="modal hidden">
+
+
+  <div class="modal-head">
+
+    <h2 id="modalTitle">
+      التفاصيل
+    </h2>
+
+    <button
+      id="modalClose"
+      class="icon-btn"
+      aria-label="إغلاق">
+
+      <svg
+        viewBox="0 0 24 24"
+        class="svg-icon">
+
+        <path d="M6 6l12 12"/>
+        <path d="M18 6L6 18"/>
+
+      </svg>
+
+    </button>
+
+  </div>
+
+
+  <div id="modalBody">
+  </div>
+
+</section>
+
+
+
+<!-- =========================
+     رسالة صغيرة
+========================= -->
+
+<div
+  id="toast"
+  class="toast hidden">
+</div>
+
+
+
+<!-- =========================
+     JavaScript
+========================= -->
+
+<script src="app.js?v=10"></script>
+
+
 </body>
+
 </html>
