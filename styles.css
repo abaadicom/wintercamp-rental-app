@@ -3828,3 +3828,26 @@ button{
   font-size:17px !important;
   font-weight:800 !important;
 }
+.expense-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+  margin-top:6px;
+}
+
+.edit-mini,
+.delete-mini{
+  border:0;
+  background:none;
+  font-size:11px;
+  padding:3px 0;
+}
+
+.edit-mini{
+  color:var(--green);
+}
+
+.delete-mini{
+  color:var(--red);
+}
