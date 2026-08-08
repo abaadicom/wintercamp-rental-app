@@ -1693,7 +1693,35 @@ function bindViewEvents() {
             );
       }
     );
+$$('[data-del-expense]')
+  .forEach(
+    button => {
+      button.onclick =
+        () =>
+          deleteExpense(
+            Number(
+              button.dataset.delExpense
+            )
+          );
+    }
+  );
 
+
+$$('[data-edit-expense]')
+  .forEach(
+    button => {
+      button.onclick =
+        () =>
+          editExpense(
+            Number(
+              button.dataset.editExpense
+            )
+          );
+    }
+  );
+
+
+const searchInput =
   const searchInput =
     $('#bookingSearch');
 
