@@ -1,6 +1,6 @@
-const DB_KEY = 'wintercamp_rental_v1';
+Const DB_KEY = 'wintercamp_rental_v1';
 
-const HIJRI_MONTHS = [
+Const HIJRI_MONTHS = [
   '',
   'محرم',
   'صفر',
@@ -16,10 +16,10 @@ const HIJRI_MONTHS = [
   'ذو الحجة'
 ];
 
-const seed = {
-  bookings: [],
-  expenses: [],
-  devices: [
+Const seed = {
+  Bookings: [],
+  Expenses: [],
+  Devices: [
     { id: 1, name: 'RCF ART 715-A MK5', qty: 2 },
     { id: 2, name: 'سماعة بلوتوث', qty: 1 },
     { id: 3, name: 'MG-12XU ميكسر', qty: 1 },
@@ -27,15 +27,15 @@ const seed = {
   ]
 };
 
-let db = load();
+Let db = load();
 
-let currentPage = 'home';
-let reportMonth = 'all';
-let reportYear = String(currentHijri().year);
-let bookingSearch = '';
-let bookingFilter = 'all';
+Let currentPage = 'home';
+Let reportMonth = 'all';
+Let reportYear = String(currentHijri().year);
+Let bookingSearch = '';
+Let bookingFilter = 'all';
 
-const $ = selector => document.querySelector(selector);
+Const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 
 
@@ -43,42 +43,42 @@ const $$ = selector => [...document.querySelectorAll(selector)];
    التخزين
 ===================================================== */
 
-function clone(obj) {
-  return JSON.parse(JSON.stringify(obj));
+Function clone(obj) {
+  Return JSON.parse(JSON.stringify(obj));
 }
 
-function load() {
-  try {
-    const saved = localStorage.getItem(DB_KEY);
+Function load() {
+  Try {
+    Const saved = localStorage.getItem(DB_KEY);
 
-    if (!saved) {
-      return clone(seed);
+    If (!saved) {
+      Return clone(seed);
     }
 
-    const data = JSON.parse(saved);
+    Const data = JSON.parse(saved);
 
-    if (!Array.isArray(data.bookings)) {
-      data.bookings = [];
+    If (!Array.isArray(data.bookings)) {
+      Data.bookings = [];
     }
 
-    if (!Array.isArray(data.expenses)) {
-      data.expenses = [];
+    If (!Array.isArray(data.expenses)) {
+      Data.expenses = [];
     }
 
-    if (!Array.isArray(data.devices)) {
-      data.devices = clone(seed.devices);
+    If (!Array.isArray(data.devices)) {
+      Data.devices = clone(seed.devices);
     }
 
-    return data;
+    Return data;
 
   } catch (error) {
-    console.error(error);
-    return clone(seed);
+    Console.error(error);
+    Return clone(seed);
   }
 }
 
-function save() {
-  localStorage.setItem(
+Function save() {
+  LocalStorage.setItem(
     DB_KEY,
     JSON.stringify(db)
   );
@@ -89,8 +89,8 @@ function save() {
    أدوات عامة
 ===================================================== */
 
-function esc(text = '') {
-  return String(text).replace(
+Function esc(text = '') {
+  Return String(text).replace(
     /[&<>"']/g,
     c => ({
       '&': '&amp;',
@@ -102,8 +102,8 @@ function esc(text = '') {
   );
 }
 
-function money(value) {
-  return new Intl.NumberFormat(
+Function money(value) {
+  Return new Intl.NumberFormat(
     'ar-SA',
     {
       minimumFractionDigits: 0,
@@ -117,11 +117,11 @@ function money(value) {
    التاريخ
 ===================================================== */
 
-function todayISO() {
-  const d = new Date();
+Function todayISO() {
+  Const d = new Date();
 
-  return (
-    d.getFullYear() +
+  Return (
+    D.getFullYear() +
     '-' +
     String(d.getMonth() + 1).padStart(2, '0') +
     '-' +
@@ -129,102 +129,102 @@ function todayISO() {
   );
 }
 
-function getHijriParts(isoDate) {
-  try {
-    const date = new Date(
-      isoDate + 'T12:00:00'
+Function getHijriParts(isoDate) {
+  Try {
+    Const date = new Date(
+      IsoDate + 'T12:00:00'
     );
 
-    const formatter =
+    Const formatter =
       new Intl.DateTimeFormat(
         'en-u-ca-islamic-umalqura',
         {
-          day: 'numeric',
-          month: 'numeric',
-          year: 'numeric',
-          timeZone: 'Asia/Riyadh'
+          Day: 'numeric',
+          Month: 'numeric',
+          Year: 'numeric',
+          TimeZone: 'Asia/Riyadh'
         }
       );
 
-    const parts =
+    Const parts =
       formatter.formatToParts(date);
 
-    return {
-      day: Number(
-        parts.find(x => x.type === 'day')?.value
+    Return {
+      Day: Number(
+        Parts.find(x => x.type === 'day')?.value
       ),
-      month: Number(
-        parts.find(x => x.type === 'month')?.value
+      Month: Number(
+        Parts.find(x => x.type === 'month')?.value
       ),
-      year: Number(
-        parts.find(x => x.type === 'year')?.value
+      Year: Number(
+        Parts.find(x => x.type === 'year')?.value
       )
     };
 
   } catch {
-    return {
-      day: 1,
-      month: 1,
-      year: 1448
+    Return {
+      Day: 1,
+      Month: 1,
+      Year: 1448
     };
   }
 }
 
-function currentHijri() {
-  return getHijriParts(todayISO());
+Function currentHijri() {
+  Return getHijriParts(todayISO());
 }
 
-function hijriFull(isoDate) {
-  const h = getHijriParts(isoDate);
+Function hijriFull(isoDate) {
+  Const h = getHijriParts(isoDate);
 
-  return (
+  Return (
     `${h.day} ` +
     `${HIJRI_MONTHS[h.month]} ` +
     `${h.year} هـ`
   );
 }
 
-function dayName(isoDate) {
-  try {
-    return new Intl.DateTimeFormat(
+Function dayName(isoDate) {
+  Try {
+    Return new Intl.DateTimeFormat(
       'ar-SA',
       {
-        weekday: 'long',
-        timeZone: 'Asia/Riyadh'
+        Weekday: 'long',
+        TimeZone: 'Asia/Riyadh'
       }
     ).format(
-      new Date(isoDate + 'T12:00:00')
+      New Date(isoDate + 'T12:00:00')
     );
 
   } catch {
-    return '';
+    Return '';
   }
 }
 
-function hijriWithDay(isoDate) {
-  return (
+Function hijriWithDay(isoDate) {
+  Return (
     `${dayName(isoDate)}، ` +
     `${hijriFull(isoDate)}`
   );
 }
 
-function hijriToGregorian(
-  hijriYear,
-  hijriMonth,
-  hijriDay
+Function hijriToGregorian(
+  HijriYear,
+  HijriMonth,
+  HijriDay
 ) {
-  hijriYear = Number(hijriYear);
-  hijriMonth = Number(hijriMonth);
-  hijriDay = Number(hijriDay);
+  HijriYear = Number(hijriYear);
+  HijriMonth = Number(hijriMonth);
+  HijriDay = Number(hijriDay);
 
-  const estimatedYear =
+  Const estimatedYear =
     Math.floor(
-      hijriYear * 0.970224 +
+      HijriYear * 0.970224 +
       621.5774
     );
 
-  const start = new Date(
-    estimatedYear - 1,
+  Const start = new Date(
+    EstimatedYear - 1,
     0,
     1,
     12,
@@ -232,34 +232,34 @@ function hijriToGregorian(
     0
   );
 
-  for (
-    let offset = 0;
-    offset < 900;
-    offset++
+  For (
+    Let offset = 0;
+    Offset < 900;
+    Offset++
   ) {
-    const date = new Date(start);
+    Const date = new Date(start);
 
-    date.setDate(
-      start.getDate() + offset
+    Date.setDate(
+      Start.getDate() + offset
     );
 
-    const iso =
+    Const iso =
       `${date.getFullYear()}-` +
       `${String(date.getMonth() + 1).padStart(2, '0')}-` +
       `${String(date.getDate()).padStart(2, '0')}`;
 
-    const h = getHijriParts(iso);
+    Const h = getHijriParts(iso);
 
-    if (
-      h.year === hijriYear &&
-      h.month === hijriMonth &&
-      h.day === hijriDay
+    If (
+      H.year === hijriYear &&
+      H.month === hijriMonth &&
+      H.day === hijriDay
     ) {
-      return iso;
+      Return iso;
     }
   }
 
-  return null;
+  Return null;
 }
 
 
@@ -267,79 +267,79 @@ function hijriToGregorian(
    حقول التاريخ
 ===================================================== */
 
-function hijriDateFields(
-  isoDate = todayISO(),
-  prefix = 'date'
+Function hijriDateFields(
+  IsoDate = todayISO(),
+  Prefix = 'date'
 ) {
-  const selected =
-    getHijriParts(isoDate);
+  Const selected =
+    GetHijriParts(isoDate);
 
-  const current =
-    currentHijri();
+  Const current =
+    CurrentHijri();
 
-  let days = '';
-  let months = '';
-  let years = '';
+  Let days = '';
+  Let months = '';
+  Let years = '';
 
-  for (let day = 1; day <= 30; day++) {
-    days += `
+  For (let day = 1; day <= 30; day++) {
+    Days += `
       <option
-        value="${day}"
+        Value="${day}"
         ${day === selected.day ? 'selected' : ''}>
         ${day}
       </option>
     `;
   }
 
-  for (
-    let month = 1;
-    month <= 12;
-    month++
+  For (
+    Let month = 1;
+    Month <= 12;
+    Month++
   ) {
-    months += `
+    Months += `
       <option
-        value="${month}"
+        Value="${month}"
         ${month === selected.month ? 'selected' : ''}>
         ${HIJRI_MONTHS[month]}
       </option>
     `;
   }
 
-  for (
-    let year = 1446;
-    year <= current.year + 5;
-    year++
+  For (
+    Let year = 1446;
+    Year <= current.year + 5;
+    Year++
   ) {
-    years += `
+    Years += `
       <option
-        value="${year}"
+        Value="${year}"
         ${year === selected.year ? 'selected' : ''}>
         ${year} هـ
       </option>
     `;
   }
 
-  return `
+  Return `
     <label>
       التاريخ الهجري
 
       <div class="hijri-selects">
 
         <select
-          name="${prefix}_day"
-          required>
+          Name="${prefix}_day"
+          Required>
           ${days}
         </select>
 
         <select
-          name="${prefix}_month"
-          required>
+          Name="${prefix}_month"
+          Required>
           ${months}
         </select>
 
         <select
-          name="${prefix}_year"
-          required>
+          Name="${prefix}_year"
+          Required>
           ${years}
         </select>
 
@@ -353,66 +353,66 @@ function hijriDateFields(
    الحسابات
 ===================================================== */
 
-function totals(
-  bookings = db.bookings,
-  expenses = db.expenses
+Function totals(
+  Bookings = db.bookings,
+  Expenses = db.expenses
 ) {
-  const revenue =
-    bookings.reduce(
+  Const revenue =
+    Bookings.reduce(
       (sum, item) =>
-        sum +
+        Sum +
         Number(item.agreed || 0),
       0
     );
 
-  const paid =
-    bookings.reduce(
+  Const paid =
+    Bookings.reduce(
       (sum, item) =>
-        sum +
+        Sum +
         Number(item.paid || 0),
       0
     );
 
-  const expensesTotal =
-    expenses.reduce(
+  Const expensesTotal =
+    Expenses.reduce(
       (sum, item) =>
-        sum +
+        Sum +
         Number(item.amount || 0),
       0
     );
 
-  return {
-    revenue,
-    paid,
-    remaining:
-      revenue - paid,
-    expenses:
-      expensesTotal,
-    profit:
-      revenue - expensesTotal
+  Return {
+    Revenue,
+    Paid,
+    Remaining:
+      Revenue - paid,
+    Expenses:
+      ExpensesTotal,
+    Profit:
+      Revenue - expensesTotal
   };
 }
 
-function status(booking) {
-  const remaining =
+Function status(booking) {
+  Const remaining =
     Number(booking.agreed || 0) -
     Number(booking.paid || 0);
 
-  if (remaining <= 0) {
-    return [
+  If (remaining <= 0) {
+    Return [
       'مدفوعة بالكامل',
       'paid'
     ];
   }
 
-  if (Number(booking.paid || 0) > 0) {
-    return [
+  If (Number(booking.paid || 0) > 0) {
+    Return [
       'مدفوعة جزئياً',
       'partial'
     ];
   }
 
-  return [
+  Return [
     'لم يتم الدفع',
     'unpaid'
   ];
@@ -423,24 +423,24 @@ function status(booking) {
    الرئيسية
 ===================================================== */
 
-function homeView() {
-  const t = totals();
+Function homeView() {
+  Const t = totals();
 
-  const upcoming =
+  Const upcoming =
     [...db.bookings]
       .filter(
-        b =>
-          b.date >= todayISO()
+        B =>
+          B.date >= todayISO()
       )
       .sort(
         (a, b) =>
-          a.date.localeCompare(
-            b.date
+          A.date.localeCompare(
+            B.date
           )
       )
       .slice(0, 5);
 
-  return `
+  Return `
 
     <section class="hero">
 
@@ -504,11 +504,11 @@ function homeView() {
             <svg viewBox="0 0 24 24">
 
               <rect
-                x="3"
-                y="6"
-                width="18"
-                height="14"
-                rx="3"/>
+                X="3"
+                Y="6"
+                Width="18"
+                Height="14"
+                Rx="3"/>
 
               <path d="M3 10H21"/>
 
@@ -581,9 +581,9 @@ function homeView() {
             <svg viewBox="0 0 24 24">
 
               <circle
-                cx="12"
-                cy="12"
-                r="9"/>
+                Cx="12"
+                Cy="12"
+                R="9"/>
 
               <path d="M12 7V12L15 14"/>
 
@@ -613,8 +613,8 @@ function homeView() {
       </h3>
 
       <button
-        class="link-btn"
-        data-go="bookings">
+        Class="link-btn"
+        Data-go="bookings">
         عرض الكل
       </button>
 
@@ -622,9 +622,9 @@ function homeView() {
 
 
     ${
-      upcoming.length
+      Upcoming.length
 
-        ? upcoming
+        ? Upcoming
             .map(bookingCard)
             .join('')
 
@@ -642,20 +642,20 @@ function homeView() {
    بطاقة الحجز
 ===================================================== */
 
-function bookingCard(booking) {
-  const [
-    statusText,
-    statusClass
+Function bookingCard(booking) {
+  Const [
+    StatusText,
+    StatusClass
   ] = status(booking);
 
-  const remaining =
+  Const remaining =
     Math.max(
       0,
       Number(booking.agreed || 0) -
       Number(booking.paid || 0)
     );
 
-  return `
+  Return `
 
     <article class="booking-card">
 
@@ -682,7 +682,7 @@ function bookingCard(booking) {
             </div>
 
             ${
-              booking.phone
+              Booking.phone
                 ? `
                   <div>
                     ☎ ${esc(booking.phone)}
@@ -719,14 +719,14 @@ function bookingCard(booking) {
       <div class="card-actions">
 
         <button
-          class="small-btn"
-          data-detail="${booking.id}">
+          Class="small-btn"
+          Data-detail="${booking.id}">
           تفاصيل
         </button>
 
         <button
-          class="small-btn primary"
-          data-invoice="${booking.id}">
+          Class="small-btn primary"
+          Data-invoice="${booking.id}">
           عرض الفاتورة
         </button>
 
@@ -741,77 +741,77 @@ function bookingCard(booking) {
    البحث
 ===================================================== */
 
-function normalizePhone(value) {
-  return String(value || '')
+Function normalizePhone(value) {
+  Return String(value || '')
     .replace(/[^\d٠-٩]/g, '');
 }
 
-function normalizeSearch(value) {
-  return String(value || '')
+Function normalizeSearch(value) {
+  Return String(value || '')
     .trim()
     .toLowerCase();
 }
 
-function getFilteredBookings() {
-  let bookings =
+Function getFilteredBookings() {
+  Let bookings =
     [...db.bookings];
 
-  const today =
-    todayISO();
+  Const today =
+    TodayISO();
 
-  if (
-    bookingFilter ===
+  If (
+    BookingFilter ===
     'upcoming'
   ) {
-    bookings =
-      bookings.filter(
-        item =>
-          item.date >= today
+    Bookings =
+      Bookings.filter(
+        Item =>
+          Item.date >= today
       );
   }
 
-  if (
-    bookingFilter ===
+  If (
+    BookingFilter ===
     'past'
   ) {
-    bookings =
-      bookings.filter(
-        item =>
-          item.date < today
+    Bookings =
+      Bookings.filter(
+        Item =>
+          Item.date < today
       );
   }
 
-  const search =
-    normalizeSearch(
-      bookingSearch
+  Const search =
+    NormalizeSearch(
+      BookingSearch
     );
 
-  const phoneSearch =
-    normalizePhone(
-      bookingSearch
+  Const phoneSearch =
+    NormalizePhone(
+      BookingSearch
     );
 
-  if (search) {
-    bookings =
-      bookings.filter(
-        item => {
+  If (search) {
+    Bookings =
+      Bookings.filter(
+        Item => {
 
-          const name =
-            normalizeSearch(
-              item.name
+          Const name =
+            NormalizeSearch(
+              Item.name
             );
 
-          const phone =
-            normalizePhone(
-              item.phone
+          Const phone =
+            NormalizePhone(
+              Item.phone
             );
 
-          return (
-            name.includes(search) ||
+          Return (
+            Name.includes(search) ||
             (
-              phoneSearch &&
-              phone.includes(
-                phoneSearch
+              PhoneSearch &&
+              Phone.includes(
+                PhoneSearch
               )
             )
           );
@@ -819,14 +819,14 @@ function getFilteredBookings() {
       );
   }
 
-  bookings.sort(
+  Bookings.sort(
     (a, b) =>
-      b.date.localeCompare(
-        a.date
+      B.date.localeCompare(
+        A.date
       )
   );
 
-  return bookings;
+  Return bookings;
 }
 
 
@@ -834,18 +834,18 @@ function getFilteredBookings() {
    صفحة الحجوزات
 ===================================================== */
 
-function bookingsView() {
-  const bookings =
-    getFilteredBookings();
+Function bookingsView() {
+  Const bookings =
+    GetFilteredBookings();
 
-  const title =
-    bookingFilter === 'upcoming'
+  Const title =
+    BookingFilter === 'upcoming'
       ? 'الحجوزات القادمة'
       : bookingFilter === 'past'
         ? 'الحجوزات السابقة'
         : 'جميع الحجوزات';
 
-  return `
+  Return `
 
     <div class="bookings-tools">
 
@@ -856,9 +856,9 @@ function bookingsView() {
           <svg viewBox="0 0 24 24">
 
             <circle
-              cx="11"
-              cy="11"
-              r="7"/>
+              Cx="11"
+              Cy="11"
+              R="7"/>
 
             <path d="M20 20L16.5 16.5"/>
 
@@ -867,15 +867,15 @@ function bookingsView() {
         </span>
 
         <input
-          id="bookingSearch"
-          type="text"
-          inputmode="search"
-          autocomplete="off"
-          autocorrect="off"
-          spellcheck="false"
-          enterkeyhint="search"
-          placeholder="بحث بالاسم أو رقم الجوال"
-          value="${esc(bookingSearch)}">
+          Id="bookingSearch"
+          Type="text"
+          Inputmode="search"
+          Autocomplete="off"
+          Autocorrect="off"
+          Spellcheck="false"
+          Enterkeyhint="search"
+          Placeholder="بحث بالاسم أو رقم الجوال"
+          Value="${esc(bookingSearch)}">
 
       </div>
 
@@ -883,9 +883,9 @@ function bookingsView() {
       <div class="booking-filter-tabs">
 
         <button
-          data-booking-filter="all"
-          class="${
-            bookingFilter === 'all'
+          Data-booking-filter="all"
+          Class="${
+            BookingFilter === 'all'
               ? 'active'
               : ''
           }">
@@ -893,9 +893,9 @@ function bookingsView() {
         </button>
 
         <button
-          data-booking-filter="upcoming"
-          class="${
-            bookingFilter === 'upcoming'
+          Data-booking-filter="upcoming"
+          Class="${
+            BookingFilter === 'upcoming'
               ? 'active'
               : ''
           }">
@@ -903,9 +903,9 @@ function bookingsView() {
         </button>
 
         <button
-          data-booking-filter="past"
-          class="${
-            bookingFilter === 'past'
+          Data-booking-filter="past"
+          Class="${
+            BookingFilter === 'past'
               ? 'active'
               : ''
           }">
@@ -924,8 +924,8 @@ function bookingsView() {
       </h3>
 
       <span
-        id="bookingCount"
-        class="count-badge">
+        Id="bookingCount"
+        Class="count-badge">
         ${bookings.length}
       </span>
 
@@ -935,7 +935,7 @@ function bookingsView() {
     <div id="bookingResults">
 
       ${
-        bookings.length
+        Bookings.length
           ? bookings.map(bookingCard).join('')
           : `
             <div class="empty">
@@ -948,19 +948,19 @@ function bookingsView() {
   `;
 }
 
-function refreshBookingResults() {
-  const bookings =
-    getFilteredBookings();
+Function refreshBookingResults() {
+  Const bookings =
+    GetFilteredBookings();
 
-  const list =
+  Const list =
     $('#bookingResults');
 
-  const count =
+  Const count =
     $('#bookingCount');
 
-  if (list) {
-    list.innerHTML =
-      bookings.length
+  If (list) {
+    List.innerHTML =
+      Bookings.length
         ? bookings
             .map(bookingCard)
             .join('')
@@ -971,12 +971,12 @@ function refreshBookingResults() {
         `;
   }
 
-  if (count) {
-    count.textContent =
-      bookings.length;
+  If (count) {
+    Count.textContent =
+      Bookings.length;
   }
 
-  bindBookingResultEvents();
+  BindBookingResultEvents();
 }
 
 
@@ -984,17 +984,17 @@ function refreshBookingResults() {
    المصاريف
 ===================================================== */
 
-function expensesView() {
-  const expenses =
+Function expensesView() {
+  Const expenses =
     [...db.expenses]
       .sort(
         (a, b) =>
-          b.date.localeCompare(
-            a.date
+          B.date.localeCompare(
+            A.date
           )
       );
 
-  return `
+  Return `
 
     <div class="section-head">
 
@@ -1010,10 +1010,10 @@ function expensesView() {
 
 
     ${
-      expenses.length
+      Expenses.length
 
         ? expenses.map(
-            expense => `
+            Expense => `
 
               <div class="expense-row">
 
@@ -1029,30 +1029,59 @@ function expensesView() {
 
                 </div>
 
-                <div class="expense-actions">
 
-  <button
-    class="edit-mini"
-    data-edit-expense="${expense.id}">
-    تعديل
-  </button>
+                <div>
 
-  <button
-    class="delete-mini"
-    data-del-expense="${expense.id}">
-    حذف
-  </button>
+                  <strong class="red">
+                    ${money(expense.amount)}
+                  </strong>
 
-</div>
+
+                  <div
+                    Style="
+                      Display:flex;
+                      Align-items:center;
+                      Gap:16px;
+                      Margin-top:7px;
+                    ">
+
+                    <button
+                      Type="button"
+                      Onclick="editExpense(${Number(expense.id)})"
+                      Style="
+                        Border:0;
+                        Padding:2px 0;
+                        Background:none;
+                        Color:#25c16f;
+                        Font-size:11px;
+                        Cursor:pointer;
+                      ">
+                      تعديل
+                    </button>
+
+
+                    <button
+                      Type="button"
+                      Class="delete-mini"
+                      Data-del-expense="${expense.id}">
+                      حذف
+                    </button>
+
+                  </div>
+
+                </div>
 
               </div>
+
             `
           ).join('')
 
         : `
+
           <div class="empty">
             لا توجد مصاريف
           </div>
+
         `
     }
   `;
@@ -1063,92 +1092,92 @@ function expensesView() {
    التقارير
 ===================================================== */
 
-function getAvailableHijriYears() {
-  const current =
-    currentHijri().year;
+Function getAvailableHijriYears() {
+  Const current =
+    CurrentHijri().year;
 
-  const years = [];
+  Const years = [];
 
-  for (
-    let year = 1446;
-    year <= current + 5;
-    year++
+  For (
+    Let year = 1446;
+    Year <= current + 5;
+    Year++
   ) {
-    years.push(year);
+    Years.push(year);
   }
 
-  return years;
+  Return years;
 }
 
-function filterByHijriPeriod(
-  items,
-  month = reportMonth,
-  year = reportYear
+Function filterByHijriPeriod(
+  Items,
+  Month = reportMonth,
+  Year = reportYear
 ) {
-  return items.filter(
-    item => {
+  Return items.filter(
+    Item => {
 
-      const h =
-        getHijriParts(
-          item.date
+      Const h =
+        GetHijriParts(
+          Item.date
         );
 
-      const monthMatch =
-        month === 'all' ||
-        h.month ===
+      Const monthMatch =
+        Month === 'all' ||
+        H.month ===
         Number(month);
 
-      const yearMatch =
-        year === 'all' ||
-        h.year ===
+      Const yearMatch =
+        Year === 'all' ||
+        H.year ===
         Number(year);
 
-      return (
-        monthMatch &&
-        yearMatch
+      Return (
+        MonthMatch &&
+        YearMatch
       );
     }
   );
 }
 
-function reportPeriodTitle() {
-  if (
-    reportMonth === 'all' &&
-    reportYear === 'all'
+Function reportPeriodTitle() {
+  If (
+    ReportMonth === 'all' &&
+    ReportYear === 'all'
   ) {
-    return 'جميع الأشهر وجميع السنوات';
+    Return 'جميع الأشهر وجميع السنوات';
   }
 
-  if (
-    reportMonth === 'all'
+  If (
+    ReportMonth === 'all'
   ) {
-    return `جميع أشهر سنة ${reportYear} هـ`;
+    Return `جميع أشهر سنة ${reportYear} هـ`;
   }
 
-  if (
-    reportYear === 'all'
+  If (
+    ReportYear === 'all'
   ) {
-    return (
+    Return (
       `${HIJRI_MONTHS[Number(reportMonth)]}` +
       ' - جميع السنوات'
     );
   }
 
-  return (
+  Return (
     `${HIJRI_MONTHS[Number(reportMonth)]} ` +
     `${reportYear} هـ`
   );
 }
 
-function monthlyBreakdownView() {
-  if (
-    reportMonth !== 'all' ||
-    reportYear === 'all'
+Function monthlyBreakdownView() {
+  If (
+    ReportMonth !== 'all' ||
+    ReportYear === 'all'
   ) {
-    return '';
+    Return '';
   }
 
-  let html = `
+  Let html = `
 
     <div class="section-head">
 
@@ -1161,36 +1190,36 @@ function monthlyBreakdownView() {
     <div class="months-list">
   `;
 
-  for (
-    let month = 1;
-    month <= 12;
-    month++
+  For (
+    Let month = 1;
+    Month <= 12;
+    Month++
   ) {
-    const bookings =
-      filterByHijriPeriod(
-        db.bookings,
+    Const bookings =
+      FilterByHijriPeriod(
+        Db.bookings,
         String(month),
         reportYear
       );
 
-    const expenses =
-      filterByHijriPeriod(
-        db.expenses,
+    Const expenses =
+      FilterByHijriPeriod(
+        Db.expenses,
         String(month),
         reportYear
       );
 
-    const t =
-      totals(
-        bookings,
-        expenses
+    Const t =
+      Totals(
+        Bookings,
+        Expenses
       );
 
-    html += `
+    Html += `
 
       <button
-        class="month-report-card"
-        data-report-month="${month}">
+        Class="month-report-card"
+        Data-report-month="${month}">
 
         <div>
 
@@ -1224,34 +1253,34 @@ function monthlyBreakdownView() {
     `;
   }
 
-  html += `
+  Html += `
     </div>
   `;
 
-  return html;
+  Return html;
 }
 
-function reportsView() {
-  const bookings =
-    filterByHijriPeriod(
-      db.bookings
+Function reportsView() {
+  Const bookings =
+    FilterByHijriPeriod(
+      Db.bookings
     );
 
-  const expenses =
-    filterByHijriPeriod(
-      db.expenses
+  Const expenses =
+    FilterByHijriPeriod(
+      Db.expenses
     );
 
-  const t =
-    totals(
-      bookings,
-      expenses
+  Const t =
+    Totals(
+      Bookings,
+      Expenses
     );
 
-  const years =
-    getAvailableHijriYears();
+  Const years =
+    GetAvailableHijriYears();
 
-  return `
+  Return `
 
     <div class="report-title">
 
@@ -1273,12 +1302,12 @@ function reportsView() {
         الشهر الهجري
 
         <select
-          id="reportMonthFilter">
+          Id="reportMonthFilter">
 
           <option
-            value="all"
+            Value="all"
             ${
-              reportMonth === 'all'
+              ReportMonth === 'all'
                 ? 'selected'
                 : ''
             }>
@@ -1290,13 +1319,13 @@ function reportsView() {
               .map(
                 (month, index) => {
 
-                  if (!index) {
-                    return '';
+                  If (!index) {
+                    Return '';
                   }
 
-                  return `
+                  Return `
                     <option
-                      value="${index}"
+                      Value="${index}"
                       ${
                         String(index) ===
                         String(reportMonth)
@@ -1321,12 +1350,12 @@ function reportsView() {
         السنة الهجرية
 
         <select
-          id="reportYearFilter">
+          Id="reportYearFilter">
 
           <option
-            value="all"
+            Value="all"
             ${
-              reportYear === 'all'
+              ReportYear === 'all'
                 ? 'selected'
                 : ''
             }>
@@ -1334,11 +1363,11 @@ function reportsView() {
           </option>
 
           ${
-            years
+            Years
               .map(
-                year => `
+                Year => `
                   <option
-                    value="${year}"
+                    Value="${year}"
                     ${
                       String(year) ===
                       String(reportYear)
@@ -1420,8 +1449,8 @@ function reportsView() {
    الأجهزة
 ===================================================== */
 
-function devicesView() {
-  return `
+Function devicesView() {
+  Return `
 
     <div class="section-head">
 
@@ -1432,9 +1461,9 @@ function devicesView() {
     </div>
 
     ${
-      db.devices
+      Db.devices
         .map(
-          device => `
+          Device => `
 
             <div class="device-card">
 
@@ -1460,17 +1489,17 @@ function devicesView() {
    قائمة الفواتير
 ===================================================== */
 
-function invoicesView() {
-  const bookings =
+Function invoicesView() {
+  Const bookings =
     [...db.bookings]
       .sort(
         (a, b) =>
-          b.date.localeCompare(
-            a.date
+          B.date.localeCompare(
+            A.date
           )
       );
 
-  return `
+  Return `
 
     <div class="section-head">
 
@@ -1482,9 +1511,9 @@ function invoicesView() {
 
 
     ${
-      bookings.length
+      Bookings.length
         ? bookings.map(
-            booking => `
+            Booking => `
 
               <div class="invoice-row">
 
@@ -1504,8 +1533,8 @@ function invoicesView() {
                 </div>
 
                 <button
-                  class="small-btn primary"
-                  data-invoice="${booking.id}">
+                  Class="small-btn primary"
+                  Data-invoice="${booking.id}">
                   عرض
                 </button>
 
@@ -1526,8 +1555,8 @@ function invoicesView() {
    الإعدادات
 ===================================================== */
 
-function settingsView() {
-  return `
+Function settingsView() {
+  Return `
 
     <div class="section-head">
 
@@ -1562,8 +1591,8 @@ function settingsView() {
     </div>
 
     <button
-      id="settingsExport"
-      class="submit-btn">
+      Id="settingsExport"
+      Class="submit-btn">
       تصدير نسخة احتياطية
     </button>
   `;
@@ -1574,64 +1603,64 @@ function settingsView() {
    العرض
 ===================================================== */
 
-function render() {
-  const titles = {
-    home: 'الرئيسية',
-    bookings: 'الحجوزات',
-    expenses: 'المصاريف',
-    reports: 'التقارير',
-    devices: 'الأجهزة',
-    invoices: 'الفواتير',
-    settings: 'الإعدادات'
+Function render() {
+  Const titles = {
+    Home: 'الرئيسية',
+    Bookings: 'الحجوزات',
+    Expenses: 'المصاريف',
+    Reports: 'التقارير',
+    Devices: 'الأجهزة',
+    Invoices: 'الفواتير',
+    Settings: 'الإعدادات'
   };
 
-  const pageTitle =
+  Const pageTitle =
     $('#pageTitle');
 
-  if (pageTitle) {
-    pageTitle.textContent =
-      titles[currentPage] ||
+  If (pageTitle) {
+    PageTitle.textContent =
+      Titles[currentPage] ||
       'الرئيسية';
   }
 
   $$('.nav-item')
     .forEach(
-      button => {
-        button.classList.toggle(
+      Button => {
+        Button.classList.toggle(
           'active',
-          button.dataset.page ===
-          currentPage
+          Button.dataset.page ===
+          CurrentPage
         );
       }
     );
 
-  const views = {
-    home: homeView,
-    bookings: bookingsView,
-    expenses: expensesView,
-    reports: reportsView,
-    devices: devicesView,
-    invoices: invoicesView,
-    settings: settingsView
+  Const views = {
+    Home: homeView,
+    Bookings: bookingsView,
+    Expenses: expensesView,
+    Reports: reportsView,
+    Devices: devicesView,
+    Invoices: invoicesView,
+    Settings: settingsView
   };
 
-  const main =
+  Const main =
     $('#mainContent');
 
-  if (main) {
-    main.innerHTML =
+  If (main) {
+    Main.innerHTML =
       (
-        views[currentPage] ||
+        Views[currentPage] ||
         homeView
       )();
   }
 
-  bindViewEvents();
+  BindViewEvents();
 }
 
-function go(page) {
-  currentPage = page;
-  render();
+Function go(page) {
+  CurrentPage = page;
+  Render();
 }
 
 
@@ -1639,15 +1668,15 @@ function go(page) {
    أحداث الصفحة
 ===================================================== */
 
-function bindBookingResultEvents() {
+Function bindBookingResultEvents() {
   $$('[data-detail]')
     .forEach(
-      button => {
-        button.onclick =
+      Button => {
+        Button.onclick =
           () =>
             showDetail(
               Number(
-                button.dataset.detail
+                Button.dataset.detail
               )
             );
       }
@@ -1655,153 +1684,117 @@ function bindBookingResultEvents() {
 
   $$('[data-invoice]')
     .forEach(
-      button => {
-        button.onclick =
+      Button => {
+        Button.onclick =
           () =>
             showInvoice(
               Number(
-                button.dataset.invoice
+                Button.dataset.invoice
               )
             );
       }
     );
 }
 
-function bindViewEvents() {
+Function bindViewEvents() {
   $$('[data-go]')
     .forEach(
-      button => {
-        button.onclick =
+      Button => {
+        Button.onclick =
           () =>
             go(
-              button.dataset.go
+              Button.dataset.go
             );
       }
     );
 
-  bindBookingResultEvents();
+  BindBookingResultEvents();
 
   $$('[data-del-expense]')
     .forEach(
-      button => {
-        button.onclick =
+      Button => {
+        Button.onclick =
           () =>
             deleteExpense(
               Number(
-                button.dataset.delExpense
+                Button.dataset.delExpense
               )
             );
       }
     );
-$$('[data-del-expense]')
-  .forEach(
-    button => {
-      button.onclick =
-        () =>
-          deleteExpense(
-            Number(
-              button.dataset.delExpense
-            )
-          );
-    }
-  );
 
+  Const searchInput = $('#bookingSearch');
 
-$$('[data-edit-expense]')
-  .forEach(
-    button => {
-      button.onclick =
-        () =>
-          editExpense(
-            Number(
-              button.dataset.editExpense
-            )
-          );
-    }
-  );
-
-
-const searchInput =
-  const searchInput =
-    $('#bookingSearch');
-
-  if (searchInput) {
-    searchInput.addEventListener(
+  If (searchInput) {
+    SearchInput.addEventListener(
       'input',
-      event => {
+      Event => {
 
-        bookingSearch =
-          event.target.value;
+        BookingSearch =
+          Event.target.value;
 
-        /*
-          مهم:
-          لا نعمل render هنا.
-          لذلك لوحة المفاتيح لا تتغير
-          بعد كل رقم أو حرف.
-        */
-
-        refreshBookingResults();
+        RefreshBookingResults();
       }
     );
   }
 
   $$('[data-booking-filter]')
     .forEach(
-      button => {
-        button.onclick =
+      Button => {
+        Button.onclick =
           () => {
-            bookingFilter =
-              button.dataset.bookingFilter;
+            BookingFilter =
+              Button.dataset.bookingFilter;
 
-            render();
+            Render();
           };
       }
     );
 
-  const monthFilter =
+  Const monthFilter =
     $('#reportMonthFilter');
 
-  if (monthFilter) {
-    monthFilter.onchange =
-      event => {
-        reportMonth =
-          event.target.value;
+  If (monthFilter) {
+    MonthFilter.onchange =
+      Event => {
+        ReportMonth =
+          Event.target.value;
 
-        render();
+        Render();
       };
   }
 
-  const yearFilter =
+  Const yearFilter =
     $('#reportYearFilter');
 
-  if (yearFilter) {
-    yearFilter.onchange =
-      event => {
-        reportYear =
-          event.target.value;
+  If (yearFilter) {
+    YearFilter.onchange =
+      Event => {
+        ReportYear =
+          Event.target.value;
 
-        render();
+        Render();
       };
   }
 
   $$('[data-report-month]')
     .forEach(
-      button => {
-        button.onclick =
+      Button => {
+        Button.onclick =
           () => {
-            reportMonth =
-              button.dataset.reportMonth;
+            ReportMonth =
+              Button.dataset.reportMonth;
 
-            render();
+            Render();
           };
       }
     );
 
-  const settingsExport =
+  Const settingsExport =
     $('#settingsExport');
 
-  if (settingsExport) {
-    settingsExport.onclick =
+  If (settingsExport) {
+    SettingsExport.onclick =
       exportData;
   }
 }
@@ -1811,18 +1804,18 @@ const searchInput =
    النوافذ
 ===================================================== */
 
-function openModal(
-  title,
-  content
+Function openModal(
+  Title,
+  Content
 ) {
-  if ($('#modalTitle')) {
+  If ($('#modalTitle')) {
     $('#modalTitle').textContent =
-      title;
+      Title;
   }
 
-  if ($('#modalBody')) {
+  If ($('#modalBody')) {
     $('#modalBody').innerHTML =
-      content;
+      Content;
   }
 
   $('#modalBackdrop')
@@ -1834,7 +1827,7 @@ function openModal(
     .remove('hidden');
 }
 
-function closeModal() {
+Function closeModal() {
   $('#modalBackdrop')
     ?.classList
     .add('hidden');
@@ -1849,26 +1842,26 @@ function closeModal() {
    تفاصيل الحجز
 ===================================================== */
 
-function showDetail(id) {
-  const booking =
-    db.bookings.find(
-      item =>
+Function showDetail(id) {
+  Const booking =
+    Db.bookings.find(
+      Item =>
         Number(item.id) ===
         Number(id)
     );
 
-  if (!booking) {
-    return;
+  If (!booking) {
+    Return;
   }
 
-  const remaining =
+  Const remaining =
     Math.max(
       0,
       Number(booking.agreed || 0) -
       Number(booking.paid || 0)
     );
 
-  openModal(
+  OpenModal(
     'تفاصيل الحجز',
     `
 
@@ -1943,14 +1936,14 @@ function showDetail(id) {
       <div class="card-actions">
 
         <button
-          id="detailInvoice"
-          class="small-btn primary">
+          Id="detailInvoice"
+          Class="small-btn primary">
           عرض الفاتورة
         </button>
 
         <button
-          id="editBooking"
-          class="small-btn">
+          Id="editBooking"
+          Class="small-btn">
           تعديل
         </button>
 
@@ -1958,8 +1951,8 @@ function showDetail(id) {
 
 
       <button
-        id="deleteBooking"
-        class="delete-full">
+        Id="deleteBooking"
+        Class="delete-full">
         حذف الحجز
       </button>
     `
@@ -1977,23 +1970,23 @@ function showDetail(id) {
 
   $('#deleteBooking').onclick =
     () => {
-      if (
-        confirm(
+      If (
+        Confirm(
           'هل تريد حذف الحجز؟'
         )
       ) {
-        db.bookings =
-          db.bookings.filter(
-            item =>
+        Db.bookings =
+          Db.bookings.filter(
+            Item =>
               Number(item.id) !==
               Number(id)
           );
 
-        save();
-        closeModal();
-        render();
+        Save();
+        CloseModal();
+        Render();
 
-        toast(
+        Toast(
           'تم حذف الحجز'
         );
       }
@@ -2005,40 +1998,40 @@ function showDetail(id) {
    نموذج الحجز
 ===================================================== */
 
-function openBookingForm(
-  existing = null
+Function openBookingForm(
+  Existing = null
 ) {
-  const booking =
-    existing || {
-      name: '',
-      phone: '',
-      eventType: '',
-      device: '',
-      location: '',
-      date: todayISO(),
-      agreed: '',
-      paid: '',
-      notes: ''
+  Const booking =
+    Existing || {
+      Name: '',
+      Phone: '',
+      EventType: '',
+      Device: '',
+      Location: '',
+      Date: todayISO(),
+      Agreed: '',
+      Paid: '',
+      Notes: ''
     };
 
-  openModal(
-    existing
+  OpenModal(
+    Existing
       ? 'تعديل الحجز'
       : 'حجز جديد',
 
     `
 
       <form
-        id="bookingForm"
-        class="form-grid">
+        Id="bookingForm"
+        Class="form-grid">
 
         <label>
           اسم العميل
 
           <input
-            name="name"
-            required
-            value="${esc(booking.name)}">
+            Name="name"
+            Required
+            Value="${esc(booking.name)}">
         </label>
 
 
@@ -2046,12 +2039,12 @@ function openBookingForm(
           رقم الجوال
 
           <input
-            name="phone"
-            type="tel"
-            inputmode="numeric"
-            autocomplete="tel"
-            value="${esc(booking.phone || '')}"
-            placeholder="05xxxxxxxx">
+            Name="phone"
+            Type="tel"
+            Inputmode="numeric"
+            Autocomplete="tel"
+            Value="${esc(booking.phone || '')}"
+            Placeholder="05xxxxxxxx">
         </label>
 
 
@@ -2059,9 +2052,9 @@ function openBookingForm(
           نوع المناسبة
 
           <input
-            name="eventType"
-            value="${esc(booking.eventType || '')}"
-            placeholder="مثال: زواج">
+            Name="eventType"
+            Value="${esc(booking.eventType || '')}"
+            Placeholder="مثال: زواج">
         </label>
 
 
@@ -2069,10 +2062,10 @@ function openBookingForm(
           نوع الأجهزة / الباقة
 
           <input
-            name="device"
-            required
-            value="${esc(booking.device || '')}"
-            placeholder="مثال: سماعتين + ميكسر">
+            Name="device"
+            Required
+            Value="${esc(booking.device || '')}"
+            Placeholder="مثال: سماعتين + ميكسر">
         </label>
 
 
@@ -2080,15 +2073,15 @@ function openBookingForm(
           الموقع
 
           <input
-            name="location"
-            required
-            value="${esc(booking.location || '')}"
-            placeholder="مثال: أبها - حي العرين">
+            Name="location"
+            Required
+            Value="${esc(booking.location || '')}"
+            Placeholder="مثال: أبها - حي العرين">
         </label>
 
 
         ${hijriDateFields(
-          booking.date,
+          Booking.date,
           'booking'
         )}
 
@@ -2099,23 +2092,23 @@ function openBookingForm(
             المبلغ المتفق عليه
 
             <input
-              name="agreed"
-              type="number"
-              inputmode="decimal"
-              min="0"
-              required
-              value="${booking.agreed}">
+              Name="agreed"
+              Type="number"
+              Inputmode="decimal"
+              Min="0"
+              Required
+              Value="${booking.agreed}">
           </label>
 
           <label>
             الواصل
 
             <input
-              name="paid"
-              type="number"
-              inputmode="decimal"
-              min="0"
-              value="${booking.paid}">
+              Name="paid"
+              Type="number"
+              Inputmode="decimal"
+              Min="0"
+              Value="${booking.paid}">
           </label>
 
         </div>
@@ -2125,17 +2118,17 @@ function openBookingForm(
           ملاحظات
 
           <textarea
-            name="notes"
-            placeholder="ملاحظات اختيارية">${esc(booking.notes || '')}</textarea>
+            Name="notes"
+            Placeholder="ملاحظات اختيارية">${esc(booking.notes || '')}</textarea>
         </label>
 
 
         <button
-          class="submit-btn"
-          type="submit">
+          Class="submit-btn"
+          Type="submit">
 
           ${
-            existing
+            Existing
               ? 'حفظ التعديلات'
               : 'حفظ الحجز'
           }
@@ -2147,66 +2140,66 @@ function openBookingForm(
   );
 
   $('#bookingForm').onsubmit =
-    event => {
-      event.preventDefault();
+    Event => {
+      Event.preventDefault();
 
-      const formData =
+      Const formData =
         Object.fromEntries(
-          new FormData(
-            event.currentTarget
+          New FormData(
+            Event.currentTarget
           ).entries()
         );
 
-      const date =
-        hijriToGregorian(
-          formData.booking_year,
-          formData.booking_month,
-          formData.booking_day
+      Const date =
+        HijriToGregorian(
+          FormData.booking_year,
+          FormData.booking_month,
+          FormData.booking_day
         );
 
-      if (!date) {
-        alert(
+      If (!date) {
+        Alert(
           'التاريخ الهجري غير صحيح'
         );
-        return;
+        Return;
       }
 
-      delete formData.booking_day;
-      delete formData.booking_month;
-      delete formData.booking_year;
+      Delete formData.booking_day;
+      Delete formData.booking_month;
+      Delete formData.booking_year;
 
-      formData.date = date;
+      FormData.date = date;
 
-      formData.agreed =
+      FormData.agreed =
         Number(
-          formData.agreed || 0
+          FormData.agreed || 0
         );
 
-      formData.paid =
+      FormData.paid =
         Number(
-          formData.paid || 0
+          FormData.paid || 0
         );
 
-      if (existing) {
+      If (existing) {
         Object.assign(
-          existing,
+          Existing,
           formData
         );
       } else {
-        formData.id =
+        FormData.id =
           Date.now();
 
-        db.bookings.push(
+        Db.bookings.push(
           formData
         );
       }
 
-      save();
-      closeModal();
-      render();
+      Save();
+      CloseModal();
+      Render();
 
-      toast(
-        existing
+      Toast(
+        Existing
           ? 'تم تحديث الحجز'
           : 'تم حفظ الحجز'
       );
@@ -2215,215 +2208,104 @@ function openBookingForm(
 
 
 /* =====================================================
-   المصروف
+   إضافة / تعديل المصروف
 ===================================================== */
 
-function openExpenseForm() {
-  openModal(
-    'إضافة مصروف',
+Function openExpenseForm(existing = null) {
+  Const isEdit = Boolean(existing);
+  Const expense = existing || {
+    Item: '',
+    Amount: '',
+    Date: todayISO()
+  };
+
+  OpenModal(
+    IsEdit ? 'تعديل المصروف' : 'إضافة مصروف',
     `
-
-      <form
-        id="expenseForm"
-        class="form-grid">
-
+      <form id="expenseForm" class="form-grid">
         <label>
           بند المصروف
-
-          <input
-            name="item"
-            required>
+          <input name="item" required value="${esc(expense.item || '')}">
         </label>
 
         <label>
           المبلغ
-
-          <input
-            name="amount"
-            type="number"
-            inputmode="decimal"
-            min="0"
-            required>
+          <input name="amount" type="number" inputmode="decimal" min="0" required value="${esc(expense.amount || '')}">
         </label>
 
-        ${hijriDateFields(
-          todayISO(),
-          'expense'
-        )}
+        ${hijriDateFields(expense.date || todayISO(), 'expense')}
 
-        <button
-          class="submit-btn"
-          type="submit">
-          حفظ المصروف
+        <button class="submit-btn" type="submit">
+          ${IsEdit ? 'حفظ التعديلات' : 'حفظ المصروف'}
         </button>
-
       </form>
     `
   );
 
-  $('#expenseForm').onsubmit =
-    event => {
-      event.preventDefault();
+  Const form = $('#expenseForm');
+  If (!form) return;
 
-      const data =
-        Object.fromEntries(
-          new FormData(
-            event.currentTarget
-          ).entries()
-        );
+  Form.onsubmit = event => {
+    Event.preventDefault();
 
-      const date =
-        hijriToGregorian(
-          data.expense_year,
-          data.expense_month,
-          data.expense_day
-        );
+    Const data = Object.fromEntries(new FormData(event.currentTarget).entries());
+    Const date = hijriToGregorian(data.expense_year, data.expense_month, data.expense_day);
 
-      if (!date) {
-        alert(
-          'التاريخ الهجري غير صحيح'
-        );
-        return;
-      }
-
-      delete data.expense_day;
-      delete data.expense_month;
-      delete data.expense_year;
-
-      data.id =
-        Date.now();
-
-      data.date =
-        date;
-
-      data.amount =
-        Number(
-          data.amount || 0
-        );
-
-      db.expenses.push(data);
-
-      save();
-      closeModal();
-      render();
-
-      toast(
-        'تم حفظ المصروف'
-      );
-    };
-}
-function editExpense(id) {
-
-  const expense = db.expenses.find(
-    item => Number(item.id) === Number(id)
-  );
-
-  if (!expense) {
-    return;
-  }
-
-  openModal(
-    'تعديل المصروف',
-    `
-      <form
-        id="editExpenseForm"
-        class="form-grid">
-
-        <label>
-          بند المصروف
-
-          <input
-            name="item"
-            required
-            value="${esc(expense.item)}">
-        </label>
-
-        <label>
-          المبلغ
-
-          <input
-            name="amount"
-            type="number"
-            inputmode="decimal"
-            min="0"
-            required
-            value="${expense.amount}">
-        </label>
-
-        ${hijriDateFields(
-          expense.date,
-          'expenseEdit'
-        )}
-
-        <button
-          class="submit-btn"
-          type="submit">
-          حفظ التعديلات
-        </button>
-
-      </form>
-    `
-  );
-
-  $('#editExpenseForm').onsubmit = event => {
-
-    event.preventDefault();
-
-    const data = Object.fromEntries(
-      new FormData(event.currentTarget).entries()
-    );
-
-    const date = hijriToGregorian(
-      data.expenseEdit_year,
-      data.expenseEdit_month,
-      data.expenseEdit_day
-    );
-
-    if (!date) {
-      alert('التاريخ الهجري غير صحيح');
-      return;
+    If (!date) {
+      Alert('التاريخ الهجري غير صحيح');
+      Return;
     }
 
-    expense.item = data.item;
+    Const item = String(data.item || '').trim();
+    Const amount = Number(data.amount || 0);
 
-    expense.amount = Number(
-      data.amount || 0
-    );
+    If (!item) {
+      Alert('يرجى كتابة بند المصروف');
+      Return;
+    }
 
-    expense.date = date;
+    If (!Number.isFinite(amount) || amount < 0) {
+      Alert('المبلغ غير صحيح');
+      Return;
+    }
 
-    save();
+    If (isEdit) {
+      Existing.item = item;
+      Existing.amount = amount;
+      Existing.date = date;
+    } else {
+      Db.expenses.push({
+        Id: Date.now(),
+        Item,
+        Amount,
+        Date
+      });
+    }
 
-    closeModal();
-
-    render();
-
-    toast('تم تعديل المصروف');
+    Save();
+    CloseModal();
+    Render();
+    Toast(isEdit ? 'تم تعديل المصروف' : 'تم حفظ المصروف');
   };
 }
 
-function deleteExpense(id) {
-  if (
-    !confirm(
-      'هل تريد حذف المصروف؟'
-    )
-  ) {
-    return;
+Function editExpense(id) {
+  Const expense = db.expenses.find(item => Number(item.id) === Number(id));
+  If (!expense) {
+    Alert('لم يتم العثور على المصروف');
+    Return;
   }
+  OpenExpenseForm(expense);
+}
 
-  db.expenses =
-    db.expenses.filter(
-      item =>
-        Number(item.id) !==
-        Number(id)
-    );
-
-  save();
-  render();
-
-  toast(
-    'تم حذف المصروف'
-  );
+Function deleteExpense(id) {
+  If (!confirm('هل تريد حذف المصروف؟')) {
+    Return;
+  }
+  Db.expenses = db.expenses.filter(item => Number(item.id) !== Number(id));
+  Save();
+  Render();
+  Toast('تم حذف المصروف');
 }
 
 
@@ -2431,17 +2313,17 @@ function deleteExpense(id) {
    المبلغ بالحروف
 ===================================================== */
 
-function numberToArabicWords(number) {
-  number =
+Function numberToArabicWords(number) {
+  Number =
     Math.floor(
       Number(number || 0)
     );
 
-  if (number === 0) {
-    return 'صفر';
+  If (number === 0) {
+    Return 'صفر';
   }
 
-  const ones = [
+  Const ones = [
     '',
     'واحد',
     'اثنان',
@@ -2464,7 +2346,7 @@ function numberToArabicWords(number) {
     'تسعة عشر'
   ];
 
-  const tens = [
+  Const tens = [
     '',
     '',
     'عشرون',
@@ -2477,7 +2359,7 @@ function numberToArabicWords(number) {
     'تسعون'
   ];
 
-  const hundreds = [
+  Const hundreds = [
     '',
     'مائة',
     'مائتان',
@@ -2490,97 +2372,97 @@ function numberToArabicWords(number) {
     'تسعمائة'
   ];
 
-  function under1000(n) {
-    const parts = [];
+  Function under1000(n) {
+    Const parts = [];
 
-    if (n >= 100) {
-      parts.push(
-        hundreds[
+    If (n >= 100) {
+      Parts.push(
+        Hundreds[
           Math.floor(n / 100)
         ]
       );
 
-      n %= 100;
+      N %= 100;
     }
 
-    if (n > 0) {
-      if (n < 20) {
-        parts.push(
-          ones[n]
+    If (n > 0) {
+      If (n < 20) {
+        Parts.push(
+          Ones[n]
         );
       } else {
-        const unit =
-          n % 10;
+        Const unit =
+          N % 10;
 
-        const ten =
+        Const ten =
           Math.floor(n / 10);
 
-        if (unit) {
-          parts.push(
+        If (unit) {
+          Parts.push(
             `${ones[unit]} و${tens[ten]}`
           );
         } else {
-          parts.push(
-            tens[ten]
+          Parts.push(
+            Tens[ten]
           );
         }
       }
     }
 
-    return parts.join(' و');
+    Return parts.join(' و');
   }
 
-  const parts = [];
+  Const parts = [];
 
-  if (number >= 1000000) {
-    const millions =
+  If (number >= 1000000) {
+    Const millions =
       Math.floor(
-        number / 1000000
+        Number / 1000000
       );
 
-    parts.push(
+    Parts.push(
       `${under1000(millions)} مليون`
     );
 
-    number %=
+    Number %=
       1000000;
   }
 
-  if (number >= 1000) {
-    const thousands =
+  If (number >= 1000) {
+    Const thousands =
       Math.floor(
-        number / 1000
+        Number / 1000
       );
 
-    if (thousands === 1) {
-      parts.push('ألف');
+    If (thousands === 1) {
+      Parts.push('ألف');
     } else if (thousands === 2) {
-      parts.push('ألفان');
+      Parts.push('ألفان');
     } else {
-      parts.push(
+      Parts.push(
         `${under1000(thousands)} ألف`
       );
     }
 
-    number %= 1000;
+    Number %= 1000;
   }
 
-  if (number > 0) {
-    parts.push(
-      under1000(number)
+  If (number > 0) {
+    Parts.push(
+      Under1000(number)
     );
   }
 
-  return parts.join(' و');
+  Return parts.join(' و');
 }
 
-function amountInWords(amount) {
-  const value =
+Function amountInWords(amount) {
+  Const value =
     Math.floor(
       Number(amount || 0)
     );
 
-  return (
+  Return (
     `${numberToArabicWords(value)} ` +
     `ريال سعودي فقط لا غير`
   );
@@ -2591,51 +2473,49 @@ function amountInWords(amount) {
    الفاتورة الجديدة
 ===================================================== */
 
-function showInvoice(id) {
-
-  const booking =
-    db.bookings.find(
-      item =>
+Function showInvoice(id) {
+  Const booking =
+    Db.bookings.find(
+      Item =>
         Number(item.id) ===
         Number(id)
     );
 
-  if (!booking) {
-    return;
+  If (!booking) {
+    Return;
   }
 
-  const agreed =
+  Const agreed =
     Number(
-      booking.agreed || 0
+      Booking.agreed || 0
     );
 
-  const paid =
+  Const paid =
     Number(
-      booking.paid || 0
+      Booking.paid || 0
     );
 
-  const remaining =
+  Const remaining =
     Math.max(
       0,
-      agreed - paid
+      Agreed - paid
     );
 
-  const invoiceNumber =
+  Const invoiceNumber =
     'INV-' +
     String(
-      booking.id
+      Booking.id
     ).slice(-8);
 
-
-  openModal(
+  OpenModal(
     '',
     `
 
     <div class="invoice-preview-scroll">
 
       <div
-        id="invoicePaper"
-        class="invoice-a4">
+        Id="invoicePaper"
+        Class="invoice-a4">
 
 
         <div class="invoice-frame">
@@ -2686,9 +2566,9 @@ function showInvoice(id) {
           <header class="invoice-header">
 
             <img
-              src="invoice_logo.png"
-              class="invoice-logo"
-              alt="Winter Camp">
+              Src="invoice_logo.png"
+              Class="invoice-logo"
+              Alt="Winter Camp">
 
 
             <div class="invoice-brand-en">
@@ -2834,11 +2714,11 @@ function showInvoice(id) {
                 </span>
 
                 <b
-                  class="customer-phone"
-                  dir="ltr">
+                  Class="customer-phone"
+                  Dir="ltr">
 
                   ${esc(
-                    booking.phone || '-'
+                    Booking.phone || '-'
                   )}
 
                 </b>
@@ -2884,7 +2764,7 @@ function showInvoice(id) {
 
                 <b>
                   ${esc(
-                    booking.eventType || '-'
+                    Booking.eventType || '-'
                   )}
                 </b>
 
@@ -2903,7 +2783,7 @@ function showInvoice(id) {
 
                 <b>
                   ${esc(
-                    booking.notes ||
+                    Booking.notes ||
                     'شكراً لثقتكم بنا'
                   )}
                 </b>
@@ -3006,9 +2886,9 @@ function showInvoice(id) {
               <div class="stamp-holder">
 
                 <img
-                  src="stamp.png?v=60"
-                  class="invoice-full-stamp"
-                  alt="ختم Winter Camp">
+                  Src="stamp.png?v=60"
+                  Class="invoice-full-stamp"
+                  Alt="ختم Winter Camp">
 
               </div>
 
@@ -3116,8 +2996,8 @@ function showInvoice(id) {
 
 
       <button
-        id="shareInvoice"
-        class="invoice-share-btn">
+        Id="shareInvoice"
+        Class="invoice-share-btn">
 
         مشاركة PDF
 
@@ -3125,7 +3005,7 @@ function showInvoice(id) {
 
 
       <button
-        id="printInvoice">
+        Id="printInvoice">
 
         طباعة
 
@@ -3133,7 +3013,7 @@ function showInvoice(id) {
 
 
       <button
-        id="closeInvoice">
+        Id="closeInvoice">
 
         إغلاق
 
@@ -3145,18 +3025,15 @@ function showInvoice(id) {
     `
   );
 
-
   $('#shareInvoice').onclick =
     () =>
       shareInvoicePDF(
         booking
       );
 
-
   $('#printInvoice').onclick =
     () =>
       window.print();
-
 
   $('#closeInvoice').onclick =
     closeModal;
@@ -3167,89 +3044,83 @@ function showInvoice(id) {
    PDF
 ===================================================== */
 
-function loadExternalScript(url) {
-  return new Promise(
+Function loadExternalScript(url) {
+  Return new Promise(
     (resolve, reject) => {
 
-      const existing =
+      Const existing =
         [...document.scripts]
           .find(
-            script =>
-              script.src === url
+            Script =>
+              Script.src === url
           );
 
-      if (existing) {
-        resolve();
-        return;
+      If (existing) {
+        Resolve();
+        Return;
       }
 
-      const script =
-        document.createElement(
+      Const script =
+        Document.createElement(
           'script'
         );
 
-      script.src = url;
+      Script.src = url;
 
-      script.onload =
-        resolve;
+      Script.onload =
+        Resolve;
 
-      script.onerror =
-        reject;
+      Script.onerror =
+        Reject;
 
-      document.head.appendChild(
+      Document.head.appendChild(
         script
       );
     }
   );
 }
 
-
-async function ensurePDFLibraries() {
-
-  if (!window.html2canvas) {
-
-    await loadExternalScript(
+Async function ensurePDFLibraries() {
+  If (!window.html2canvas) {
+    Await loadExternalScript(
       'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
     );
   }
 
-  if (!window.jspdf) {
-
-    await loadExternalScript(
+  If (!window.jspdf) {
+    Await loadExternalScript(
       'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
     );
   }
 }
 
-
-async function waitForImages(element) {
-
-  const images =
+Async function waitForImages(element) {
+  Const images =
     [
       ...element.querySelectorAll(
         'img'
       )
     ];
 
-  await Promise.all(
-    images.map(
-      image => {
+  Await Promise.all(
+    Images.map(
+      Image => {
 
-        if (
-          image.complete &&
-          image.naturalWidth > 0
+        If (
+          Image.complete &&
+          Image.naturalWidth > 0
         ) {
-          return Promise.resolve();
+          Return Promise.resolve();
         }
 
-        return new Promise(
-          resolve => {
+        Return new Promise(
+          Resolve => {
 
-            image.onload =
-              resolve;
+            Image.onload =
+              Resolve;
 
-            image.onerror =
-              resolve;
+            Image.onerror =
+              Resolve;
           }
         );
       }
@@ -3257,512 +3128,386 @@ async function waitForImages(element) {
   );
 }
 
-
-async function shareInvoicePDF(booking) {
-
-  const paper =
+Async function shareInvoicePDF(booking) {
+  Const paper =
     $('#invoicePaper');
 
-  const button =
+  Const button =
     $('#shareInvoice');
 
-  if (!paper) {
-    return;
+  If (!paper) {
+    Return;
   }
 
-
-  const oldButtonText =
-    button
+  Const oldButtonText =
+    Button
       ? button.textContent
       : 'مشاركة PDF';
 
+  Let exportContainer = null;
 
-  let exportContainer = null;
+  Try {
+    If (button) {
+      Button.disabled = true;
 
-
-  try {
-
-    if (button) {
-
-      button.disabled = true;
-
-      button.textContent =
+      Button.textContent =
         'جاري تجهيز الفاتورة...';
     }
 
-
-    toast(
+    Toast(
       'جاري تجهيز الفاتورة PDF'
     );
 
-
-    await ensurePDFLibraries();
-
-    await waitForImages(
+    Await ensurePDFLibraries();
+    Await waitForImages(
       paper
     );
 
-
-    /* =============================================
-       نصنع نسخة خاصة بالـ PDF
-       بدون تصغير شاشة الجوال
-    ============================================= */
-
-    exportContainer =
-      document.createElement(
+    ExportContainer =
+      Document.createElement(
         'div'
       );
 
-
-    exportContainer.style.position =
+    ExportContainer.style.position =
       'fixed';
 
-    exportContainer.style.left =
+    ExportContainer.style.left =
       '-10000px';
 
-    exportContainer.style.top =
+    ExportContainer.style.top =
       '0';
 
-    exportContainer.style.width =
+    ExportContainer.style.width =
       '794px';
 
-    exportContainer.style.height =
+    ExportContainer.style.height =
       '1123px';
 
-    exportContainer.style.background =
+    ExportContainer.style.background =
       '#ffffff';
 
-    exportContainer.style.zIndex =
+    ExportContainer.style.zIndex =
       '-9999';
 
-    exportContainer.style.overflow =
+    ExportContainer.style.overflow =
       'hidden';
 
-
-    const exportPaper =
-      paper.cloneNode(
+    Const exportPaper =
+      Paper.cloneNode(
         true
       );
 
-
-    exportPaper.removeAttribute(
+    ExportPaper.removeAttribute(
       'id'
     );
 
-
-    exportPaper.style.setProperty(
+    ExportPaper.style.setProperty(
       'width',
       '794px',
       'important'
     );
 
-    exportPaper.style.setProperty(
+    ExportPaper.style.setProperty(
       'height',
       '1123px',
       'important'
     );
 
-    exportPaper.style.setProperty(
+    ExportPaper.style.setProperty(
       'min-width',
       '794px',
       'important'
     );
 
-    exportPaper.style.setProperty(
+    ExportPaper.style.setProperty(
       'min-height',
       '1123px',
       'important'
     );
 
-    exportPaper.style.setProperty(
+    ExportPaper.style.setProperty(
       'max-width',
       '794px',
       'important'
     );
 
-    exportPaper.style.setProperty(
+    ExportPaper.style.setProperty(
       'max-height',
       '1123px',
       'important'
     );
 
-    exportPaper.style.setProperty(
+    ExportPaper.style.setProperty(
       'margin',
       '0',
       'important'
     );
 
-    exportPaper.style.setProperty(
+    ExportPaper.style.setProperty(
       'padding',
       '0',
       'important'
     );
 
-    exportPaper.style.setProperty(
+    ExportPaper.style.setProperty(
       'transform',
       'none',
       'important'
     );
 
-    exportPaper.style.setProperty(
+    ExportPaper.style.setProperty(
       'transform-origin',
       'top left',
       'important'
     );
 
-    exportPaper.style.setProperty(
+    ExportPaper.style.setProperty(
       'position',
       'relative',
       'important'
     );
 
-    exportPaper.style.setProperty(
+    ExportPaper.style.setProperty(
       'overflow',
       'hidden',
       'important'
     );
 
-    exportPaper.style.setProperty(
+    ExportPaper.style.setProperty(
       'box-shadow',
       'none',
       'important'
     );
 
-
-    exportContainer.appendChild(
+    ExportContainer.appendChild(
       exportPaper
     );
 
-
-    document.body.appendChild(
+    Document.body.appendChild(
       exportContainer
     );
 
-
-    /*
-      ننتظر تحميل الشعار والختم
-      داخل نسخة الـ PDF أيضًا
-    */
-
-    await waitForImages(
+    Await waitForImages(
       exportPaper
     );
 
-
-    /*
-      مهلة بسيطة للآيفون حتى
-      يطبق جميع تنسيقات CSS
-    */
-
-    await new Promise(
-      resolve =>
+    Await new Promise(
+      Resolve =>
         setTimeout(
-          resolve,
+          Resolve,
           150
         )
     );
 
-
-    /* =============================================
-       تحويل الفاتورة كاملة إلى صورة
-    ============================================= */
-
-    const canvas =
-      await window.html2canvas(
-        exportPaper,
+    Const canvas =
+      Await window.html2canvas(
+        ExportPaper,
         {
-
-          scale: 2,
-
-          width: 794,
-
-          height: 1123,
-
-          windowWidth: 794,
-
-          windowHeight: 1123,
-
-          backgroundColor:
+          Scale: 2,
+          Width: 794,
+          Height: 1123,
+          WindowWidth: 794,
+          WindowHeight: 1123,
+          BackgroundColor:
             '#ffffff',
-
-          useCORS: true,
-
-          allowTaint: false,
-
-          logging: false,
-
-          scrollX: 0,
-
-          scrollY: 0,
-
-          x: 0,
-
-          y: 0
-
+          UseCORS: true,
+          AllowTaint: false,
+          Logging: false,
+          ScrollX: 0,
+          ScrollY: 0,
+          X: 0,
+          Y: 0
         }
       );
 
-
-    /* =============================================
-       إنشاء PDF A4
-    ============================================= */
-
-    const {
-      jsPDF
+    Const {
+      JsPDF
     } =
-      window.jspdf;
+      Window.jspdf;
 
-
-    const pdf =
+    Const pdf =
       new jsPDF({
-
-        orientation:
+        Orientation:
           'portrait',
-
-        unit:
+        Unit:
           'mm',
-
-        format:
+        Format:
           'a4',
-
-        compress:
+        Compress:
           true
-
       });
 
-
-    /*
-      الصفحة A4:
-      210 × 297 mm
-    */
-
-    pdf.addImage(
-
-      canvas.toDataURL(
+    Pdf.addImage(
+      Canvas.toDataURL(
         'image/jpeg',
         0.98
       ),
-
       'JPEG',
-
       0,
-
       0,
-
       210,
-
       297,
-
-      undefined,
-
+      Undefined,
       'FAST'
-
     );
 
-
-    const blob =
-      pdf.output(
+    Const blob =
+      Pdf.output(
         'blob'
       );
 
-
-    const invoiceNumber =
+    Const invoiceNumber =
       String(
-        booking.id
+        Booking.id
       ).slice(-8);
 
-
-    const fileName =
+    Const fileName =
       `WinterCamp-Invoice-${invoiceNumber}.pdf`;
 
-
-    const file =
+    Const file =
       new File(
-
         [blob],
-
-        fileName,
-
+        FileName,
         {
-          type:
+          Type:
             'application/pdf'
         }
-
       );
 
+    If (
+      Navigator.share &&
 
-    /* =============================================
-       مشاركة الآيفون
-    ============================================= */
+      Navigator.canShare &&
 
-    if (
-
-      navigator.share &&
-
-      navigator.canShare &&
-
-      navigator.canShare({
-        files: [file]
+      Navigator.canShare({
+        Files: [file]
       })
-
     ) {
-
-      await navigator.share({
-
-        files:
+      Await navigator.share({
+        Files:
           [file],
-
-        title:
+        Title:
           'فاتورة Winter Camp',
-
-        text:
+        Text:
           `فاتورة ${booking.name || ''}`
-
       });
 
-
-      return;
+      Return;
     }
 
-
-    /* =============================================
-       إذا لم تدعم مشاركة الملفات
-    ============================================= */
-
-    const url =
+    Const url =
       URL.createObjectURL(
-        blob
+        Blob
       );
 
-
-    const link =
-      document.createElement(
+    Const link =
+      Document.createElement(
         'a'
       );
 
-
-    link.href =
+    Link.href =
       url;
 
-    link.download =
-      fileName;
+    Link.download =
+      FileName;
 
-
-    document.body.appendChild(
+    Document.body.appendChild(
       link
     );
 
+    Link.click();
 
-    link.click();
+    Link.remove();
 
-
-    link.remove();
-
-
-    setTimeout(
+    SetTimeout(
       () => {
-
         URL.revokeObjectURL(
           url
         );
-
       },
       2000
     );
 
-
-    toast(
+    Toast(
       'تم تجهيز الفاتورة PDF'
     );
 
-
   } catch (error) {
-
-    console.error(
+    Console.error(
       'PDF Error:',
       error
     );
 
-
-    alert(
+    Alert(
       'تعذر تجهيز الفاتورة PDF، حاول مرة أخرى.'
     );
 
-
   } finally {
-
-
-    /* حذف نسخة التصدير */
-
-    if (
-      exportContainer &&
-      exportContainer.parentNode
+    If (
+      ExportContainer &&
+      ExportContainer.parentNode
     ) {
-
-      exportContainer.parentNode
+      ExportContainer.parentNode
         .removeChild(
           exportContainer
         );
     }
 
-
-    if (button) {
-
-      button.disabled =
+    If (button) {
+      Button.disabled =
         false;
 
-      button.textContent =
+      Button.textContent =
         oldButtonText;
     }
-
   }
-
 }
+
 
 /* =====================================================
    النسخة الاحتياطية
 ===================================================== */
 
-function exportData() {
-  const blob =
+Function exportData() {
+  Const blob =
     new Blob(
       [
         JSON.stringify(
-          db,
-          null,
+          Db,
+          Null,
           2
         )
       ],
       {
-        type:
+        Type:
           'application/json'
       }
     );
 
-  const url =
+  Const url =
     URL.createObjectURL(
-      blob
+      Blob
     );
 
-  const link =
-    document.createElement(
+  Const link =
+    Document.createElement(
       'a'
     );
 
-  link.href = url;
+  Link.href = url;
 
-  link.download =
+  Link.download =
     'wintercamp-backup.json';
 
-  document.body.appendChild(
+  Document.body.appendChild(
     link
   );
 
-  link.click();
+  Link.click();
 
-  link.remove();
+  Link.remove();
 
-  setTimeout(
+  SetTimeout(
     () =>
       URL.revokeObjectURL(
         url
@@ -3770,7 +3515,7 @@ function exportData() {
     1000
   );
 
-  toast(
+  Toast(
     'تم تجهيز النسخة الاحتياطية'
   );
 }
@@ -3780,24 +3525,24 @@ function exportData() {
    إشعار
 ===================================================== */
 
-function toast(message) {
-  const element =
+Function toast(message) {
+  Const element =
     $('#toast');
 
-  if (!element) {
-    return;
+  If (!element) {
+    Return;
   }
 
-  element.textContent =
+  Element.textContent =
     message;
 
-  element.classList.remove(
+  Element.classList.remove(
     'hidden'
   );
 
-  setTimeout(
+  SetTimeout(
     () => {
-      element.classList.add(
+      Element.classList.add(
         'hidden'
       );
     },
@@ -3810,7 +3555,7 @@ function toast(message) {
    القائمة
 ===================================================== */
 
-function toggleMenu(show) {
+Function toggleMenu(show) {
   $('#sideSheet')
     ?.classList
     .toggle(
@@ -3833,50 +3578,42 @@ function toggleMenu(show) {
 
 $$('.nav-item')
   .forEach(
-    button => {
-      button.onclick =
+    Button => {
+      Button.onclick =
         () =>
           go(
-            button.dataset.page
+            Button.dataset.page
           );
     }
   );
 
-if ($('#fabBtn')) {
-
+If ($('#fabBtn')) {
   $('#fabBtn').onclick =
     () => {
-
-      if (
-        currentPage ===
+      If (
+        CurrentPage ===
         'expenses'
       ) {
-
-        openExpenseForm();
-
+        OpenExpenseForm();
       } else {
-
-        openBookingForm();
+        OpenBookingForm();
       }
     };
 }
 
-if ($('#menuBtn')) {
-
+If ($('#menuBtn')) {
   $('#menuBtn').onclick =
     () =>
       toggleMenu(true);
 }
 
-if ($('#closeMenu')) {
-
+If ($('#closeMenu')) {
   $('#closeMenu').onclick =
     () =>
       toggleMenu(false);
 }
 
-if ($('#sheetBackdrop')) {
-
+If ($('#sheetBackdrop')) {
   $('#sheetBackdrop').onclick =
     () =>
       toggleMenu(false);
@@ -3884,35 +3621,34 @@ if ($('#sheetBackdrop')) {
 
 $$('[data-sheet-page]')
   .forEach(
-    button => {
-      button.onclick =
+    Button => {
+      Button.onclick =
         () => {
+          ToggleMenu(false);
 
-          toggleMenu(false);
-
-          go(
-            button.dataset.sheetPage
+          Go(
+            Button.dataset.sheetPage
           );
         };
     }
   );
 
-if ($('#modalClose')) {
+If ($('#modalClose')) {
   $('#modalClose').onclick =
     closeModal;
 }
 
-if ($('#modalBackdrop')) {
+If ($('#modalBackdrop')) {
   $('#modalBackdrop').onclick =
     closeModal;
 }
 
-if ($('#exportBtn')) {
+If ($('#exportBtn')) {
   $('#exportBtn').onclick =
     exportData;
 }
 
-if ($('#backupBtn')) {
+If ($('#backupBtn')) {
   $('#backupBtn').onclick =
     exportData;
 }
@@ -3922,65 +3658,59 @@ if ($('#backupBtn')) {
    استيراد نسخة احتياطية
 ===================================================== */
 
-if ($('#importInput')) {
-
+If ($('#importInput')) {
   $('#importInput').onchange =
-    async event => {
+    Async event => {
+      Const file =
+        Event.target.files[0];
 
-      const file =
-        event.target.files[0];
-
-      if (!file) {
-        return;
+      If (!file) {
+        Return;
       }
 
-      try {
-
-        const imported =
+      Try {
+        Const imported =
           JSON.parse(
-            await file.text()
+            Await file.text()
           );
 
-        if (
+        If (
           !Array.isArray(
-            imported.bookings
+            Imported.bookings
           ) ||
           !Array.isArray(
-            imported.expenses
+            Imported.expenses
           )
         ) {
-
-          throw new Error();
+          Throw new Error();
         }
 
-        if (
+        If (
           !Array.isArray(
-            imported.devices
+            Imported.devices
           )
         ) {
-
-          imported.devices =
-            clone(seed.devices);
+          Imported.devices =
+            Clone(seed.devices);
         }
 
-        db =
+        Db =
           imported;
 
-        save();
+        Save();
 
-        render();
+        Render();
 
-        toggleMenu(
+        ToggleMenu(
           false
         );
 
-        toast(
+        Toast(
           'تم استيراد البيانات'
         );
 
       } catch {
-
-        alert(
+        Alert(
           'ملف النسخة الاحتياطية غير صالح'
         );
       }
@@ -3992,8 +3722,7 @@ if ($('#importInput')) {
    تاريخ اليوم في الأعلى
 ===================================================== */
 
-if ($('#hijriToday')) {
-
+If ($('#hijriToday')) {
   $('#hijriToday').textContent =
     hijriWithDay(
       todayISO()
@@ -4005,20 +3734,18 @@ if ($('#hijriToday')) {
    Service Worker
 ===================================================== */
 
-if (
+If (
   'serviceWorker' in navigator
 ) {
-
-  window.addEventListener(
+  Window.addEventListener(
     'load',
     () => {
-
-      navigator.serviceWorker
+      Navigator.serviceWorker
         .register(
           './sw.js?v=60'
         )
         .catch(
-          console.error
+          Console.error
         );
     }
   );
@@ -4026,350 +3753,6 @@ if (
 
 
 /* =====================================================
-   تشغيل البرنامج
+   تشغيل البرنامج الأول
 ===================================================== */
-/* =====================================================
-   تعديل المصاريف - النسخة النهائية
-   ضع هذا الكود قبل render(); مباشرة
-===================================================== */
-
-
-/* =====================================================
-   صفحة المصاريف
-===================================================== */
-
-function expensesView() {
-
-  const expenses =
-    [...db.expenses]
-      .sort(
-        (a, b) =>
-          b.date.localeCompare(
-            a.date
-          )
-      );
-
-  return `
-
-    <div class="section-head">
-
-      <h3>
-        المصاريف
-      </h3>
-
-      <strong class="red">
-        ${money(totals().expenses)}
-      </strong>
-
-    </div>
-
-
-    ${
-      expenses.length
-
-        ? expenses.map(
-            expense => `
-
-              <div class="expense-row">
-
-                <div>
-
-                  <strong>
-                    ${esc(expense.item)}
-                  </strong>
-
-                  <small>
-                    ${hijriWithDay(expense.date)}
-                  </small>
-
-                </div>
-
-
-                <div>
-
-                  <strong class="red">
-                    ${money(expense.amount)}
-                  </strong>
-
-
-                  <div
-                    style="
-                      display:flex;
-                      align-items:center;
-                      gap:16px;
-                      margin-top:7px;
-                    ">
-
-                    <button
-                      type="button"
-                      onclick="editExpense(${Number(expense.id)})"
-                      style="
-                        border:0;
-                        padding:2px 0;
-                        background:none;
-                        color:#25c16f;
-                        font-size:11px;
-                        cursor:pointer;
-                      ">
-                      تعديل
-                    </button>
-
-
-                    <button
-                      type="button"
-                      class="delete-mini"
-                      data-del-expense="${expense.id}">
-                      حذف
-                    </button>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            `
-          ).join('')
-
-        : `
-
-          <div class="empty">
-            لا توجد مصاريف
-          </div>
-
-        `
-    }
-  `;
-}
-
-
-/* =====================================================
-   إضافة / تعديل مصروف
-===================================================== */
-
-function openExpenseForm(existing = null) {
-
-  const isEdit =
-    Boolean(existing);
-
-  const expense =
-    existing || {
-      item: '',
-      amount: '',
-      date: todayISO()
-    };
-
-
-  openModal(
-
-    isEdit
-      ? 'تعديل المصروف'
-      : 'إضافة مصروف',
-
-    `
-
-      <form
-        id="expenseForm"
-        class="form-grid">
-
-
-        <label>
-          بند المصروف
-
-          <input
-            name="item"
-            required
-            value="${esc(expense.item || '')}">
-        </label>
-
-
-        <label>
-          المبلغ
-
-          <input
-            name="amount"
-            type="number"
-            inputmode="decimal"
-            min="0"
-            required
-            value="${esc(expense.amount || '')}">
-        </label>
-
-
-        ${hijriDateFields(
-          expense.date || todayISO(),
-          'expense'
-        )}
-
-
-        <button
-          class="submit-btn"
-          type="submit">
-
-          ${
-            isEdit
-              ? 'حفظ التعديلات'
-              : 'حفظ المصروف'
-          }
-
-        </button>
-
-      </form>
-
-    `
-  );
-
-
-  const form =
-    $('#expenseForm');
-
-
-  if (!form) {
-    return;
-  }
-
-
-  form.onsubmit =
-    event => {
-
-      event.preventDefault();
-
-
-      const data =
-        Object.fromEntries(
-          new FormData(
-            event.currentTarget
-          ).entries()
-        );
-
-
-      const date =
-        hijriToGregorian(
-          data.expense_year,
-          data.expense_month,
-          data.expense_day
-        );
-
-
-      if (!date) {
-
-        alert(
-          'التاريخ الهجري غير صحيح'
-        );
-
-        return;
-      }
-
-
-      const item =
-        String(
-          data.item || ''
-        ).trim();
-
-
-      const amount =
-        Number(
-          data.amount || 0
-        );
-
-
-      if (!item) {
-
-        alert(
-          'يرجى كتابة بند المصروف'
-        );
-
-        return;
-      }
-
-
-      if (
-        !Number.isFinite(amount) ||
-        amount < 0
-      ) {
-
-        alert(
-          'المبلغ غير صحيح'
-        );
-
-        return;
-      }
-
-
-      if (isEdit) {
-
-        existing.item =
-          item;
-
-        existing.amount =
-          amount;
-
-        existing.date =
-          date;
-
-      } else {
-
-        db.expenses.push({
-
-          id:
-            Date.now(),
-
-          item,
-
-          amount,
-
-          date
-
-        });
-
-      }
-
-
-      save();
-
-      closeModal();
-
-      render();
-
-
-      toast(
-        isEdit
-          ? 'تم تعديل المصروف'
-          : 'تم حفظ المصروف'
-      );
-
-    };
-
-}
-
-
-/* =====================================================
-   فتح المصروف للتعديل
-===================================================== */
-
-function editExpense(id) {
-
-  const expense =
-    db.expenses.find(
-      item =>
-        Number(item.id) ===
-        Number(id)
-    );
-
-
-  if (!expense) {
-
-    alert(
-      'لم يتم العثور على المصروف'
-    );
-
-    return;
-  }
-
-
-  openExpenseForm(
-    expense
-  );
-
-}
-render();
+Render();
