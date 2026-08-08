@@ -5,6 +5,7 @@
   --text:#f4f7f5;
   --muted:#8f9aa1;
   --green:#25c16f;
+  --dark-green:#064b32;
   --red:#f05a5a;
   --blue:#4c88ff;
   --gold:#e0a339;
@@ -23,9 +24,7 @@ html{
 body{
   margin:0;
   min-height:100vh;
-
   background:var(--bg);
-
   color:var(--text);
 
   font-family:
@@ -45,38 +44,31 @@ textarea{
 }
 
 button{
-  -webkit-tap-highlight-color:
-    transparent
+  -webkit-tap-highlight-color:transparent
 }
 
 
-/* أعلى التطبيق */
+/* ======================================
+   الشريط العلوي
+====================================== */
 
 .topbar{
   position:sticky;
-
   top:0;
-
   z-index:10;
 
   display:flex;
-
   align-items:center;
-
   justify-content:space-between;
 
   gap:12px;
 
   padding:
-    calc(
-      10px +
-      env(safe-area-inset-top)
-    )
+    calc(10px + env(safe-area-inset-top))
     16px
     10px;
 
-  background:
-    rgba(12,17,21,.96);
+  background:rgba(12,17,21,.96);
 
   border-bottom:
     1px solid var(--line);
@@ -87,10 +79,9 @@ button{
 
 .brand-title{
   display:flex;
-
   align-items:center;
-
-  gap:10px
+  gap:10px;
+  min-width:0
 }
 
 .top-logo{
@@ -103,21 +94,19 @@ button{
 
   border-radius:14px;
 
-  padding:2px
+  padding:2px;
+
+  flex-shrink:0
 }
 
 .brand-title h1{
   margin:0;
-
   font-size:20px
 }
 
 .brand-title p{
-  margin:
-    4px 0 0;
-
+  margin:4px 0 0;
   color:var(--muted);
-
   font-size:11px
 }
 
@@ -126,18 +115,18 @@ button{
   height:42px;
 
   display:flex;
-
   align-items:center;
-
   justify-content:center;
 
   border:0;
-
   border-radius:12px;
 
   background:transparent;
-
   color:var(--text)
+}
+
+.icon-btn:active{
+  background:rgba(255,255,255,.05)
 }
 
 .svg-icon{
@@ -145,71 +134,56 @@ button{
   height:24px;
 
   fill:none;
-
   stroke:currentColor;
 
   stroke-width:1.9;
-
   stroke-linecap:round;
-
   stroke-linejoin:round
 }
 
 
-/* المحتوى */
+/* ======================================
+   المحتوى
+====================================== */
 
 .content{
   max-width:760px;
-
   margin:auto;
 
   padding:
     16px
     14px
-    calc(
-      112px +
-      var(--safe-bottom)
-    )
+    calc(112px + var(--safe-bottom))
 }
 
 .hero{
-  margin:
-    4px
-    2px
-    16px
+  margin:4px 2px 16px
 }
 
 .hero h2{
   margin:0;
-
   font-size:22px
 }
 
 .hero p{
-  margin:
-    5px 0 0;
-
+  margin:5px 0 0;
   color:var(--muted);
-
   font-size:13px
 }
 
 
-/* البطاقات */
+/* ======================================
+   بطاقات الإحصائيات
+====================================== */
 
 .cards{
   display:grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
+  grid-template-columns:1fr 1fr;
   gap:10px
 }
 
 .stat-card{
-  position:relative;
-
-  min-height:116px;
+  min-height:112px;
 
   padding:15px;
 
@@ -223,67 +197,16 @@ button{
 
 .stat-card .label{
   color:var(--muted);
-
-  font-size:12px
+  font-size:13px
 }
 
 .stat-card .value{
   display:block;
 
-  margin-top:11px;
+  margin-top:12px;
 
-  font-size:23px;
-
+  font-size:24px;
   font-weight:800
-}
-
-.stat-icon{
-  position:absolute;
-
-  top:12px;
-
-  left:12px;
-
-  width:28px;
-  height:28px;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  border-radius:9px;
-
-  font-size:13px
-}
-
-.green-bg{
-  background:
-    rgba(37,193,111,.13);
-
-  color:var(--green)
-}
-
-.red-bg{
-  background:
-    rgba(240,90,90,.13);
-
-  color:var(--red)
-}
-
-.blue-bg{
-  background:
-    rgba(76,136,255,.13);
-
-  color:var(--blue)
-}
-
-.gold-bg{
-  background:
-    rgba(224,163,57,.14);
-
-  color:var(--gold)
 }
 
 .green{
@@ -303,13 +226,13 @@ button{
 }
 
 
-/* رؤوس الأقسام */
+/* ======================================
+   رؤوس الأقسام
+====================================== */
 
 .section-head{
   display:flex;
-
   align-items:center;
-
   justify-content:space-between;
 
   gap:10px;
@@ -322,22 +245,17 @@ button{
 
 .section-head h3{
   margin:0;
-
   font-size:18px
 }
 
 .link-btn{
   border:0;
-
   background:none;
-
   color:var(--green)
 }
 
 .count-badge{
-  padding:
-    4px
-    9px;
+  padding:4px 9px;
 
   border-radius:999px;
 
@@ -349,12 +267,14 @@ button{
 }
 
 
-/* الحجوزات */
+/* ======================================
+   الحجوزات
+====================================== */
 
 .booking-card,
 .expense-row,
-.invoice-row,
 .device-card,
+.invoice-row,
 .settings-card{
   margin-bottom:10px;
 
@@ -371,25 +291,20 @@ button{
 .booking-top{
   display:flex;
 
-  align-items:flex-start;
-
   justify-content:space-between;
 
-  gap:12px
-}
+  gap:12px;
 
-.booking-info{
-  min-width:0
+  align-items:flex-start
 }
 
 .booking-name{
-  font-size:16px;
-
-  font-weight:800
+  font-weight:800;
+  font-size:16px
 }
 
 .booking-meta{
-  margin-top:6px;
+  margin-top:5px;
 
   color:var(--muted);
 
@@ -403,9 +318,9 @@ button{
 
   text-align:left;
 
-  font-size:17px;
+  font-weight:800;
 
-  font-weight:800
+  font-size:17px
 }
 
 .amount small{
@@ -425,9 +340,7 @@ button{
 
   margin-top:8px;
 
-  padding:
-    5px
-    9px;
+  padding:5px 9px;
 
   border-radius:999px;
 
@@ -436,27 +349,22 @@ button{
 
 .badge.paid{
   background:#163e2b;
-
   color:#77e6a4
 }
 
 .badge.partial{
   background:#463718;
-
   color:#ffd680
 }
 
 .badge.unpaid{
   background:#4b2020;
-
   color:#ff8b8b
 }
 
 .card-actions{
   display:flex;
-
   gap:8px;
-
   margin-top:12px
 }
 
@@ -485,23 +393,306 @@ button{
   font-weight:800
 }
 
-.empty{
-  padding:
-    45px 12px;
+.delete-full{
+  width:100%;
 
+  margin-top:10px;
+
+  padding:11px;
+
+  border:
+    1px solid #662d2d;
+
+  border-radius:11px;
+
+  background:#3a1b1b;
+
+  color:#ff9292
+}
+
+.empty{
+  padding:45px 12px;
   text-align:center;
+  color:var(--muted)
+}
+
+
+/* ======================================
+   البحث والفلترة
+====================================== */
+
+.bookings-tools{
+  margin-bottom:12px
+}
+
+.booking-search-box{
+  display:flex;
+  align-items:center;
+  gap:9px;
+
+  padding:
+    0
+    12px;
+
+  background:var(--panel);
+
+  border:
+    1px solid var(--line);
+
+  border-radius:15px
+}
+
+.booking-search-box:focus-within{
+  border-color:var(--green);
+
+  box-shadow:
+    0
+    0
+    0
+    2px
+    rgba(37,193,111,.10)
+}
+
+.search-icon{
+  color:var(--muted);
+  font-size:23px;
+  flex-shrink:0
+}
+
+.booking-search-box input{
+  width:100%;
+
+  padding:
+    13px
+    0;
+
+  border:0;
+  outline:none;
+
+  background:transparent;
+
+  color:var(--text);
+
+  font-size:14px
+}
+
+.booking-search-box input::placeholder{
+  color:#768188
+}
+
+.booking-filter-tabs{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:7px;
+
+  margin-top:9px
+}
+
+.booking-filter-tabs button{
+  padding:10px 5px;
+
+  border:
+    1px solid var(--line);
+
+  border-radius:12px;
+
+  background:var(--panel);
+
+  color:var(--muted);
+
+  font-size:12px
+}
+
+.booking-filter-tabs button.active{
+  background:
+    rgba(37,193,111,.13);
+
+  border-color:
+    rgba(37,193,111,.45);
+
+  color:var(--green);
+
+  font-weight:800
+}
+
+
+/* ======================================
+   المصاريف
+====================================== */
+
+.expense-row,
+.invoice-row{
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:10px
+}
+
+.expense-row small,
+.invoice-row small,
+.settings-card small{
+  display:block;
+
+  margin-top:4px;
+
+  color:var(--muted);
+
+  font-size:11px;
+
+  line-height:1.7
+}
+
+.delete-mini{
+  display:block;
+
+  margin-top:6px;
+
+  border:0;
+
+  background:none;
+
+  color:var(--red);
+
+  font-size:10px
+}
+
+
+/* ======================================
+   الأجهزة
+====================================== */
+
+.device-card small{
+  display:block;
+
+  margin-top:4px;
 
   color:var(--muted)
 }
 
 
-/* الشريط السفلي */
+/* ======================================
+   التقارير
+====================================== */
+
+.report-title{
+  margin:4px 2px 15px
+}
+
+.report-title h2{
+  margin:0;
+  font-size:22px
+}
+
+.report-title p{
+  margin:4px 0 0;
+
+  color:var(--muted);
+
+  font-size:12px
+}
+
+.report-filters{
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:10px;
+
+  margin-bottom:14px
+}
+
+.report-filters label{
+  display:grid;
+
+  gap:6px;
+
+  color:var(--muted);
+
+  font-size:11px
+}
+
+.report-filters select{
+  width:100%;
+
+  padding:12px;
+
+  border:
+    1px solid var(--line);
+
+  border-radius:12px;
+
+  background:#0c1216;
+
+  color:var(--text);
+
+  outline:none
+}
+
+.report-filters select:focus{
+  border-color:var(--green)
+}
+
+.months-list{
+  display:grid;
+  gap:8px
+}
+
+.month-report-card{
+  width:100%;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:10px;
+
+  padding:13px;
+
+  border:
+    1px solid var(--line);
+
+  border-radius:15px;
+
+  background:var(--panel);
+
+  color:var(--text);
+
+  text-align:right
+}
+
+.month-report-card small{
+  display:block;
+
+  margin-top:4px;
+
+  color:var(--muted);
+
+  font-size:10px
+}
+
+.month-report-money{
+  text-align:left
+}
+
+
+/* ======================================
+   الشريط السفلي
+====================================== */
 
 .bottom-nav{
   position:fixed;
 
-  bottom:0;
   right:0;
+  bottom:0;
   left:0;
 
   z-index:20;
@@ -514,10 +705,7 @@ button{
   padding:
     7px
     8px
-    calc(
-      7px +
-      var(--safe-bottom)
-    );
+    calc(7px + var(--safe-bottom));
 
   background:
     rgba(14,19,23,.97);
@@ -578,7 +766,9 @@ button{
 }
 
 
-/* زر الإضافة */
+/* ======================================
+   زر الإضافة
+====================================== */
 
 .fab{
   position:fixed;
@@ -586,10 +776,7 @@ button{
   z-index:22;
 
   bottom:
-    calc(
-      73px +
-      var(--safe-bottom)
-    );
+    calc(73px + var(--safe-bottom));
 
   left:50%;
 
@@ -635,7 +822,9 @@ button{
 }
 
 
-/* القائمة الجانبية */
+/* ======================================
+   القائمة الجانبية
+====================================== */
 
 .sheet-backdrop,
 .modal-backdrop{
@@ -659,18 +848,12 @@ button{
   z-index:31;
 
   width:
-    min(
-      82vw,
-      330px
-    );
+    min(82vw,330px);
 
   overflow-y:auto;
 
   padding:
-    calc(
-      18px +
-      env(safe-area-inset-top)
-    )
+    calc(18px + env(safe-area-inset-top))
     15px
     20px;
 
@@ -713,9 +896,7 @@ button{
 
   gap:12px;
 
-  padding:
-    15px
-    8px;
+  padding:15px 8px;
 
   border:0;
 
@@ -738,24 +919,23 @@ button{
 }
 
 
-/* النوافذ */
+/* ======================================
+   النوافذ
+====================================== */
 
 .modal{
   position:fixed;
 
   right:10px;
   bottom:
-    calc(
-      10px +
-      var(--safe-bottom)
-    );
+    calc(10px + var(--safe-bottom));
   left:10px;
 
   z-index:41;
 
-  max-width:640px;
+  max-width:700px;
 
-  max-height:88vh;
+  max-height:90vh;
 
   overflow:auto;
 
@@ -784,17 +964,13 @@ button{
 
   justify-content:space-between;
 
-  padding:
-    4px
-    0
-    8px;
+  padding:4px 0 8px;
 
   background:#12191e
 }
 
 .modal-head h2{
   margin:0;
-
   font-size:19px
 }
 
@@ -803,11 +979,12 @@ button{
 }
 
 
-/* النماذج */
+/* ======================================
+   النماذج
+====================================== */
 
 .form-grid{
   display:grid;
-
   gap:12px
 }
 
@@ -823,8 +1000,7 @@ button{
 
 .form-grid input,
 .form-grid select,
-.form-grid textarea,
-.report-filters select{
+.form-grid textarea{
   width:100%;
 
   padding:12px;
@@ -843,8 +1019,7 @@ button{
 
 .form-grid input:focus,
 .form-grid select:focus,
-.form-grid textarea:focus,
-.report-filters select:focus{
+.form-grid textarea:focus{
   border-color:var(--green)
 }
 
@@ -891,274 +1066,9 @@ button{
 }
 
 
-/* التقارير */
-
-.report-title{
-  margin:
-    4px 2px 15px
-}
-
-.report-title h2{
-  margin:0;
-
-  font-size:22px
-}
-
-.report-title p{
-  margin:
-    4px 0 0;
-
-  color:var(--muted);
-
-  font-size:12px
-}
-
-.report-filters{
-  display:grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
-  gap:10px;
-
-  margin-bottom:14px
-}
-
-.report-filters label{
-  display:grid;
-
-  gap:6px;
-
-  color:var(--muted);
-
-  font-size:11px
-}
-
-.report-box{
-  padding:16px;
-
-  background:var(--panel);
-
-  border:
-    1px solid var(--line);
-
-  border-radius:18px
-}
-
-.bar-line{
-  display:grid;
-
-  grid-template-columns:
-    68px
-    1fr
-    60px;
-
-  align-items:center;
-
-  gap:8px;
-
-  margin:
-    14px 0;
-
-  font-size:11px
-}
-
-.track{
-  height:9px;
-
-  overflow:hidden;
-
-  border-radius:99px;
-
-  background:#222d33
-}
-
-.fill{
-  height:100%;
-
-  border-radius:99px
-}
-
-.report-counts{
-  display:grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
-  gap:10px;
-
-  margin-top:12px
-}
-
-.report-counts>div{
-  padding:14px;
-
-  background:var(--panel);
-
-  border:
-    1px solid var(--line);
-
-  border-radius:16px
-}
-
-.report-counts span{
-  display:block;
-
-  color:var(--muted);
-
-  font-size:11px
-}
-
-.report-counts strong{
-  display:block;
-
-  margin-top:6px;
-
-  font-size:22px
-}
-
-
-/* تفاصيل الأشهر */
-
-.months-list{
-  display:grid;
-
-  gap:8px
-}
-
-.month-report-card{
-  width:100%;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:space-between;
-
-  gap:10px;
-
-  padding:13px;
-
-  border:
-    1px solid var(--line);
-
-  border-radius:15px;
-
-  background:var(--panel);
-
-  color:var(--text);
-
-  text-align:right
-}
-
-.month-report-card strong{
-  display:block
-}
-
-.month-report-card small{
-  display:block;
-
-  margin-top:4px;
-
-  color:var(--muted);
-
-  font-size:10px
-}
-
-.month-report-money{
-  text-align:left
-}
-
-.month-report-money span{
-  display:block;
-
-  font-weight:800
-}
-
-
-/* المصاريف */
-
-.expense-row,
-.invoice-row{
-  display:flex;
-
-  align-items:center;
-
-  justify-content:space-between;
-
-  gap:10px
-}
-
-.expense-row small,
-.invoice-row small,
-.settings-card small{
-  display:block;
-
-  margin-top:4px;
-
-  color:var(--muted);
-
-  font-size:11px;
-
-  line-height:1.7
-}
-
-.expense-value{
-  text-align:left
-}
-
-.delete-mini{
-  display:block;
-
-  margin-top:5px;
-
-  margin-right:auto;
-
-  border:0;
-
-  background:none;
-
-  color:var(--red);
-
-  font-size:10px
-}
-
-
-/* الأجهزة */
-
-.device-card{
-  display:flex;
-
-  align-items:center;
-
-  gap:12px
-}
-
-.device-icon{
-  width:42px;
-  height:42px;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  border-radius:12px;
-
-  background:var(--panel2)
-}
-
-.device-data small{
-  display:block;
-
-  margin-top:4px;
-
-  color:var(--muted)
-}
-
-
-/* التفاصيل */
+/* ======================================
+   تفاصيل الحجز
+====================================== */
 
 .detail-list{
   display:grid;
@@ -1189,139 +1099,546 @@ button{
 
 .detail-list span{
   color:var(--muted);
-
   font-size:11px
 }
 
 .detail-list strong{
   text-align:left;
-
   font-size:13px
 }
 
-.delete-full{
-  width:100%;
 
-  margin-top:10px;
+/* ======================================
+   الفاتورة الرسمية
+====================================== */
 
-  padding:11px;
+.wc-invoice{
+  position:relative;
 
-  border:
-    1px solid #662d2d;
+  overflow:hidden;
 
-  border-radius:11px;
-
-  background:#3a1b1b;
-
-  color:#ff9292
-}
-
-
-/* الفاتورة */
-
-.invoice-paper{
-  padding:18px;
-
-  border-radius:14px;
+  direction:rtl;
 
   background:#fff;
 
-  color:#172027;
+  color:#111;
 
-  direction:rtl
-}
+  border:
+    1px solid #cfd4d2;
 
-.invoice-brand{
-  display:flex;
-
-  align-items:flex-start;
-
-  justify-content:space-between;
-
-  gap:10px;
-
-  padding-bottom:12px;
-
-  margin-bottom:12px;
-
-  border-bottom:
-    1px solid #ddd
-}
-
-.invoice-brand h2{
-  margin:0
-}
-
-.invoice-brand img{
-  width:105px;
-
-  max-height:80px;
-
-  object-fit:contain
-}
-
-.invoice-paper table{
-  width:100%;
-
-  margin-top:12px;
-
-  border-collapse:collapse;
-
-  font-size:12px
-}
-
-.invoice-paper th,
-.invoice-paper td{
-  padding:
-    8px
-    4px;
-
-  border-bottom:
-    1px solid #ddd;
-
-  text-align:right
-}
-
-.invoice-money{
-  margin-top:12px
-}
-
-.invoice-money>div{
-  display:flex;
-
-  justify-content:space-between;
+  border-radius:18px;
 
   padding:
-    6px 0;
+    22px
+    22px
+    0;
 
-  font-size:12px
+  box-shadow:
+    0
+    12px
+    35px
+    rgba(0,0,0,.18)
 }
 
-.invoice-total{
+
+/* زخارف الصوت بالأعلى */
+
+.invoice-wave{
+  position:absolute;
+
+  top:30px;
+
+  width:145px;
+  height:70px;
+
+  opacity:.12;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--dark-green) 0 2px,
+      transparent 2px 7px
+    );
+
+  clip-path:
+    polygon(
+      0 46%,
+      5% 40%,
+      10% 55%,
+      15% 30%,
+      20% 65%,
+      25% 20%,
+      30% 75%,
+      35% 10%,
+      40% 90%,
+      45% 20%,
+      50% 80%,
+      55% 28%,
+      60% 72%,
+      65% 35%,
+      70% 62%,
+      75% 40%,
+      80% 58%,
+      85% 44%,
+      90% 54%,
+      95% 48%,
+      100% 50%,
+      100% 52%,
+      95% 52%,
+      90% 56%,
+      85% 55%,
+      80% 62%,
+      75% 55%,
+      70% 66%,
+      65% 57%,
+      60% 76%,
+      55% 60%,
+      50% 84%,
+      45% 60%,
+      40% 94%,
+      35% 54%,
+      30% 80%,
+      25% 60%,
+      20% 70%,
+      15% 54%,
+      10% 61%,
+      5% 54%,
+      0 54%
+    )
+}
+
+.wave-left{
+  left:-8px
+}
+
+.wave-right{
+  right:-8px;
+
+  transform:
+    scaleX(-1)
+}
+
+
+/* رأس الفاتورة */
+
+.wc-invoice-header{
+  position:relative;
+
+  z-index:1;
+
   display:flex;
 
-  justify-content:space-between;
+  flex-direction:column;
 
-  margin-top:10px;
+  align-items:center;
 
-  padding:12px;
+  text-align:center
+}
 
-  border-radius:8px;
+.wc-invoice-logo{
+  width:205px;
 
-  background:#195d3a;
+  max-height:105px;
+
+  object-fit:contain;
+
+  background:#fff
+}
+
+.wc-brand-en{
+  margin-top:2px;
+
+  font-size:20px;
+
+  letter-spacing:5px;
+
+  direction:ltr
+}
+
+.wc-brand-ar{
+  margin-top:5px;
+
+  color:#073f2c;
+
+  font-size:16px;
+
+  font-weight:700
+}
+
+.wc-invoice-title{
+  margin-top:15px;
+
+  min-width:160px;
+
+  padding:
+    9px
+    26px;
+
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #075239,
+      #023c29
+    );
 
   color:#fff;
 
-  font-weight:800
+  font-size:31px;
+
+  font-weight:800;
+
+  box-shadow:
+    0
+    4px
+    11px
+    rgba(0,71,47,.18)
 }
 
-.invoice-thanks{
-  margin-bottom:0;
+.wc-invoice-title::before,
+.wc-invoice-title::after{
+  content:")))";
+
+  display:inline-block;
+
+  margin:0 10px;
+
+  color:#6d9989;
+
+  font-size:18px;
+
+  font-weight:400
+}
+
+
+/* رقم الفاتورة */
+
+.wc-invoice-number{
+  display:flex;
+
+  flex-direction:column;
+
+  gap:9px;
+
+  max-width:330px;
+
+  margin:
+    14px
+    0
+    18px
+    auto;
+
+  font-size:12px
+}
+
+.wc-invoice-number>div{
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:20px
+}
+
+.wc-invoice-number span{
+  color:#3d4542
+}
+
+.wc-invoice-number strong{
+  direction:ltr
+}
+
+
+/* بيانات العميل */
+
+.wc-client-box{
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:0;
+
+  margin-bottom:18px;
+
+  padding:14px 16px;
+
+  border:
+    1.5px solid #446157;
+
+  border-radius:16px
+}
+
+.wc-client-box>div{
+  padding:0 14px
+}
+
+.wc-client-box>div:first-child{
+  border-left:
+    1px solid #d4d7d5
+}
+
+.wc-client-box p{
+  display:grid;
+
+  grid-template-columns:
+    110px
+    1fr;
+
+  gap:10px;
+
+  margin:
+    7px
+    0;
+
+  font-size:12px
+}
+
+.wc-client-box span{
+  color:#343b38
+}
+
+.wc-client-box strong{
+  font-weight:600
+}
+
+
+/* جدول الأصناف */
+
+.wc-items-table{
+  width:100%;
+
+  border-collapse:
+    separate;
+
+  border-spacing:0;
+
+  overflow:hidden;
+
+  margin-bottom:16px;
+
+  border:
+    1px solid #cdd3d0;
+
+  border-radius:8px;
+
+  font-size:12px
+}
+
+.wc-items-table th{
+  padding:10px 5px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #075139,
+      #033a29
+    );
+
+  color:#fff;
+
+  font-weight:700
+}
+
+.wc-items-table td{
+  padding:
+    17px
+    6px;
+
+  border-left:
+    1px solid #d9dcda;
+
+  text-align:center
+}
+
+.wc-items-table td:last-child{
+  border-left:0
+}
+
+
+/* الجزء السفلي */
+
+.wc-invoice-bottom{
+  display:grid;
+
+  grid-template-columns:
+    1fr
+    1.25fr;
+
+  gap:24px;
+
+  align-items:start;
+
+  padding-bottom:20px
+}
+
+
+/* ملخص الحساب */
+
+.wc-summary-table{
+  overflow:hidden;
+
+  border:
+    1px solid #bfc7c3;
+
+  border-radius:8px
+}
+
+.wc-summary-table>div{
+  display:grid;
+
+  grid-template-columns:
+    1.4fr
+    1fr;
+
+  align-items:center;
+
+  min-height:44px;
+
+  border-bottom:
+    1px solid #d6dad8
+}
+
+.wc-summary-table>div:last-child{
+  border-bottom:0
+}
+
+.wc-summary-table span,
+.wc-summary-table strong{
+  padding:10px
+}
+
+.wc-summary-table strong{
+  direction:ltr;
 
   text-align:center;
 
+  border-right:
+    1px solid #d6dad8
+}
+
+.wc-summary-table .wc-total{
+  background:
+    linear-gradient(
+      180deg,
+      #075139,
+      #033a29
+    );
+
+  color:#fff;
+
+  font-size:15px
+}
+
+
+/* المبلغ بالحروف والختم */
+
+.wc-words-stamp{
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+
+  gap:12px
+}
+
+.wc-words-stamp>div{
+  width:100%
+}
+
+.wc-words-title{
+  margin:
+    0
+    0
+    7px;
+
+  font-size:12px;
+
+  font-weight:700
+}
+
+.wc-amount-words{
+  width:100%;
+
+  min-height:58px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  padding:10px;
+
+  border:
+    1px solid #bfc7c3;
+
+  border-radius:11px;
+
+  text-align:center;
+
+  font-size:13px;
+
+  font-weight:600
+}
+
+.wc-stamp{
+  width:165px;
+  height:165px;
+
+  object-fit:contain;
+
+  opacity:.96
+}
+
+
+/* تذييل الفاتورة */
+
+.wc-footer{
+  margin:
+    0
+    -22px;
+
+  display:grid;
+
+  grid-template-columns:
+    1fr
+    1.6fr
+    1fr;
+
+  gap:8px;
+
+  align-items:center;
+
+  padding:
+    11px
+    16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #075139,
+      #033a29
+    );
+
+  color:#fff;
+
+  border-radius:
+    0
+    0
+    17px
+    17px;
+
   font-size:11px
 }
+
+.wc-footer span{
+  text-align:center
+}
+
+
+/* أزرار الفاتورة */
 
 .invoice-actions{
   display:grid;
@@ -1347,21 +1664,16 @@ button{
   color:var(--text)
 }
 
-.invoice-view-btn{
-  max-width:80px
-}
 
-
-/* Toast */
+/* ======================================
+   رسالة صغيرة
+====================================== */
 
 .toast{
   position:fixed;
 
   bottom:
-    calc(
-      105px +
-      var(--safe-bottom)
-    );
+    calc(105px + var(--safe-bottom));
 
   left:50%;
 
@@ -1370,8 +1682,7 @@ button{
   transform:
     translateX(-50%);
 
-  padding:
-    10px 14px;
+  padding:10px 14px;
 
   border-radius:12px;
 
@@ -1385,7 +1696,137 @@ button{
 }
 
 
-/* أجهزة أكبر */
+/* ======================================
+   الجوالات الصغيرة
+====================================== */
+
+@media(max-width:560px){
+
+  .wc-invoice{
+    padding:
+      16px
+      12px
+      0
+  }
+
+  .invoice-wave{
+    width:85px;
+    height:55px;
+
+    top:24px;
+
+    opacity:.08
+  }
+
+  .wc-invoice-logo{
+    width:160px;
+
+    max-height:85px
+  }
+
+  .wc-brand-en{
+    font-size:14px;
+    letter-spacing:3px
+  }
+
+  .wc-brand-ar{
+    font-size:12px
+  }
+
+  .wc-invoice-title{
+    min-width:130px;
+
+    padding:
+      7px
+      20px;
+
+    font-size:24px
+  }
+
+  .wc-invoice-title::before,
+  .wc-invoice-title::after{
+    margin:
+      0
+      5px;
+
+    font-size:13px
+  }
+
+  .wc-client-box{
+    grid-template-columns:1fr
+  }
+
+  .wc-client-box>div{
+    padding:0
+  }
+
+  .wc-client-box>div:first-child{
+    border-left:0;
+
+    border-bottom:
+      1px solid #e0e3e1;
+
+    padding-bottom:5px;
+
+    margin-bottom:5px
+  }
+
+  .wc-client-box p{
+    grid-template-columns:
+      100px
+      1fr;
+
+    font-size:11px
+  }
+
+  .wc-items-table{
+    font-size:10px
+  }
+
+  .wc-items-table th{
+    padding:
+      8px
+      3px
+  }
+
+  .wc-items-table td{
+    padding:
+      13px
+      3px
+  }
+
+  .wc-invoice-bottom{
+    grid-template-columns:1fr;
+
+    gap:14px
+  }
+
+  .wc-stamp{
+    width:145px;
+    height:145px
+  }
+
+  .wc-footer{
+    margin:
+      0
+      -12px;
+
+    grid-template-columns:1fr;
+
+    padding:
+      9px
+      10px;
+
+    gap:4px;
+
+    font-size:9px
+  }
+}
+
+
+/* ======================================
+   أجهزة كبيرة
+====================================== */
 
 @media(min-width:700px){
 
@@ -1395,41 +1836,27 @@ button{
   }
 
   .modal{
-    top:7vh;
+    top:5vh;
 
     bottom:auto
   }
 }
 
 
-/* جوالات صغيرة */
-
-@media(max-width:380px){
-
-  .top-logo{
-    width:52px;
-    height:52px
-  }
-
-  .stat-card .value{
-    font-size:20px
-  }
-
-  .hijri-selects{
-    grid-template-columns:
-      1fr
-  }
-
-  .report-filters{
-    grid-template-columns:
-      1fr
-  }
-}
-
-
-/* الطباعة */
+/* ======================================
+   الطباعة / PDF
+====================================== */
 
 @media print{
+
+  @page{
+    size:A4;
+    margin:8mm
+  }
+
+  body{
+    background:#fff
+  }
 
   body *{
     visibility:hidden!important
@@ -1444,11 +1871,22 @@ button{
     position:absolute;
 
     top:0;
-
     right:0;
 
     width:100%;
 
+    max-width:none;
+
+    box-shadow:none;
+
     border-radius:0
+  }
+
+  .invoice-actions{
+    display:none!important
+  }
+
+  .wc-invoice{
+    break-inside:avoid
   }
 }
