@@ -1,10 +1,10 @@
 {
   "name": "Winter Camp - إدارة التأجير",
   "short_name": "Winter Camp",
-  "description": "نظام إدارة حجوزات وتأجير أجهزة Winter Camp",
+  "description": "برنامج إدارة حجوزات وتأجير الصوتيات والمصاريف والفواتير",
   "lang": "ar",
   "dir": "rtl",
-  "start_url": "./index.html?v=10",
+  "start_url": "./?v=20",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
