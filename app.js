@@ -1029,19 +1029,21 @@ function expensesView() {
 
                 </div>
 
-                <div>
+                <div class="expense-actions">
 
-                  <strong class="red">
-                    ${money(expense.amount)}
-                  </strong>
+  <button
+    class="edit-mini"
+    data-edit-expense="${expense.id}">
+    تعديل
+  </button>
 
-                  <button
-                    class="delete-mini"
-                    data-del-expense="${expense.id}">
-                    حذف
-                  </button>
+  <button
+    class="delete-mini"
+    data-del-expense="${expense.id}">
+    حذف
+  </button>
 
-                </div>
+</div>
 
               </div>
             `
