@@ -24,7 +24,6 @@ html{
 body{
   margin:0;
   min-height:100vh;
-
   background:var(--bg);
   color:var(--text);
 
@@ -80,9 +79,7 @@ button{
 .brand-title{
   display:flex;
   align-items:center;
-
   gap:10px;
-
   min-width:0;
 }
 
@@ -268,7 +265,9 @@ button{
 }
 
 
-/* أيقونات بطاقات الرئيسية */
+/* =========================================================
+   أيقونات بطاقات الرئيسية
+========================================================= */
 
 .dashboard-icon{
   width:39px;
@@ -297,33 +296,25 @@ button{
 
 .green-icon{
   color:#34d77f;
-
   background:rgba(37,193,111,.13);
-
   border:1px solid rgba(37,193,111,.20);
 }
 
 .red-icon{
   color:#ff7676;
-
   background:rgba(240,90,90,.13);
-
   border:1px solid rgba(240,90,90,.20);
 }
 
 .blue-icon{
   color:#72a2ff;
-
   background:rgba(76,136,255,.13);
-
   border:1px solid rgba(76,136,255,.20);
 }
 
 .gold-icon{
   color:#efb94d;
-
   background:rgba(224,163,57,.13);
-
   border:1px solid rgba(224,163,57,.20);
 }
 
@@ -345,7 +336,6 @@ button{
 
 .section-head h3{
   margin:0;
-
   font-size:18px;
 }
 
@@ -448,19 +438,16 @@ button{
 
 .badge.paid{
   background:#163e2b;
-
   color:#77e6a4;
 }
 
 .badge.partial{
   background:#463718;
-
   color:#ffd680;
 }
 
 .badge.unpaid{
   background:#4b2020;
-
   color:#ff8b8b;
 }
 
@@ -683,7 +670,6 @@ button{
 
 .report-title h2{
   margin:0;
-
   font-size:22px;
 }
 
@@ -736,7 +722,6 @@ button{
 
 .months-list{
   display:grid;
-
   gap:8px;
 }
 
@@ -778,7 +763,7 @@ button{
 
 
 /* =========================================================
-   القائمة السفلية + رجوع الأيقونات
+   القائمة السفلية
 ========================================================= */
 
 .bottom-nav{
@@ -1246,7 +1231,7 @@ button{
 
 
 /* =========================================================
-   الفاتورة الجديدة A4
+   الفاتورة A4
 ========================================================= */
 
 .invoice-preview-scroll{
@@ -1269,6 +1254,9 @@ button{
 
   min-width:794px!important;
   min-height:1123px!important;
+
+  max-width:794px!important;
+  max-height:1123px!important;
 
   flex:none;
 
@@ -1302,9 +1290,9 @@ button{
   overflow:hidden;
 
   padding:
-    25px
+    22px
     29px
-    68px;
+    62px;
 
   background:#fff;
 
@@ -1320,7 +1308,7 @@ button{
 .sound-wave{
   position:absolute;
 
-  top:45px;
+  top:40px;
 
   width:185px;
   height:100px;
@@ -1394,7 +1382,7 @@ button{
 
 
 /* =========================================================
-   رأس الفاتورة
+   رأس الفاتورة - التصميم النهائي
 ========================================================= */
 
 .invoice-header{
@@ -1411,16 +1399,19 @@ button{
   text-align:center;
 }
 
+
+/* الشعار أكبر وأعرض بدون تشويه */
+
 .invoice-logo{
   display:block;
 
-  width:325px!important;
-  height:125px!important;
+  width:375px!important;
+  height:135px!important;
 
   max-width:none!important;
   max-height:none!important;
 
-  margin:0!important;
+  margin:0 auto!important;
   padding:0!important;
 
   object-fit:contain!important;
@@ -1432,41 +1423,48 @@ button{
   border-radius:0!important;
 }
 
+
 .invoice-brand-en{
-  margin-top:-3px;
+  margin-top:-4px;
 
   direction:ltr;
 
   color:#121714;
 
-  font-size:19px;
+  font-size:22px;
 
-  letter-spacing:5px;
+  letter-spacing:6px;
+
+  line-height:1.15;
 }
 
+
 .invoice-brand-ar{
-  margin-top:5px;
+  margin-top:7px;
 
   color:#075039;
 
-  font-size:17px;
+  font-size:19px;
   font-weight:700;
+
+  line-height:1.2;
 }
 
-.invoice-title{
-  min-width:268px;
-  height:74px;
 
-  margin-top:18px;
+.invoice-title{
+  min-width:315px;
+  height:78px;
+
+  margin-top:20px;
 
   display:flex;
 
   align-items:center;
   justify-content:center;
 
-  gap:22px;
+  gap:28px;
 
-  padding:0 30px;
+  padding:0 34px;
 
   background:
     linear-gradient(
@@ -1475,7 +1473,7 @@ button{
       #03482f
     );
 
-  border-radius:40px;
+  border-radius:44px;
 
   color:#fff;
 
@@ -1487,14 +1485,14 @@ button{
 }
 
 .invoice-title strong{
-  font-size:34px;
+  font-size:36px;
   font-weight:800;
 }
 
 .invoice-title span{
   color:#97beb0;
 
-  font-size:20px;
+  font-size:21px;
 
   letter-spacing:-5px;
 }
@@ -1505,12 +1503,12 @@ button{
 ========================================================= */
 
 .invoice-info{
-  width:360px;
+  width:365px;
 
   margin:
-    21px
+    19px
     0
-    17px
+    15px
     auto;
 
   direction:rtl;
@@ -1519,7 +1517,7 @@ button{
 }
 
 .invoice-info-row{
-  min-height:33px;
+  min-height:31px;
 
   display:grid;
 
@@ -1535,7 +1533,7 @@ button{
 
   direction:rtl;
 
-  font-size:13px;
+  font-size:14px;
 }
 
 .invoice-info-icon{
@@ -1556,6 +1554,8 @@ button{
   text-align:right;
 
   white-space:nowrap;
+
+  font-size:14px;
 }
 
 .invoice-number-value{
@@ -1574,7 +1574,7 @@ button{
 .invoice-customer{
   width:100%;
 
-  min-height:155px;
+  min-height:145px;
 
   display:grid;
 
@@ -1590,7 +1590,7 @@ button{
 
 .customer-main,
 .customer-extra{
-  padding:18px 20px;
+  padding:16px 20px;
 }
 
 .customer-extra{
@@ -1598,7 +1598,7 @@ button{
 }
 
 .customer-row{
-  min-height:39px;
+  min-height:37px;
 
   display:grid;
 
@@ -1612,7 +1612,7 @@ button{
 
   column-gap:6px;
 
-  font-size:13px;
+  font-size:14px;
 }
 
 .customer-row-simple{
@@ -1650,13 +1650,15 @@ button{
 
 
 /* =========================================================
-   جدول الفاتورة
+   جدول الصنف - متناسق وأوضح
 ========================================================= */
 
 .invoice-products{
   width:100%;
 
-  margin-top:20px;
+  margin-top:18px;
+
+  table-layout:fixed;
 
   overflow:hidden;
 
@@ -1668,13 +1670,13 @@ button{
   border:1px solid #bdc6c1;
   border-radius:9px;
 
-  font-size:13px;
+  font-size:15px;
 }
 
 .invoice-products thead th{
-  height:48px;
+  height:46px;
 
-  padding:7px;
+  padding:7px 5px;
 
   background:
     linear-gradient(
@@ -1691,14 +1693,16 @@ button{
 
   text-align:center;
 
-  font-size:14px;
+  font-size:15px;
   font-weight:700;
+
+  line-height:1.15;
 }
 
 .invoice-products tbody td{
-  height:105px;
+  height:78px;
 
-  padding:8px;
+  padding:7px 5px;
 
   background:#fff;
 
@@ -1709,6 +1713,11 @@ button{
   text-align:center;
 
   vertical-align:middle;
+
+  font-size:15px;
+  font-weight:600;
+
+  line-height:1.25;
 }
 
 .invoice-products th:last-child,
@@ -1717,31 +1726,38 @@ button{
 }
 
 .invoice-no{
-  width:60px;
+  width:8%;
+}
+
+.invoice-products th:nth-child(2),
+.invoice-products td:nth-child(2){
+  width:38%;
 }
 
 .invoice-qty{
-  width:100px;
+  width:13%;
 }
 
 .invoice-price{
-  width:142px;
+  width:20.5%;
 }
 
 .product-title strong{
   display:block;
 
-  font-size:15px;
+  font-size:16px;
+  font-weight:700;
 }
 
 .product-title small{
   display:block;
 
-  margin-top:7px;
+  margin-top:5px;
 
   color:#69726d;
 
-  font-size:11px;
+  font-size:10px;
+  font-weight:400;
 }
 
 
@@ -1754,20 +1770,24 @@ button{
 
   grid-template-columns:1.15fr .95fr;
 
-  gap:25px;
+  gap:24px;
 
   align-items:start;
 
-  margin-top:25px;
+  margin-top:21px;
+
+  margin-bottom:55px;
 }
 
 
-/* المبلغ بالحروف */
+/* =========================================================
+   المبلغ بالحروف
+========================================================= */
 
 .invoice-words-side{
   position:relative;
 
-  min-height:345px;
+  min-height:250px;
 }
 
 .amount-words-label{
@@ -1776,23 +1796,23 @@ button{
   margin:
     0
     4px
-    8px;
+    7px;
 
-  font-size:14px;
+  font-size:15px;
   font-weight:700;
 }
 
 .amount-words-box{
   width:100%;
 
-  min-height:70px;
+  min-height:64px;
 
   display:flex;
 
   align-items:center;
   justify-content:center;
 
-  padding:12px 18px;
+  padding:10px 15px;
 
   background:#fff;
 
@@ -1806,36 +1826,42 @@ button{
   font-size:14px;
   font-weight:700;
 
-  line-height:1.7;
+  line-height:1.6;
 }
 
 
-/* الختم */
+/* =========================================================
+   الختم - أصغر ويظهر كامل
+========================================================= */
 
 .stamp-holder{
   width:100%;
-  height:225px;
+
+  height:155px;
 
   display:flex;
 
   align-items:center;
   justify-content:center;
 
-  margin-top:7px;
+  margin-top:6px;
 
   overflow:visible;
 }
 
 .invoice-full-stamp{
-  display:block;
+  display:block!important;
 
-  width:205px!important;
-  height:205px!important;
+  width:142px!important;
+  height:142px!important;
 
-  max-width:none!important;
-  max-height:none!important;
+  min-width:142px!important;
+  min-height:142px!important;
 
-  margin:0!important;
+  max-width:142px!important;
+  max-height:142px!important;
+
+  margin:0 auto!important;
   padding:0!important;
 
   object-fit:contain!important;
@@ -1863,7 +1889,7 @@ button{
 }
 
 .total-row{
-  min-height:53px;
+  min-height:49px;
 
   display:grid;
 
@@ -1886,7 +1912,9 @@ button{
 
   align-items:center;
 
-  padding:12px 14px;
+  padding:10px 12px;
+
+  font-size:14px;
 }
 
 .total-row span{
@@ -1901,6 +1929,8 @@ button{
   border-right:1px solid #d4d9d6;
 
   text-align:center;
+
+  font-size:15px;
 }
 
 .remaining-number{
@@ -1935,7 +1965,7 @@ button{
   position:absolute;
 
   right:18px;
-  bottom:11px;
+  bottom:13px;
   left:18px;
 
   height:43px;
@@ -1960,13 +1990,15 @@ button{
       #03472f
     );
 
-  border-radius:16px;
+  border-radius:18px;
 
   color:#fff;
 
   text-align:center;
 
   font-size:12px;
+
+  z-index:10;
 }
 
 
@@ -2013,12 +2045,14 @@ button{
 
 
 /* =========================================================
-   تصغير الفاتورة للآيفون
+   معاينة الفاتورة على الآيفون
 ========================================================= */
 
-@media(max-width:850px){
+@media screen and (max-width:850px){
 
   .invoice-preview-scroll{
+    width:100%;
+
     display:flex;
 
     justify-content:center;
@@ -2036,7 +2070,8 @@ button{
 
 }
 
-@media(max-width:430px){
+
+@media screen and (max-width:430px){
 
   .invoice-a4{
     transform:scale(.43);
@@ -2115,20 +2150,20 @@ button{
 
 
 /* =========================================================
-   الطباعة و PDF
+   الطباعة A4
 ========================================================= */
 
 @media print{
 
   @page{
-    size:A4;
+    size:A4 portrait;
     margin:0;
   }
 
   html,
   body{
-    width:210mm;
-    height:297mm;
+    width:210mm!important;
+    height:297mm!important;
 
     margin:0!important;
     padding:0!important;
@@ -2150,6 +2185,7 @@ button{
 
     top:0!important;
     right:0!important;
+    left:0!important;
 
     width:210mm!important;
     height:297mm!important;
@@ -2157,15 +2193,80 @@ button{
     min-width:210mm!important;
     min-height:297mm!important;
 
+    max-width:210mm!important;
+    max-height:297mm!important;
+
     margin:0!important;
+    padding:0!important;
 
     transform:none!important;
 
     box-shadow:none!important;
+
+    overflow:hidden!important;
   }
 
-  .invoice-actions{
+  .invoice-frame{
+    position:absolute!important;
+
+    inset:3mm!important;
+
+    overflow:hidden!important;
+  }
+
+  .invoice-preview-scroll{
+    width:auto!important;
+
+    display:block!important;
+
+    overflow:visible!important;
+  }
+
+  .modal{
+    position:static!important;
+
+    width:auto!important;
+    height:auto!important;
+
+    max-width:none!important;
+    max-height:none!important;
+
+    margin:0!important;
+    padding:0!important;
+
+    overflow:visible!important;
+
+    border:0!important;
+
+    background:#fff!important;
+
+    box-shadow:none!important;
+  }
+
+  .modal-head,
+  .invoice-actions,
+  .modal-backdrop{
     display:none!important;
+  }
+
+  .invoice-logo{
+    width:99mm!important;
+    height:36mm!important;
+
+    object-fit:contain!important;
+  }
+
+  .invoice-full-stamp{
+    width:37mm!important;
+    height:37mm!important;
+
+    min-width:37mm!important;
+    min-height:37mm!important;
+
+    max-width:37mm!important;
+    max-height:37mm!important;
+
+    object-fit:contain!important;
   }
 
   .invoice-title,
@@ -2216,240 +2317,4 @@ button{
   white-space:nowrap;
 
   font-weight:700;
-}
-/* =========================================================
-   إصلاح نهائي للفاتورة PDF والطباعة والختم
-========================================================= */
-
-/* مساحة الختم */
-.stamp-holder{
-  width:100% !important;
-  height:210px !important;
-
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-
-  margin-top:4px !important;
-
-  overflow:visible !important;
-}
-
-.invoice-full-stamp{
-  display:block !important;
-
-  width:180px !important;
-  height:180px !important;
-
-  max-width:180px !important;
-  max-height:180px !important;
-
-  margin:0 auto !important;
-  padding:0 !important;
-
-  object-fit:contain !important;
-  object-position:center !important;
-
-  transform:none !important;
-
-  clip-path:none !important;
-
-  opacity:1 !important;
-}
-
-
-/* نرفع الجزء السفلي قليلًا حتى لا يلامس الختم الشريط الأخضر */
-.invoice-lower{
-  margin-top:22px !important;
-}
-
-.invoice-words-side{
-  min-height:305px !important;
-}
-
-
-/* الشريط السفلي */
-.invoice-green-footer{
-  bottom:13px !important;
-}
-
-
-/* =========================================================
-   المعاينة على الجوال فقط
-========================================================= */
-
-@media screen and (max-width:850px){
-
-  .invoice-preview-scroll{
-    width:100% !important;
-
-    display:flex !important;
-
-    justify-content:center !important;
-
-    overflow:hidden !important;
-  }
-
-  .invoice-a4{
-    width:794px !important;
-    height:1123px !important;
-
-    min-width:794px !important;
-    min-height:1123px !important;
-
-    transform:scale(.46) !important;
-
-    transform-origin:top center !important;
-
-    margin-bottom:-600px !important;
-  }
-
-}
-
-
-@media screen and (max-width:430px){
-
-  .invoice-a4{
-    transform:scale(.43) !important;
-
-    transform-origin:top center !important;
-
-    margin-bottom:-640px !important;
-  }
-
-}
-
-
-/* =========================================================
-   الطباعة A4 كاملة
-========================================================= */
-
-@media print{
-
-  @page{
-    size:A4 portrait;
-    margin:0;
-  }
-
-  html,
-  body{
-    width:210mm !important;
-    height:297mm !important;
-
-    margin:0 !important;
-    padding:0 !important;
-
-    background:#fff !important;
-  }
-
-  body *{
-    visibility:hidden !important;
-  }
-
-
-  #invoicePaper,
-  #invoicePaper *{
-    visibility:visible !important;
-  }
-
-
-  #invoicePaper{
-    position:absolute !important;
-
-    top:0 !important;
-    right:0 !important;
-    left:0 !important;
-
-    width:210mm !important;
-    height:297mm !important;
-
-    min-width:210mm !important;
-    min-height:297mm !important;
-
-    margin:0 !important;
-    padding:0 !important;
-
-    transform:none !important;
-
-    transform-origin:top right !important;
-
-    box-shadow:none !important;
-
-    overflow:hidden !important;
-  }
-
-
-  .invoice-frame{
-    position:absolute !important;
-
-    inset:3mm !important;
-
-    width:auto !important;
-    height:auto !important;
-
-    margin:0 !important;
-
-    overflow:hidden !important;
-  }
-
-
-  .invoice-preview-scroll{
-    overflow:visible !important;
-
-    width:auto !important;
-
-    display:block !important;
-  }
-
-
-  .modal,
-  .modal-body{
-    position:static !important;
-
-    width:auto !important;
-    height:auto !important;
-
-    max-width:none !important;
-    max-height:none !important;
-
-    padding:0 !important;
-    margin:0 !important;
-
-    overflow:visible !important;
-
-    border:0 !important;
-
-    background:#fff !important;
-
-    box-shadow:none !important;
-  }
-
-
-  .modal-head,
-  .invoice-actions,
-  .modal-backdrop{
-    display:none !important;
-  }
-
-
-  .invoice-title,
-  .invoice-products thead th,
-  .grand-total,
-  .invoice-green-footer{
-    -webkit-print-color-adjust:exact !important;
-
-    print-color-adjust:exact !important;
-  }
-
-
-  .invoice-full-stamp{
-    width:47mm !important;
-    height:47mm !important;
-
-    max-width:47mm !important;
-    max-height:47mm !important;
-
-    object-fit:contain !important;
-  }
-
 }
