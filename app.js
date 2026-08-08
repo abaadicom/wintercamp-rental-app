@@ -2312,7 +2312,130 @@ function openExpenseForm() {
       );
     };
 }
+function editExpense(id) {
 
+  const expense =
+    db.expenses.find(
+      item =>
+        Number(item.id) ===
+        Number(id)
+    );
+
+  if (!expense) {
+    return;
+  }
+
+
+  openModal(
+    'تعديل المصروف',
+    `
+
+      <form
+        id="editExpenseForm"
+        class="form-grid">
+
+        <label>
+          بند المصروف
+
+          <input
+            name="item"
+            required
+            value="${esc(expense.item)}">
+        </label>
+
+
+        <label>
+          المبلغ
+
+          <input
+            name="amount"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            required
+            value="${expense.amount}">
+        </label>
+
+
+        ${hijriDateFields(
+          expense.date,
+          'expenseEdit'
+        )}
+
+
+        <button
+          class="submit-btn"
+          type="submit">
+
+          حفظ التعديلات
+
+        </button>
+
+      </form>
+    `
+  );
+
+
+  $('#editExpenseForm').onsubmit =
+    event => {
+
+      event.preventDefault();
+
+
+      const data =
+        Object.fromEntries(
+          new FormData(
+            event.currentTarget
+          ).entries()
+        );
+
+
+      const date =
+        hijriToGregorian(
+          data.expenseEdit_year,
+          data.expenseEdit_month,
+          data.expenseEdit_day
+        );
+
+
+      if (!date) {
+
+        alert(
+          'التاريخ الهجري غير صحيح'
+        );
+
+        return;
+      }
+
+
+      expense.item =
+        data.item;
+
+
+      expense.amount =
+        Number(
+          data.amount || 0
+        );
+
+
+      expense.date =
+        date;
+
+
+      save();
+
+      closeModal();
+
+      render();
+
+
+      toast(
+        'تم تعديل المصروف'
+      );
+
+    };
+
+}
 function deleteExpense(id) {
   if (
     !confirm(
