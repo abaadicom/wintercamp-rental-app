@@ -17,48 +17,10 @@ const HIJRI_MONTHS = [
 ];
 
 const seed = {
-  bookings: [
-    {
-      id: 1001,
-      name: 'أحمد الشهري',
-      phone: '0555123456',
-      device: '2 سماعات',
-      location: 'أبها - حي العرين',
-      date: '2026-08-08',
-      agreed: 500,
-      paid: 200,
-      notes: ''
-    },
-    {
-      id: 1002,
-      name: 'محمد القحطاني',
-      phone: '',
-      device: 'سماعة بلوتوث',
-      location: 'خميس مشيط',
-      date: '2026-08-09',
-      agreed: 300,
-      paid: 300,
-      notes: ''
-    }
-  ],
-
-  expenses: [
-    {
-      id: 1,
-      item: 'صيانة سماعات',
-      amount: 300,
-      date: '2026-08-03'
-    },
-    {
-      id: 2,
-      item: 'وقود',
-      amount: 150,
-      date: '2026-08-04'
-    }
-  ],
-
+  bookings: [],
+  expenses: [],
   devices: [
-    { id: 1, name: 'RCF 715-A', qty: 2 },
+    { id: 1, name: 'RCF ART 715-A MK5', qty: 2 },
     { id: 2, name: 'سماعة بلوتوث', qty: 1 },
     { id: 3, name: 'MG-12XU ميكسر', qty: 1 },
     { id: 4, name: 'ميكروفون', qty: 4 }
@@ -68,78 +30,118 @@ const seed = {
 let db = load();
 let currentPage = 'home';
 
-const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
+let reportMonth = 'all';
+let reportYear = String(currentHijri().year);
 
-function clone(obj) {
-  return JSON.parse(JSON.stringify(obj));
+const $ = selector => document.querySelector(selector);
+const $$ = selector => [...document.querySelectorAll(selector)];
+
+/* =========================================
+   حفظ وقراءة البيانات
+========================================= */
+
+function clone(object) {
+  return JSON.parse(JSON.stringify(object));
 }
 
 function load() {
   try {
     const saved = localStorage.getItem(DB_KEY);
-    return saved ? JSON.parse(saved) : clone(seed);
-  } catch {
+
+    if (saved) {
+      const data = JSON.parse(saved);
+
+      if (!data.bookings) data.bookings = [];
+      if (!data.expenses) data.expenses = [];
+      if (!data.devices) data.devices = clone(seed.devices);
+
+      return data;
+    }
+
+    return clone(seed);
+
+  } catch (error) {
     return clone(seed);
   }
 }
 
 function save() {
-  localStorage.setItem(DB_KEY, JSON.stringify(db));
+  localStorage.setItem(
+    DB_KEY,
+    JSON.stringify(db)
+  );
 }
 
-function money(n) {
-  return new Intl.NumberFormat('ar-SA').format(Number(n || 0)) + ' ر.س';
+/* =========================================
+   تنسيق المبالغ
+========================================= */
+
+function money(value) {
+  return new Intl.NumberFormat('ar-SA').format(
+    Number(value || 0)
+  ) + ' ر.س';
 }
+
+/* =========================================
+   التاريخ
+========================================= */
 
 function todayISO() {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
+  const date = new Date();
 
-  return `${y}-${m}-${day}`;
+  const year = date.getFullYear();
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, '0');
+
+  const day = String(
+    date.getDate()
+  ).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
 }
-
-/* ==============================
-   التاريخ الهجري - أم القرى
-================================ */
 
 function getHijriParts(isoDate) {
   try {
-    const date = new Date(isoDate + 'T12:00:00');
-
-    const formatter = new Intl.DateTimeFormat(
-      'en-u-ca-islamic-umalqura',
-      {
-        day: 'numeric',
-        month: 'numeric',
-        year: 'numeric',
-        timeZone: 'Asia/Riyadh'
-      }
+    const date = new Date(
+      isoDate + 'T12:00:00'
     );
 
-    const parts = formatter.formatToParts(date);
+    const formatter =
+      new Intl.DateTimeFormat(
+        'en-u-ca-islamic-umalqura',
+        {
+          day: 'numeric',
+          month: 'numeric',
+          year: 'numeric',
+          timeZone: 'Asia/Riyadh'
+        }
+      );
 
-    const day = Number(
-      parts.find(x => x.type === 'day')?.value
-    );
-
-    const month = Number(
-      parts.find(x => x.type === 'month')?.value
-    );
-
-    const year = Number(
-      parts.find(x => x.type === 'year')?.value
-    );
+    const parts =
+      formatter.formatToParts(date);
 
     return {
-      day,
-      month,
-      year
+      day: Number(
+        parts.find(
+          item => item.type === 'day'
+        )?.value
+      ),
+
+      month: Number(
+        parts.find(
+          item => item.type === 'month'
+        )?.value
+      ),
+
+      year: Number(
+        parts.find(
+          item => item.type === 'year'
+        )?.value
+      )
     };
 
-  } catch {
+  } catch (error) {
     return {
       day: 1,
       month: 1,
@@ -148,52 +150,90 @@ function getHijriParts(isoDate) {
   }
 }
 
-function hijriFull(isoDate) {
-  const h = getHijriParts(isoDate);
-
-  return `${h.day} ${HIJRI_MONTHS[h.month]} ${h.year} هـ`;
-}
-
-function hijriShort(isoDate) {
-  const h = getHijriParts(isoDate);
-
-  return `${h.day}/${h.month}/${h.year} هـ`;
-}
-
-function dayName(isoDate) {
-  return new Intl.DateTimeFormat(
-    'ar-SA',
-    {
-      weekday: 'long',
-      timeZone: 'Asia/Riyadh'
-    }
-  ).format(
-    new Date(isoDate + 'T12:00:00')
+function currentHijri() {
+  return getHijriParts(
+    todayISO()
   );
 }
 
-function hijriWithDay(isoDate) {
-  return `${dayName(isoDate)} ${hijriFull(isoDate)}`;
+function hijriFull(isoDate) {
+  const hijri =
+    getHijriParts(isoDate);
+
+  return (
+    `${hijri.day} ` +
+    `${HIJRI_MONTHS[hijri.month]} ` +
+    `${hijri.year} هـ`
+  );
 }
 
-/*
-  تحويل التاريخ الهجري إلى ميلادي داخلياً.
-  المستخدم لن يرى التاريخ الميلادي.
-*/
+function hijriShort(isoDate) {
+  const hijri =
+    getHijriParts(isoDate);
 
-function hijriToGregorian(hYear, hMonth, hDay) {
+  return (
+    `${hijri.day}/` +
+    `${hijri.month}/` +
+    `${hijri.year} هـ`
+  );
+}
 
-  hYear = Number(hYear);
-  hMonth = Number(hMonth);
-  hDay = Number(hDay);
+function dayName(isoDate) {
+  try {
+    return new Intl.DateTimeFormat(
+      'ar-SA',
+      {
+        weekday: 'long',
+        timeZone: 'Asia/Riyadh'
+      }
+    ).format(
+      new Date(
+        isoDate + 'T12:00:00'
+      )
+    );
 
-  const estimatedGregorianYear =
+  } catch (error) {
+    return '';
+  }
+}
+
+function hijriWithDay(isoDate) {
+  return (
+    `${dayName(isoDate)} ` +
+    `${hijriFull(isoDate)}`
+  );
+}
+
+function hijriMonthTitle(month, year) {
+  return (
+    `${HIJRI_MONTHS[month]} ` +
+    `${year} هـ`
+  );
+}
+
+/* =========================================
+   تحويل هجري إلى ميلادي داخلي
+   المستخدم لا يرى الميلادي
+========================================= */
+
+function hijriToGregorian(
+  hijriYear,
+  hijriMonth,
+  hijriDay
+) {
+
+  hijriYear = Number(hijriYear);
+  hijriMonth = Number(hijriMonth);
+  hijriDay = Number(hijriDay);
+
+  const estimatedYear =
     Math.floor(
-      hYear * 0.970224 + 621.5774
+      hijriYear * 0.970224 +
+      621.5774
     );
 
   const start = new Date(
-    estimatedGregorianYear - 1,
+    estimatedYear - 1,
     0,
     1,
     12,
@@ -201,25 +241,35 @@ function hijriToGregorian(hYear, hMonth, hDay) {
     0
   );
 
-  for (let i = 0; i < 900; i++) {
+  for (
+    let offset = 0;
+    offset < 900;
+    offset++
+  ) {
 
-    const d = new Date(start);
+    const date =
+      new Date(start);
 
-    d.setDate(
-      start.getDate() + i
+    date.setDate(
+      start.getDate() + offset
     );
 
     const iso =
-      `${d.getFullYear()}-` +
-      `${String(d.getMonth() + 1).padStart(2, '0')}-` +
-      `${String(d.getDate()).padStart(2, '0')}`;
+      `${date.getFullYear()}-` +
+      `${String(
+        date.getMonth() + 1
+      ).padStart(2, '0')}-` +
+      `${String(
+        date.getDate()
+      ).padStart(2, '0')}`;
 
-    const h = getHijriParts(iso);
+    const hijri =
+      getHijriParts(iso);
 
     if (
-      h.year === hYear &&
-      h.month === hMonth &&
-      h.day === hDay
+      hijri.year === hijriYear &&
+      hijri.month === hijriMonth &&
+      hijri.day === hijriDay
     ) {
       return iso;
     }
@@ -228,125 +278,169 @@ function hijriToGregorian(hYear, hMonth, hDay) {
   return null;
 }
 
-function currentHijri() {
-  return getHijriParts(todayISO());
-}
-
-function hijriMonthTitle(month, year) {
-  return `${HIJRI_MONTHS[month]} ${year} هـ`;
-}
-
-/* ==============================
+/* =========================================
    حقول اختيار التاريخ الهجري
-================================ */
+========================================= */
 
-function hijriDateFields(isoDate = todayISO(), prefix = 'date') {
+function hijriDateFields(
+  isoDate = todayISO(),
+  prefix = 'date'
+) {
 
-  const selected = getHijriParts(isoDate);
-  const current = currentHijri();
+  const selected =
+    getHijriParts(isoDate);
 
-  let dayOptions = '';
+  const current =
+    currentHijri();
 
-  for (let d = 1; d <= 30; d++) {
-    dayOptions += `
-      <option
-        value="${d}"
-        ${d === selected.day ? 'selected' : ''}>
-        ${d}
-      </option>
-    `;
-  }
-
-  let monthOptions = '';
-
-  for (let m = 1; m <= 12; m++) {
-    monthOptions += `
-      <option
-        value="${m}"
-        ${m === selected.month ? 'selected' : ''}>
-        ${HIJRI_MONTHS[m]}
-      </option>
-    `;
-  }
-
-  let yearOptions = '';
+  let days = '';
 
   for (
-    let y = current.year - 2;
-    y <= current.year + 5;
-    y++
+    let day = 1;
+    day <= 30;
+    day++
   ) {
-    yearOptions += `
+    days += `
       <option
-        value="${y}"
-        ${y === selected.year ? 'selected' : ''}>
-        ${y} هـ
+        value="${day}"
+        ${
+          day === selected.day
+            ? 'selected'
+            : ''
+        }>
+        ${day}
+      </option>
+    `;
+  }
+
+  let months = '';
+
+  for (
+    let month = 1;
+    month <= 12;
+    month++
+  ) {
+    months += `
+      <option
+        value="${month}"
+        ${
+          month === selected.month
+            ? 'selected'
+            : ''
+        }>
+        ${HIJRI_MONTHS[month]}
+      </option>
+    `;
+  }
+
+  let years = '';
+
+  for (
+    let year = current.year - 3;
+    year <= current.year + 5;
+    year++
+  ) {
+    years += `
+      <option
+        value="${year}"
+        ${
+          year === selected.year
+            ? 'selected'
+            : ''
+        }>
+        ${year} هـ
       </option>
     `;
   }
 
   return `
-    <label>
+    <label class="hijri-field">
+
       التاريخ الهجري
 
-      <div class="form-row hijri-date-row">
+      <div class="hijri-selects">
 
-        <select name="${prefix}_day" required>
-          ${dayOptions}
+        <select
+          name="${prefix}_day"
+          required>
+          ${days}
         </select>
 
-        <select name="${prefix}_month" required>
-          ${monthOptions}
+        <select
+          name="${prefix}_month"
+          required>
+          ${months}
+        </select>
+
+        <select
+          name="${prefix}_year"
+          required>
+          ${years}
         </select>
 
       </div>
-
-      <select name="${prefix}_year" required>
-        ${yearOptions}
-      </select>
 
     </label>
   `;
 }
 
-/* ==============================
-   العمليات المالية
-================================ */
+/* =========================================
+   الحسابات المالية
+========================================= */
 
-function totals(bookings = db.bookings, expenses = db.expenses) {
+function totals(
+  bookings = db.bookings,
+  expenses = db.expenses
+) {
 
-  const revenue = bookings.reduce(
-    (sum, booking) =>
-      sum + Number(booking.agreed || 0),
-    0
-  );
+  const revenue =
+    bookings.reduce(
+      (total, booking) =>
+        total +
+        Number(
+          booking.agreed || 0
+        ),
+      0
+    );
 
-  const paid = bookings.reduce(
-    (sum, booking) =>
-      sum + Number(booking.paid || 0),
-    0
-  );
+  const paid =
+    bookings.reduce(
+      (total, booking) =>
+        total +
+        Number(
+          booking.paid || 0
+        ),
+      0
+    );
 
-  const expenseTotal = expenses.reduce(
-    (sum, expense) =>
-      sum + Number(expense.amount || 0),
-    0
-  );
+  const expensesTotal =
+    expenses.reduce(
+      (total, expense) =>
+        total +
+        Number(
+          expense.amount || 0
+        ),
+      0
+    );
 
   return {
     revenue,
     paid,
-    remaining: revenue - paid,
-    expenses: expenseTotal,
-    profit: revenue - expenseTotal
+    remaining:
+      revenue - paid,
+
+    expenses:
+      expensesTotal,
+
+    profit:
+      revenue - expensesTotal
   };
 }
 
 function status(booking) {
-
   const remaining =
-    Number(booking.agreed) -
-    Number(booking.paid);
+    Number(booking.agreed || 0) -
+    Number(booking.paid || 0);
 
   if (remaining <= 0) {
     return [
@@ -355,7 +449,9 @@ function status(booking) {
     ];
   }
 
-  if (Number(booking.paid) > 0) {
+  if (
+    Number(booking.paid || 0) > 0
+  ) {
     return [
       'مدفوعة جزئياً',
       'partial'
@@ -368,145 +464,129 @@ function status(booking) {
   ];
 }
 
-/* ==============================
-   عرض الصفحات
-================================ */
-
-function render() {
-
-  const titles = {
-    home: 'الرئيسية',
-    bookings: 'الحجوزات',
-    expenses: 'المصاريف',
-    reports: 'التقارير',
-    devices: 'الأجهزة',
-    invoices: 'الفواتير',
-    settings: 'الإعدادات'
-  };
-
-  $('#pageTitle').textContent =
-    titles[currentPage] || 'الرئيسية';
-
-  $$('.nav-item').forEach(button => {
-
-    button.classList.toggle(
-      'active',
-      button.dataset.page === currentPage
-    );
-
-  });
-
-  const views = {
-    home: homeView,
-    bookings: bookingsView,
-    expenses: expensesView,
-    reports: reportsView,
-    devices: devicesView,
-    invoices: invoicesView,
-    settings: settingsView
-  };
-
-  $('#mainContent').innerHTML =
-    (views[currentPage] || homeView)();
-
-  bindViewEvents();
-}
+/* =========================================
+   الصفحة الرئيسية
+========================================= */
 
 function homeView() {
 
-  const t = totals();
+  const totalsData =
+    totals();
 
-  const upcoming = [...db.bookings]
-    .filter(
-      booking =>
-        booking.date >= todayISO()
-    )
-    .sort(
-      (a, b) =>
-        a.date.localeCompare(b.date)
-    )
-    .slice(0, 5);
+  const upcoming =
+    [...db.bookings]
+      .filter(
+        booking =>
+          booking.date >= todayISO()
+      )
+      .sort(
+        (a, b) =>
+          a.date.localeCompare(
+            b.date
+          )
+      )
+      .slice(0, 5);
 
   return `
+
     <section class="hero">
 
       <div>
-        <h2>مرحباً بك 👋</h2>
+
+        <h2>
+          مرحباً بك
+        </h2>
 
         <p>
-          ${hijriWithDay(todayISO())}
+          ${hijriWithDay(
+            todayISO()
+          )}
         </p>
+
       </div>
 
     </section>
 
+
     <div class="cards">
 
       <div class="stat-card">
+
+        <div class="stat-icon green-bg">
+          <span>↗</span>
+        </div>
 
         <span class="label">
           إجمالي الإيرادات
         </span>
 
         <span class="value green">
-          ${money(t.revenue)}
-        </span>
-
-        <span class="unit">
-          جميع الحجوزات
+          ${money(
+            totalsData.revenue
+          )}
         </span>
 
       </div>
 
+
       <div class="stat-card">
+
+        <div class="stat-icon red-bg">
+          <span>↘</span>
+        </div>
 
         <span class="label">
           إجمالي المصاريف
         </span>
 
         <span class="value red">
-          ${money(t.expenses)}
-        </span>
-
-        <span class="unit">
-          المصاريف المسجلة
+          ${money(
+            totalsData.expenses
+          )}
         </span>
 
       </div>
 
+
       <div class="stat-card">
+
+        <div class="stat-icon blue-bg">
+          <span>◆</span>
+        </div>
 
         <span class="label">
           صافي الربح
         </span>
 
         <span class="value blue">
-          ${money(t.profit)}
-        </span>
-
-        <span class="unit">
-          الإيرادات - المصاريف
+          ${money(
+            totalsData.profit
+          )}
         </span>
 
       </div>
 
+
       <div class="stat-card">
 
+        <div class="stat-icon gold-bg">
+          <span>◷</span>
+        </div>
+
         <span class="label">
-          المبالغ المتبقية
+          المتبقي للتحصيل
         </span>
 
         <span class="value gold">
-          ${money(t.remaining)}
-        </span>
-
-        <span class="unit">
-          المطلوب تحصيلها
+          ${money(
+            totalsData.remaining
+          )}
         </span>
 
       </div>
 
     </div>
+
 
     <div class="section-head">
 
@@ -517,42 +597,60 @@ function homeView() {
       <button
         class="link-btn"
         data-go="bookings">
-
         عرض الكل
-
       </button>
 
     </div>
 
+
     ${
       upcoming.length
-        ? upcoming.map(bookingCard).join('')
+
+        ? upcoming
+            .map(bookingCard)
+            .join('')
+
         : `
           <div class="empty">
+
             لا توجد حجوزات قادمة
+
           </div>
         `
     }
+
   `;
 }
 
+/* =========================================
+   بطاقة الحجز
+========================================= */
+
 function bookingCard(booking) {
 
-  const [statusText, statusClass] =
-    status(booking);
+  const [
+    statusText,
+    statusClass
+  ] = status(booking);
 
-  const remaining = Math.max(
-    0,
-    Number(booking.agreed) -
-    Number(booking.paid)
-  );
+  const remaining =
+    Math.max(
+      0,
+      Number(
+        booking.agreed || 0
+      ) -
+      Number(
+        booking.paid || 0
+      )
+    );
 
   return `
+
     <article class="booking-card">
 
       <div class="booking-top">
 
-        <div>
+        <div class="booking-info">
 
           <div class="booking-name">
             ${esc(booking.name)}
@@ -560,41 +658,63 @@ function bookingCard(booking) {
 
           <div class="booking-meta">
 
-            ${esc(booking.device)}
+            <div>
+              🔊
+              ${esc(
+                booking.device
+              )}
+            </div>
 
-            <br>
+            <div>
+              📍
+              ${esc(
+                booking.location
+              )}
+            </div>
 
-            📍 ${esc(booking.location)}
-
-            <br>
-
-            📅 ${hijriWithDay(booking.date)}
+            <div>
+              📅
+              ${hijriWithDay(
+                booking.date
+              )}
+            </div>
 
           </div>
 
-          <span class="badge ${statusClass}">
+          <span
+            class="badge ${statusClass}">
+
             ${statusText}
+
           </span>
 
         </div>
 
+
         <div class="amount">
 
-          ${money(booking.agreed)}
+          ${money(
+            booking.agreed
+          )}
 
-          <div class="booking-meta">
+          <small>
 
             المتبقي
 
             <span class="red">
-              ${money(remaining)}
+
+              ${money(
+                remaining
+              )}
+
             </span>
 
-          </div>
+          </small>
 
         </div>
 
       </div>
+
 
       <div class="card-actions">
 
@@ -617,233 +737,554 @@ function bookingCard(booking) {
       </div>
 
     </article>
+
   `;
 }
 
+/* =========================================
+   الحجوزات
+========================================= */
+
 function bookingsView() {
 
+  const bookings =
+    [...db.bookings]
+      .sort(
+        (a, b) =>
+          b.date.localeCompare(
+            a.date
+          )
+      );
+
   return `
+
     <div class="section-head">
 
       <h3>
         جميع الحجوزات
       </h3>
 
-      <span>
-        ${db.bookings.length} حجز
+      <span class="count-badge">
+        ${bookings.length}
       </span>
 
     </div>
 
+
     ${
-      db.bookings.length
-        ? [...db.bookings]
-            .sort(
-              (a, b) =>
-                b.date.localeCompare(a.date)
-            )
+      bookings.length
+
+        ? bookings
             .map(bookingCard)
             .join('')
+
         : `
           <div class="empty">
-            لم تسجل حجوزات بعد
+            لا توجد حجوزات
           </div>
         `
     }
+
   `;
 }
 
+/* =========================================
+   المصاريف
+========================================= */
+
 function expensesView() {
 
+  const expenses =
+    [...db.expenses]
+      .sort(
+        (a, b) =>
+          b.date.localeCompare(
+            a.date
+          )
+      );
+
   return `
+
     <div class="section-head">
 
       <h3>
         المصاريف
       </h3>
 
-      <span class="red">
-        ${money(totals().expenses)}
-      </span>
+      <strong class="red">
+        ${money(
+          totals().expenses
+        )}
+      </strong>
 
     </div>
 
+
     ${
-      db.expenses.length
-        ? [...db.expenses]
-            .sort(
-              (a, b) =>
-                b.date.localeCompare(a.date)
-            )
-            .map(
-              expense => `
-                <div class="expense-row">
+      expenses.length
 
-                  <div>
+        ? expenses.map(
+            expense => `
 
-                    <strong>
-                      ${esc(expense.item)}
-                    </strong>
+              <div class="expense-row">
 
-                    <small>
-                      ${hijriWithDay(expense.date)}
-                    </small>
+                <div>
 
-                  </div>
+                  <strong>
+                    ${esc(
+                      expense.item
+                    )}
+                  </strong>
 
-                  <div>
-
-                    <strong class="red">
-                      ${money(expense.amount)}
-                    </strong>
-
-                    <button
-                      class="icon-btn"
-                      data-del-expense="${expense.id}">
-
-                      ⋮
-
-                    </button>
-
-                  </div>
+                  <small>
+                    ${hijriWithDay(
+                      expense.date
+                    )}
+                  </small>
 
                 </div>
-              `
-            )
-            .join('')
+
+
+                <div class="expense-value">
+
+                  <strong class="red">
+
+                    ${money(
+                      expense.amount
+                    )}
+
+                  </strong>
+
+                  <button
+                    class="delete-mini"
+                    data-del-expense="${expense.id}">
+
+                    حذف
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            `
+          ).join('')
+
         : `
           <div class="empty">
             لا توجد مصاريف
           </div>
         `
     }
+
   `;
 }
 
-/* ==============================
-   التقرير الشهري الهجري
-================================ */
+/* =========================================
+   فلترة التقارير
+========================================= */
+
+function getAvailableHijriYears() {
+
+  const years =
+    new Set();
+
+  db.bookings.forEach(
+    booking => {
+
+      const hijri =
+        getHijriParts(
+          booking.date
+        );
+
+      if (hijri.year) {
+        years.add(
+          hijri.year
+        );
+      }
+    }
+  );
+
+  db.expenses.forEach(
+    expense => {
+
+      const hijri =
+        getHijriParts(
+          expense.date
+        );
+
+      if (hijri.year) {
+        years.add(
+          hijri.year
+        );
+      }
+    }
+  );
+
+  years.add(
+    currentHijri().year
+  );
+
+  return [...years]
+    .sort(
+      (a, b) => b - a
+    );
+}
+
+function filterByHijriPeriod(
+  items,
+  month = reportMonth,
+  year = reportYear
+) {
+
+  return items.filter(
+    item => {
+
+      const hijri =
+        getHijriParts(
+          item.date
+        );
+
+      const monthMatch =
+        month === 'all' ||
+        hijri.month ===
+        Number(month);
+
+      const yearMatch =
+        year === 'all' ||
+        hijri.year ===
+        Number(year);
+
+      return (
+        monthMatch &&
+        yearMatch
+      );
+    }
+  );
+}
+
+function reportPeriodTitle() {
+
+  if (
+    reportMonth === 'all' &&
+    reportYear === 'all'
+  ) {
+    return (
+      'جميع الأشهر ' +
+      'وجميع السنوات'
+    );
+  }
+
+  if (
+    reportMonth === 'all'
+  ) {
+    return (
+      `جميع أشهر سنة ` +
+      `${reportYear} هـ`
+    );
+  }
+
+  if (
+    reportYear === 'all'
+  ) {
+    return (
+      `${HIJRI_MONTHS[
+        Number(reportMonth)
+      ]} - جميع السنوات`
+    );
+  }
+
+  return (
+    `${HIJRI_MONTHS[
+      Number(reportMonth)
+    ]} ` +
+    `${reportYear} هـ`
+  );
+}
+
+/* =========================================
+   تفصيل الأشهر
+========================================= */
+
+function monthlyBreakdownView() {
+
+  if (
+    reportMonth !== 'all' ||
+    reportYear === 'all'
+  ) {
+    return '';
+  }
+
+  let html = `
+
+    <div class="section-head">
+
+      <h3>
+        تفاصيل الأشهر
+      </h3>
+
+    </div>
+
+    <div class="months-list">
+
+  `;
+
+  for (
+    let month = 1;
+    month <= 12;
+    month++
+  ) {
+
+    const monthBookings =
+      filterByHijriPeriod(
+        db.bookings,
+        String(month),
+        reportYear
+      );
+
+    const monthExpenses =
+      filterByHijriPeriod(
+        db.expenses,
+        String(month),
+        reportYear
+      );
+
+    const monthTotals =
+      totals(
+        monthBookings,
+        monthExpenses
+      );
+
+    html += `
+
+      <button
+        class="month-report-card"
+        data-report-month="${month}">
+
+        <div>
+
+          <strong>
+
+            ${HIJRI_MONTHS[month]}
+
+          </strong>
+
+          <small>
+
+            ${monthBookings.length}
+            حجز
+
+          </small>
+
+        </div>
+
+
+        <div class="month-report-money">
+
+          <span class="green">
+
+            ${money(
+              monthTotals.revenue
+            )}
+
+          </span>
+
+          <small>
+
+            صافي:
+            ${money(
+              monthTotals.profit
+            )}
+
+          </small>
+
+        </div>
+
+      </button>
+
+    `;
+  }
+
+  html += `
+    </div>
+  `;
+
+  return html;
+}
+
+/* =========================================
+   صفحة التقارير
+========================================= */
 
 function reportsView() {
 
-  const current = currentHijri();
-
-  const monthlyBookings =
-    db.bookings.filter(
-      booking => {
-
-        const h =
-          getHijriParts(
-            booking.date
-          );
-
-        return (
-          h.year === current.year &&
-          h.month === current.month
-        );
-      }
+  const bookings =
+    filterByHijriPeriod(
+      db.bookings
     );
 
-  const monthlyExpenses =
-    db.expenses.filter(
-      expense => {
-
-        const h =
-          getHijriParts(
-            expense.date
-          );
-
-        return (
-          h.year === current.year &&
-          h.month === current.month
-        );
-      }
+  const expenses =
+    filterByHijriPeriod(
+      db.expenses
     );
 
-  const t = totals(
-    monthlyBookings,
-    monthlyExpenses
-  );
+  const reportTotals =
+    totals(
+      bookings,
+      expenses
+    );
 
-  const max = Math.max(
-    t.revenue,
-    t.expenses,
-    t.profit,
-    t.remaining,
-    1
-  );
+  const years =
+    getAvailableHijriYears();
+
+  const max =
+    Math.max(
+      reportTotals.revenue,
+      reportTotals.expenses,
+      reportTotals.remaining,
+      Math.max(
+        0,
+        reportTotals.profit
+      ),
+      1
+    );
 
   return `
-    <div class="section-head">
 
-      <div>
+    <div class="report-title">
 
-        <h3>
-          التقرير الشهري
-        </h3>
+      <h2>
+        التقرير المالي
+      </h2>
 
-        <div class="booking-meta">
-          ${hijriMonthTitle(
-            current.month,
-            current.year
-          )}
-        </div>
-
-      </div>
+      <p>
+        ${reportPeriodTitle()}
+      </p>
 
     </div>
 
-    <div class="report-box">
 
-      ${reportLine(
-        'الإيرادات',
-        t.revenue,
-        max,
-        'var(--green)'
-      )}
+    <div class="report-filters">
 
-      ${reportLine(
-        'المصاريف',
-        t.expenses,
-        max,
-        'var(--red)'
-      )}
+      <label>
 
-      ${reportLine(
-        'صافي الربح',
-        Math.max(0, t.profit),
-        max,
-        'var(--blue)'
-      )}
+        الشهر
 
-      ${reportLine(
-        'المتبقي',
-        t.remaining,
-        max,
-        'var(--gold)'
-      )}
+        <select
+          id="reportMonthFilter">
+
+          <option
+            value="all"
+            ${
+              reportMonth === 'all'
+                ? 'selected'
+                : ''
+            }>
+
+            جميع الأشهر
+
+          </option>
+
+          ${
+            HIJRI_MONTHS
+              .map(
+                (month, index) => {
+
+                  if (!index) {
+                    return '';
+                  }
+
+                  return `
+
+                    <option
+                      value="${index}"
+                      ${
+                        String(index) ===
+                        String(reportMonth)
+                          ? 'selected'
+                          : ''
+                      }>
+
+                      ${month}
+
+                    </option>
+
+                  `;
+                }
+              )
+              .join('')
+          }
+
+        </select>
+
+      </label>
+
+
+      <label>
+
+        السنة
+
+        <select
+          id="reportYearFilter">
+
+          <option
+            value="all"
+            ${
+              reportYear === 'all'
+                ? 'selected'
+                : ''
+            }>
+
+            جميع السنوات
+
+          </option>
+
+          ${
+            years.map(
+              year => `
+
+                <option
+                  value="${year}"
+                  ${
+                    String(year) ===
+                    String(reportYear)
+                      ? 'selected'
+                      : ''
+                  }>
+
+                  ${year} هـ
+
+                </option>
+
+              `
+            ).join('')
+          }
+
+        </select>
+
+      </label>
 
     </div>
 
-    <div class="section-head">
-      <h3>
-        ملخص الشهر
-      </h3>
-    </div>
 
     <div class="cards">
 
       <div class="stat-card">
 
         <span class="label">
-          الحجوزات
+          الإيرادات
         </span>
 
-        <span class="value">
-          ${monthlyBookings.length}
+        <span class="value green">
+
+          ${money(
+            reportTotals.revenue
+          )}
+
         </span>
 
       </div>
+
 
       <div class="stat-card">
 
@@ -851,13 +1292,129 @@ function reportsView() {
           المصاريف
         </span>
 
-        <span class="value">
-          ${monthlyExpenses.length}
+        <span class="value red">
+
+          ${money(
+            reportTotals.expenses
+          )}
+
+        </span>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <span class="label">
+          صافي الربح
+        </span>
+
+        <span class="value blue">
+
+          ${money(
+            reportTotals.profit
+          )}
+
+        </span>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <span class="label">
+          المتبقي
+        </span>
+
+        <span class="value gold">
+
+          ${money(
+            reportTotals.remaining
+          )}
+
         </span>
 
       </div>
 
     </div>
+
+
+    <div class="section-head">
+
+      <h3>
+        الرسم المالي
+      </h3>
+
+    </div>
+
+
+    <div class="report-box">
+
+      ${reportLine(
+        'الإيرادات',
+        reportTotals.revenue,
+        max,
+        'var(--green)'
+      )}
+
+      ${reportLine(
+        'المصاريف',
+        reportTotals.expenses,
+        max,
+        'var(--red)'
+      )}
+
+      ${reportLine(
+        'صافي الربح',
+        Math.max(
+          0,
+          reportTotals.profit
+        ),
+        max,
+        'var(--blue)'
+      )}
+
+      ${reportLine(
+        'المتبقي',
+        reportTotals.remaining,
+        max,
+        'var(--gold)'
+      )}
+
+    </div>
+
+
+    <div class="report-counts">
+
+      <div>
+
+        <span>
+          الحجوزات
+        </span>
+
+        <strong>
+          ${bookings.length}
+        </strong>
+
+      </div>
+
+      <div>
+
+        <span>
+          المصاريف
+        </span>
+
+        <strong>
+          ${expenses.length}
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    ${monthlyBreakdownView()}
+
   `;
 }
 
@@ -868,7 +1425,16 @@ function reportLine(
   color
 ) {
 
+  const percentage =
+    Math.max(
+      0,
+      Number(value || 0)
+    ) /
+    max *
+    100;
+
   return `
+
     <div class="bar-line">
 
       <span>
@@ -880,7 +1446,7 @@ function reportLine(
         <div
           class="fill"
           style="
-            width:${Math.max(0, value) / max * 100}%;
+            width:${percentage}%;
             background:${color};
           ">
         </div>
@@ -892,126 +1458,187 @@ function reportLine(
       </b>
 
     </div>
+
   `;
 }
+
+/* =========================================
+   الأجهزة
+========================================= */
 
 function devicesView() {
 
   return `
+
     <div class="section-head">
-      <h3>الأجهزة</h3>
+
+      <h3>
+        الأجهزة
+      </h3>
+
     </div>
+
 
     ${
       db.devices.map(
         device => `
+
           <div class="device-card">
 
-            <div class="booking-top">
+            <div class="device-icon">
+              🔊
+            </div>
+
+            <div class="device-data">
 
               <strong>
                 ${esc(device.name)}
               </strong>
 
-              <span>
-                ${device.qty} قطعة
-              </span>
+              <small>
+                الكمية:
+                ${device.qty}
+              </small>
 
             </div>
 
           </div>
+
         `
       ).join('')
     }
+
   `;
 }
+
+/* =========================================
+   الفواتير
+========================================= */
 
 function invoicesView() {
 
+  const bookings =
+    [...db.bookings]
+      .sort(
+        (a, b) =>
+          b.date.localeCompare(
+            a.date
+          )
+      );
+
   return `
+
     <div class="section-head">
-      <h3>الفواتير</h3>
+
+      <h3>
+        الفواتير
+      </h3>
+
     </div>
 
+
     ${
-      db.bookings.length
-        ? [...db.bookings]
-            .sort(
-              (a, b) =>
-                b.date.localeCompare(a.date)
-            )
-            .map(
-              booking => `
-                <div class="invoice-row">
+      bookings.length
 
-                  <div>
+        ? bookings.map(
+            booking => `
 
-                    <strong>
-                      فاتورة
-                      #${String(booking.id).slice(-6)}
-                    </strong>
+              <div class="invoice-row">
 
-                    <small>
-                      ${esc(booking.name)}
-                      <br>
-                      ${hijriWithDay(booking.date)}
-                    </small>
+                <div>
 
-                  </div>
+                  <strong>
+                    فاتورة
+                    #${String(
+                      booking.id
+                    ).slice(-6)}
+                  </strong>
 
-                  <button
-                    class="small-btn primary"
-                    data-invoice="${booking.id}">
+                  <small>
 
-                    عرض
+                    ${esc(
+                      booking.name
+                    )}
 
-                  </button>
+                    <br>
+
+                    ${hijriWithDay(
+                      booking.date
+                    )}
+
+                  </small>
 
                 </div>
-              `
-            )
-            .join('')
+
+
+                <button
+                  class="small-btn primary invoice-view-btn"
+                  data-invoice="${booking.id}">
+
+                  عرض
+
+                </button>
+
+              </div>
+
+            `
+          ).join('')
+
         : `
           <div class="empty">
+
             لا توجد فواتير
+
           </div>
         `
     }
+
   `;
 }
+
+/* =========================================
+   الإعدادات
+========================================= */
 
 function settingsView() {
 
   return `
+
     <div class="section-head">
-      <h3>الإعدادات</h3>
+
+      <h3>
+        الإعدادات
+      </h3>
+
     </div>
 
-    <div class="device-card">
+
+    <div class="settings-card">
 
       <strong>
         نظام التاريخ
       </strong>
 
-      <p class="booking-meta">
-        التاريخ الهجري
-        – تقويم أم القرى
-      </p>
+      <small>
+        هجري - تقويم أم القرى
+      </small>
 
     </div>
 
-    <div class="device-card">
+
+    <div class="settings-card">
 
       <strong>
         حفظ البيانات
       </strong>
 
-      <p class="booking-meta">
+      <small>
         يتم حفظ البيانات
-        داخل الجهاز.
-      </p>
+        داخل الآيفون
+      </small>
 
     </div>
+
 
     <button
       class="submit-btn"
@@ -1020,60 +1647,109 @@ function settingsView() {
       تصدير نسخة احتياطية
 
     </button>
+
   `;
 }
 
-/* ==============================
-   الأحداث
-================================ */
+/* =========================================
+   تشغيل الصفحة
+========================================= */
+
+function render() {
+
+  const titles = {
+    home: 'الرئيسية',
+    bookings: 'الحجوزات',
+    expenses: 'المصاريف',
+    reports: 'التقارير',
+    devices: 'الأجهزة',
+    invoices: 'الفواتير',
+    settings: 'الإعدادات'
+  };
+
+  $('#pageTitle').textContent =
+    titles[currentPage] ||
+    'الرئيسية';
+
+  $$('.nav-item').forEach(
+    button => {
+
+      button.classList.toggle(
+        'active',
+        button.dataset.page ===
+        currentPage
+      );
+    }
+  );
+
+  const views = {
+    home: homeView,
+    bookings: bookingsView,
+    expenses: expensesView,
+    reports: reportsView,
+    devices: devicesView,
+    invoices: invoicesView,
+    settings: settingsView
+  };
+
+  $('#mainContent').innerHTML =
+    (
+      views[currentPage] ||
+      homeView
+    )();
+
+  bindViewEvents();
+}
+
+/* =========================================
+   أحداث الصفحات
+========================================= */
 
 function bindViewEvents() {
 
   $$('[data-go]').forEach(
     button => {
 
-      button.onclick =
-        () => go(button.dataset.go);
-
+      button.onclick = () =>
+        go(
+          button.dataset.go
+        );
     }
   );
 
   $$('[data-detail]').forEach(
     button => {
 
-      button.onclick =
-        () => showDetail(
+      button.onclick = () =>
+        showDetail(
           Number(
             button.dataset.detail
           )
         );
-
     }
   );
 
   $$('[data-invoice]').forEach(
     button => {
 
-      button.onclick =
-        () => showInvoice(
+      button.onclick = () =>
+        showInvoice(
           Number(
             button.dataset.invoice
           )
         );
-
     }
   );
 
   $$('[data-del-expense]').forEach(
     button => {
 
-      button.onclick =
-        () => deleteExpense(
+      button.onclick = () =>
+        deleteExpense(
           Number(
             button.dataset.delExpense
           )
         );
-
     }
   );
 
@@ -1084,6 +1760,51 @@ function bindViewEvents() {
     exportButton.onclick =
       exportData;
   }
+
+  const monthFilter =
+    $('#reportMonthFilter');
+
+  if (monthFilter) {
+
+    monthFilter.onchange =
+      event => {
+
+        reportMonth =
+          event.target.value;
+
+        render();
+      };
+  }
+
+  const yearFilter =
+    $('#reportYearFilter');
+
+  if (yearFilter) {
+
+    yearFilter.onchange =
+      event => {
+
+        reportYear =
+          event.target.value;
+
+        render();
+      };
+  }
+
+  $$('[data-report-month]')
+    .forEach(
+      button => {
+
+        button.onclick = () => {
+
+          reportMonth =
+            button.dataset
+              .reportMonth;
+
+          render();
+        };
+      }
+    );
 }
 
 function go(page) {
@@ -1091,51 +1812,66 @@ function go(page) {
   render();
 }
 
+/* =========================================
+   تنظيف النصوص
+========================================= */
+
 function esc(text = '') {
 
   return String(text).replace(
     /[&<>"']/g,
-    char => ({
+    character => ({
       '&': '&amp;',
       '<': '&lt;',
       '>': '&gt;',
       '"': '&quot;',
       "'": '&#039;'
-    }[char])
+    }[character])
   );
 }
 
-/* ==============================
+/* =========================================
    النوافذ
-================================ */
+========================================= */
 
-function openModal(title, html) {
+function openModal(
+  title,
+  content
+) {
 
   $('#modalTitle').textContent =
     title;
 
   $('#modalBody').innerHTML =
-    html;
+    content;
 
   $('#modalBackdrop')
-    .classList
-    .remove('hidden');
+    .classList.remove(
+      'hidden'
+    );
 
   $('#modal')
-    .classList
-    .remove('hidden');
+    .classList.remove(
+      'hidden'
+    );
 }
 
 function closeModal() {
 
   $('#modalBackdrop')
-    .classList
-    .add('hidden');
+    .classList.add(
+      'hidden'
+    );
 
   $('#modal')
-    .classList
-    .add('hidden');
+    .classList.add(
+      'hidden'
+    );
 }
+
+/* =========================================
+   تفاصيل الحجز
+========================================= */
 
 function showDetail(id) {
 
@@ -1148,91 +1884,148 @@ function showDetail(id) {
     return;
   }
 
-  const remaining = Math.max(
-    0,
-    booking.agreed -
-    booking.paid
-  );
+  const remaining =
+    Math.max(
+      0,
+      Number(
+        booking.agreed || 0
+      ) -
+      Number(
+        booking.paid || 0
+      )
+    );
 
   openModal(
     'تفاصيل الحجز',
     `
-      <div class="device-card">
 
-        <p>
-          <b>العميل:</b>
-          ${esc(booking.name)}
-        </p>
+      <div class="detail-list">
 
-        <p>
-          <b>الجهاز:</b>
-          ${esc(booking.device)}
-        </p>
+        <div>
+          <span>اسم العميل</span>
+          <strong>
+            ${esc(
+              booking.name
+            )}
+          </strong>
+        </div>
 
-        <p>
-          <b>الموقع:</b>
-          ${esc(booking.location)}
-        </p>
+        <div>
+          <span>رقم التواصل</span>
+          <strong>
+            ${esc(
+              booking.phone || '-'
+            )}
+          </strong>
+        </div>
 
-        <p>
-          <b>التاريخ:</b>
-          ${hijriWithDay(booking.date)}
-        </p>
+        <div>
+          <span>الجهاز</span>
+          <strong>
+            ${esc(
+              booking.device
+            )}
+          </strong>
+        </div>
 
-        <p>
-          <b>المتفق عليه:</b>
-          <span class="green">
-            ${money(booking.agreed)}
+        <div>
+          <span>الموقع</span>
+          <strong>
+            ${esc(
+              booking.location
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <span>التاريخ</span>
+          <strong>
+            ${hijriWithDay(
+              booking.date
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <span>
+            المتفق عليه
           </span>
-        </p>
 
-        <p>
-          <b>الواصل:</b>
-          <span class="blue">
-            ${money(booking.paid)}
-          </span>
-        </p>
+          <strong class="green">
+            ${money(
+              booking.agreed
+            )}
+          </strong>
+        </div>
 
-        <p>
-          <b>المتبقي:</b>
-          <span class="red">
-            ${money(remaining)}
+        <div>
+          <span>
+            الواصل
           </span>
-        </p>
+
+          <strong class="blue">
+            ${money(
+              booking.paid
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <span>
+            المتبقي
+          </span>
+
+          <strong class="red">
+            ${money(
+              remaining
+            )}
+          </strong>
+        </div>
 
       </div>
+
 
       <div class="card-actions">
 
         <button
-          class="small-btn primary"
-          id="detailInvoice">
+          id="detailInvoice"
+          class="small-btn primary">
+
           عرض الفاتورة
+
         </button>
 
         <button
-          class="small-btn"
-          id="editBooking">
+          id="editBooking"
+          class="small-btn">
+
           تعديل
-        </button>
 
-        <button
-          class="small-btn danger-btn"
-          id="deleteBooking">
-          حذف
         </button>
 
       </div>
+
+
+      <button
+        id="deleteBooking"
+        class="delete-full">
+
+        حذف الحجز
+
+      </button>
+
     `
   );
 
   $('#detailInvoice').onclick =
-    () => showInvoice(id);
+    () =>
+      showInvoice(id);
 
   $('#editBooking').onclick =
-    () => openBookingForm(
-      booking
-    );
+    () =>
+      openBookingForm(
+        booking
+      );
 
   $('#deleteBooking').onclick =
     () => {
@@ -1260,11 +2053,13 @@ function showDetail(id) {
     };
 }
 
-/* ==============================
-   إضافة / تعديل حجز
-================================ */
+/* =========================================
+   إضافة وتعديل الحجز
+========================================= */
 
-function openBookingForm(existing = null) {
+function openBookingForm(
+  existing = null
+) {
 
   const booking =
     existing || {
@@ -1281,32 +2076,47 @@ function openBookingForm(existing = null) {
   openModal(
     existing
       ? 'تعديل الحجز'
-      : 'إضافة حجز',
+      : 'حجز جديد',
 
     `
+
       <form
         id="bookingForm"
         class="form-grid">
 
+
         <label>
+
           اسم العميل
 
           <input
             name="name"
             required
-            value="${esc(booking.name)}">
+            value="${esc(
+              booking.name
+            )}"
+            placeholder="اسم العميل">
+
         </label>
 
+
         <label>
+
           رقم التواصل
 
           <input
             name="phone"
             inputmode="tel"
-            value="${esc(booking.phone)}">
+            value="${esc(
+              booking.phone || ''
+            )}"
+            placeholder="05xxxxxxxx">
+
         </label>
 
+
         <label>
+
           نوع الجهاز
 
           <select
@@ -1320,8 +2130,11 @@ function openBookingForm(existing = null) {
             ${
               db.devices.map(
                 device => `
+
                   <option
-                    value="${esc(device.name)}"
+                    value="${esc(
+                      device.name
+                    )}"
                     ${
                       booking.device ===
                       device.name
@@ -1329,9 +2142,12 @@ function openBookingForm(existing = null) {
                         : ''
                     }>
 
-                    ${esc(device.name)}
+                    ${esc(
+                      device.name
+                    )}
 
                   </option>
+
                 `
               ).join('')
             }
@@ -1366,24 +2182,32 @@ function openBookingForm(existing = null) {
 
         </label>
 
+
         <label>
+
           الموقع
 
           <input
             name="location"
             required
-            value="${esc(booking.location)}">
+            value="${esc(
+              booking.location
+            )}"
+            placeholder="مثال: أبها - حي العرين">
 
         </label>
+
 
         ${hijriDateFields(
           booking.date,
           'booking'
         )}
 
+
         <div class="form-row">
 
           <label>
+
             السعر المتفق عليه
 
             <input
@@ -1396,7 +2220,9 @@ function openBookingForm(existing = null) {
 
           </label>
 
+
           <label>
+
             الواصل
 
             <input
@@ -1410,14 +2236,19 @@ function openBookingForm(existing = null) {
 
         </div>
 
+
         <label>
+
           ملاحظات
 
-          <textarea name="notes">${esc(
-            booking.notes || ''
-          )}</textarea>
+          <textarea
+            name="notes"
+            placeholder="ملاحظات اختيارية">${esc(
+              booking.notes || ''
+            )}</textarea>
 
         </label>
+
 
         <button
           class="submit-btn"
@@ -1432,6 +2263,7 @@ function openBookingForm(existing = null) {
         </button>
 
       </form>
+
     `
   );
 
@@ -1440,58 +2272,58 @@ function openBookingForm(existing = null) {
 
       event.preventDefault();
 
-      const form =
-        new FormData(
-          event.currentTarget
-        );
-
-      const obj =
+      const formData =
         Object.fromEntries(
-          form.entries()
+          new FormData(
+            event.currentTarget
+          ).entries()
         );
 
-      const isoDate =
+      const date =
         hijriToGregorian(
-          obj.booking_year,
-          obj.booking_month,
-          obj.booking_day
+          formData.booking_year,
+          formData.booking_month,
+          formData.booking_day
         );
 
-      if (!isoDate) {
-
+      if (!date) {
         alert(
-          'التاريخ الهجري غير صحيح. تأكد من اليوم والشهر.'
+          'التاريخ الهجري غير صحيح'
         );
 
         return;
       }
 
-      delete obj.booking_day;
-      delete obj.booking_month;
-      delete obj.booking_year;
+      delete formData.booking_day;
+      delete formData.booking_month;
+      delete formData.booking_year;
 
-      obj.date = isoDate;
+      formData.date = date;
 
-      obj.agreed =
-        Number(obj.agreed);
+      formData.agreed =
+        Number(
+          formData.agreed || 0
+        );
 
-      obj.paid =
-        Number(obj.paid || 0);
+      formData.paid =
+        Number(
+          formData.paid || 0
+        );
 
       if (existing) {
 
         Object.assign(
           existing,
-          obj
+          formData
         );
 
       } else {
 
-        obj.id =
+        formData.id =
           Date.now();
 
         db.bookings.push(
-          obj
+          formData
         );
       }
 
@@ -1507,20 +2339,22 @@ function openBookingForm(existing = null) {
     };
 }
 
-/* ==============================
-   إضافة مصروف بالتاريخ الهجري
-================================ */
+/* =========================================
+   إضافة المصروف
+========================================= */
 
 function openExpenseForm() {
 
   openModal(
     'إضافة مصروف',
     `
+
       <form
         id="expenseForm"
         class="form-grid">
 
         <label>
+
           بند المصروف
 
           <input
@@ -1530,31 +2364,37 @@ function openExpenseForm() {
 
         </label>
 
+
         <label>
+
           المبلغ
 
           <input
             name="amount"
             type="number"
-            inputmode="decimal"
             min="0"
-            required>
+            required
+            inputmode="decimal">
 
         </label>
+
 
         ${hijriDateFields(
           todayISO(),
           'expense'
         )}
 
+
         <button
-          class="submit-btn">
+          class="submit-btn"
+          type="submit">
 
           حفظ المصروف
 
         </button>
 
       </form>
+
     `
   );
 
@@ -1563,42 +2403,47 @@ function openExpenseForm() {
 
       event.preventDefault();
 
-      const obj =
+      const formData =
         Object.fromEntries(
           new FormData(
             event.currentTarget
           ).entries()
         );
 
-      const isoDate =
+      const date =
         hijriToGregorian(
-          obj.expense_year,
-          obj.expense_month,
-          obj.expense_day
+          formData.expense_year,
+          formData.expense_month,
+          formData.expense_day
         );
 
-      if (!isoDate) {
+      if (!date) {
 
         alert(
-          'التاريخ الهجري غير صحيح.'
+          'التاريخ الهجري غير صحيح'
         );
 
         return;
       }
 
-      delete obj.expense_day;
-      delete obj.expense_month;
-      delete obj.expense_year;
+      delete formData.expense_day;
+      delete formData.expense_month;
+      delete formData.expense_year;
 
-      obj.date = isoDate;
+      formData.date =
+        date;
 
-      obj.id =
+      formData.id =
         Date.now();
 
-      obj.amount =
-        Number(obj.amount);
+      formData.amount =
+        Number(
+          formData.amount || 0
+        );
 
-      db.expenses.push(obj);
+      db.expenses.push(
+        formData
+      );
 
       save();
       closeModal();
@@ -1633,9 +2478,9 @@ function deleteExpense(id) {
   }
 }
 
-/* ==============================
+/* =========================================
    الفاتورة
-================================ */
+========================================= */
 
 function showInvoice(id) {
 
@@ -1652,29 +2497,37 @@ function showInvoice(id) {
   const remaining =
     Math.max(
       0,
-      booking.agreed -
-      booking.paid
+      Number(
+        booking.agreed || 0
+      ) -
+      Number(
+        booking.paid || 0
+      )
     );
 
   openModal(
     'الفاتورة',
     `
+
       <div
         class="invoice-paper"
         id="invoicePaper">
+
 
         <div class="invoice-brand">
 
           <div>
 
-            <h2 style="margin:0">
+            <h2>
               فاتورة
             </h2>
 
             <small>
 
-              رقم #
-              ${String(booking.id).slice(-6)}
+              رقم الفاتورة
+              #${String(
+                booking.id
+              ).slice(-6)}
 
               <br>
 
@@ -1686,40 +2539,64 @@ function showInvoice(id) {
 
           </div>
 
+
           <img
             src="wintercamp_icon.png"
             alt="Winter Camp">
 
         </div>
 
-        <p>
-          <b>العميل:</b>
-          ${esc(booking.name)}
-        </p>
 
-        <p>
-          <b>الموقع:</b>
-          ${esc(booking.location)}
-        </p>
+        <div class="invoice-customer">
+
+          <p>
+            <b>العميل:</b>
+            ${esc(
+              booking.name
+            )}
+          </p>
+
+          <p>
+            <b>الموقع:</b>
+            ${esc(
+              booking.location
+            )}
+          </p>
+
+        </div>
+
 
         <table>
 
           <thead>
 
             <tr>
-              <th>الصنف</th>
-              <th>الكمية</th>
-              <th>الإجمالي</th>
+
+              <th>
+                الصنف
+              </th>
+
+              <th>
+                العدد
+              </th>
+
+              <th>
+                السعر
+              </th>
+
             </tr>
 
           </thead>
+
 
           <tbody>
 
             <tr>
 
               <td>
-                ${esc(booking.device)}
+                ${esc(
+                  booking.device
+                )}
               </td>
 
               <td>
@@ -1738,32 +2615,55 @@ function showInvoice(id) {
 
         </table>
 
-        <p>
-          المبلغ المتفق عليه:
-          <b>
-            ${money(
-              booking.agreed
-            )}
-          </b>
-        </p>
 
-        <p>
-          الواصل:
-          <b>
-            ${money(
-              booking.paid
-            )}
-          </b>
-        </p>
+        <div class="invoice-money">
 
-        <p>
-          المتبقي:
-          <b>
-            ${money(
-              remaining
-            )}
-          </b>
-        </p>
+          <div>
+
+            <span>
+              المتفق عليه
+            </span>
+
+            <strong>
+              ${money(
+                booking.agreed
+              )}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              الواصل
+            </span>
+
+            <strong>
+              ${money(
+                booking.paid
+              )}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              المتبقي
+            </span>
+
+            <strong>
+              ${money(
+                remaining
+              )}
+            </strong>
+
+          </div>
+
+        </div>
+
 
         <div class="invoice-total">
 
@@ -1779,30 +2679,42 @@ function showInvoice(id) {
 
         </div>
 
-        <p style="
-          margin-bottom:0;
-          font-size:12px;
-        ">
-          شكراً لتعاملكم معنا
+
+        <p class="invoice-thanks">
+
+          شكراً لتعاملكم مع
+          Winter Camp
+
         </p>
 
       </div>
 
+
       <div class="invoice-actions">
 
-        <button id="printInvoice">
+        <button
+          id="printInvoice">
+
           طباعة
+
         </button>
 
-        <button id="shareInvoice">
+        <button
+          id="shareInvoice">
+
           مشاركة
+
         </button>
 
-        <button id="closeInvoice">
+        <button
+          id="closeInvoice">
+
           إغلاق
+
         </button>
 
       </div>
+
     `
   );
 
@@ -1810,45 +2722,56 @@ function showInvoice(id) {
     () => window.print();
 
   $('#shareInvoice').onclick =
-    () => shareBooking(
-      booking
-    );
+    () =>
+      shareBooking(
+        booking
+      );
 
   $('#closeInvoice').onclick =
     closeModal;
 }
 
-function shareBooking(booking) {
+function shareBooking(
+  booking
+) {
 
   const remaining =
     Math.max(
       0,
-      booking.agreed -
-      booking.paid
+      Number(
+        booking.agreed || 0
+      ) -
+      Number(
+        booking.paid || 0
+      )
     );
 
-  const text =
-`Winter Camp
+  const text = `
+Winter Camp
 
 العميل: ${booking.name}
 
 التاريخ:
 ${hijriWithDay(booking.date)}
 
-الإجمالي:
+الجهاز:
+${booking.device}
+
+المبلغ المتفق عليه:
 ${money(booking.agreed)}
 
 الواصل:
 ${money(booking.paid)}
 
 المتبقي:
-${money(remaining)}`;
+${money(remaining)}
+`;
 
   if (navigator.share) {
 
     navigator.share({
       title:
-        'فاتورة Winter Camp',
+        'Winter Camp',
       text
     });
 
@@ -1863,9 +2786,9 @@ ${money(remaining)}`;
   }
 }
 
-/* ==============================
-   النسخة الاحتياطية
-================================ */
+/* =========================================
+   النسخ الاحتياطي
+========================================= */
 
 function exportData() {
 
@@ -1894,7 +2817,8 @@ function exportData() {
       'a'
     );
 
-  link.href = url;
+  link.href =
+    url;
 
   link.download =
     'wintercamp-backup.json';
@@ -1913,6 +2837,10 @@ function exportData() {
     'تم تجهيز النسخة الاحتياطية'
   );
 }
+
+/* =========================================
+   إشعار
+========================================= */
 
 function toast(message) {
 
@@ -1942,35 +2870,36 @@ function toast(message) {
   );
 }
 
+/* =========================================
+   القائمة
+========================================= */
+
 function toggleMenu(show) {
 
   $('#sideSheet')
-    .classList
-    .toggle(
+    .classList.toggle(
       'hidden',
       !show
     );
 
   $('#sheetBackdrop')
-    .classList
-    .toggle(
+    .classList.toggle(
       'hidden',
       !show
     );
 }
 
-/* ==============================
-   أزرار البرنامج
-================================ */
+/* =========================================
+   الأزرار الرئيسية
+========================================= */
 
 $$('.nav-item').forEach(
   button => {
 
-    button.onclick =
-      () =>
-        go(
-          button.dataset.page
-        );
+    button.onclick = () =>
+      go(
+        button.dataset.page
+      );
   }
 );
 
@@ -2005,15 +2934,15 @@ $('#sheetBackdrop').onclick =
 $$('[data-sheet-page]').forEach(
   button => {
 
-    button.onclick =
-      () => {
+    button.onclick = () => {
 
-        toggleMenu(false);
+      toggleMenu(false);
 
-        go(
-          button.dataset.sheetPage
-        );
-      };
+      go(
+        button.dataset
+          .sheetPage
+      );
+    };
   }
 );
 
@@ -2047,11 +2976,21 @@ $('#importInput').onchange =
         );
 
       if (
-        !imported.bookings ||
-        !imported.expenses
+        !Array.isArray(
+          imported.bookings
+        ) ||
+        !Array.isArray(
+          imported.expenses
+        )
       ) {
-
         throw new Error();
+      }
+
+      if (!imported.devices) {
+        imported.devices =
+          clone(
+            seed.devices
+          );
       }
 
       db = imported;
@@ -2064,7 +3003,7 @@ $('#importInput').onchange =
         'تم استيراد البيانات'
       );
 
-    } catch {
+    } catch (error) {
 
       alert(
         'ملف النسخة الاحتياطية غير صالح'
@@ -2072,7 +3011,9 @@ $('#importInput').onchange =
     }
   };
 
-/* تاريخ اليوم الهجري */
+/* =========================================
+   التاريخ في الأعلى
+========================================= */
 
 if ($('#hijriToday')) {
 
@@ -2082,7 +3023,9 @@ if ($('#hijriToday')) {
     );
 }
 
-/* PWA */
+/* =========================================
+   Service Worker
+========================================= */
 
 if (
   'serviceWorker'
@@ -2096,14 +3039,18 @@ if (
       navigator
         .serviceWorker
         .register(
-          './sw.js?v=10'
+          './sw.js?v=20'
         )
         .catch(
-          console.error
+          error =>
+            console.log(
+              error
+            )
         );
-
     }
   );
 }
+
+/* تشغيل التطبيق */
 
 render();
