@@ -3779,3 +3779,52 @@ button{
     font-size:15px !important;
     font-weight:700 !important;
 }
+/* =========================================================
+   توحيد خط الصنف والكمية والأسعار - إصلاح نهائي
+========================================================= */
+
+/* جميع خلايا بيانات الجدول */
+.invoice-items-table tbody td,
+.invoice-products tbody td{
+  font-size:17px !important;
+  font-weight:800 !important;
+  line-height:1.4 !important;
+}
+
+/* اسم الصنف */
+.invoice-items-table .invoice-product-name strong,
+.invoice-items-table .product-title strong,
+.invoice-products .invoice-product-name strong,
+.invoice-products .product-title strong{
+  font-size:17px !important;
+  font-weight:800 !important;
+  line-height:1.4 !important;
+}
+
+/* الكمية */
+.invoice-items-table tbody td:nth-child(3),
+.invoice-products tbody td:nth-child(3){
+  font-size:17px !important;
+  font-weight:800 !important;
+}
+
+/* سعر الوحدة */
+.invoice-items-table tbody td:nth-child(4),
+.invoice-products tbody td:nth-child(4){
+  font-size:17px !important;
+  font-weight:800 !important;
+}
+
+/* الإجمالي */
+.invoice-items-table tbody td:nth-child(5),
+.invoice-products tbody td:nth-child(5){
+  font-size:17px !important;
+  font-weight:800 !important;
+}
+
+/* الرقم م */
+.invoice-items-table tbody td:nth-child(1),
+.invoice-products tbody td:nth-child(1){
+  font-size:17px !important;
+  font-weight:800 !important;
+}
