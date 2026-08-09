@@ -2341,6 +2341,44 @@ $$('.device-package')
       const value =
         button.dataset.deviceValue;
 
+      button.onclick =
+        () => {
+
+          $$('.device-package')
+            .forEach(
+              item =>
+                item.classList.remove(
+                  'selected'
+                )
+            );
+
+          button.classList.add(
+            'selected'
+          );
+
+          if (deviceValue) {
+            deviceValue.value = value;
+          }
+
+          if (deviceManualInput) {
+            deviceManualInput.value = value;
+          }
+
+          /* إغلاق القائمة بعد الاختيار */
+          deviceListSection.classList.add(
+            'hidden'
+          );
+
+          deviceListMode.textContent =
+            'تم اختيار الباقة ✓';
+        };
+    }
+  );
+    button => {
+
+      const value =
+        button.dataset.deviceValue;
+
       if (
         deviceValue &&
         deviceValue.value === value
