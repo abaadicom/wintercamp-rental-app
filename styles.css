@@ -3851,3 +3851,192 @@ button{
 .delete-mini{
   color:var(--red);
 }
+/* =========================================================
+   اختيار نوع الأجهزة / الباقة
+========================================================= */
+
+.optional-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  margin-right:8px;
+  padding:3px 8px;
+
+  border:1px solid var(--green);
+  border-radius:6px;
+
+  color:var(--green);
+
+  font-size:10px;
+  font-weight:700;
+}
+
+.device-mode-tabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+
+  gap:10px;
+
+  margin-top:8px;
+}
+
+.device-mode-btn{
+  min-height:48px;
+
+  padding:10px 12px;
+
+  border:1px solid var(--line);
+  border-radius:13px;
+
+  background:#0c1216;
+
+  color:var(--muted);
+
+  cursor:pointer;
+}
+
+.device-mode-btn.active{
+  border-color:var(--green);
+
+  background:rgba(37,193,111,.07);
+
+  color:var(--green);
+
+  box-shadow:
+    0
+    0
+    0
+    1px
+    rgba(37,193,111,.08);
+}
+
+
+.device-list-section{
+  margin-top:10px;
+}
+
+
+.device-package-list{
+  overflow:hidden;
+
+  border:1px solid var(--line);
+  border-radius:14px;
+
+  background:#0c1216;
+}
+
+
+.device-package{
+  width:100%;
+
+  display:grid;
+  grid-template-columns:48px 1fr;
+
+  align-items:center;
+
+  gap:10px;
+
+  padding:13px 12px;
+
+  border:0;
+  border-bottom:1px solid var(--line);
+
+  background:transparent;
+
+  color:var(--text);
+
+  text-align:right;
+
+  cursor:pointer;
+}
+
+.device-package:last-child{
+  border-bottom:0;
+}
+
+
+.device-package-number{
+  width:36px;
+  height:36px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  justify-self:center;
+
+  flex-shrink:0;
+
+  border-radius:50%;
+
+  background:var(--green);
+
+  color:#06130b;
+
+  font-size:17px;
+  font-weight:900;
+}
+
+
+.device-package-text{
+  display:block;
+
+  font-size:12px;
+  line-height:1.8;
+}
+
+
+.device-package.selected{
+  background:rgba(37,193,111,.09);
+
+  box-shadow:
+    inset
+    0
+    0
+    0
+    1px
+    rgba(37,193,111,.35);
+}
+
+.device-package.selected
+.device-package-number{
+  box-shadow:
+    0
+    0
+    0
+    3px
+    rgba(37,193,111,.15);
+}
+
+
+.device-manual-section{
+  margin-top:10px;
+}
+
+
+.device-manual-section input{
+  width:100%;
+
+  padding:12px;
+
+  border:1px solid var(--line);
+  border-radius:12px;
+
+  outline:none;
+
+  background:#0c1216;
+
+  color:var(--text);
+}
+
+.device-manual-section input:focus{
+  border-color:var(--green);
+
+  box-shadow:
+    0
+    0
+    0
+    2px
+    rgba(37,193,111,.08);
+}
