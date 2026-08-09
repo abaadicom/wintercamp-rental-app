@@ -2064,19 +2064,129 @@ function openBookingForm(
           <input
             name="eventType"
             value="${esc(booking.eventType || '')}"
-            placeholder="مثال: زواج">
+            placeholder="مثال: زواج - ملكة">
         </label>
 
 
         <label>
-          نوع الأجهزة / الباقة
+  نوع الأجهزة / الباقة
+  <span class="optional-badge">اختياري</span>
 
-          <input
-            name="device"
-            required
-            value="${esc(booking.device || '')}"
-            placeholder="مثال: سماعتين + ميكسر">
-        </label>
+  <div class="device-mode-tabs">
+
+    <button
+      type="button"
+      id="deviceListMode"
+      class="device-mode-btn active">
+      اختيار من القائمة
+    </button>
+
+    <button
+      type="button"
+      id="deviceManualMode"
+      class="device-mode-btn">
+      كتابة يدوية
+    </button>
+
+  </div>
+
+
+  <div
+    id="deviceListSection"
+    class="device-list-section">
+
+    <div class="device-package-list">
+
+
+      <button
+        type="button"
+        class="device-package"
+        data-device-value="عدد (1) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط">
+
+        <span class="device-package-number">
+          1
+        </span>
+
+        <span class="device-package-text">
+          عدد (1) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط
+        </span>
+
+      </button>
+
+
+      <button
+        type="button"
+        class="device-package"
+        data-device-value="عدد (2) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط">
+
+        <span class="device-package-number">
+          2
+        </span>
+
+        <span class="device-package-text">
+          عدد (2) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط
+        </span>
+
+      </button>
+
+
+      <button
+        type="button"
+        class="device-package"
+        data-device-value="عدد (1) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط + ياماها ميكسر 12 قناة M-12XU + ميكروفون صوتي ديناميكي">
+
+        <span class="device-package-number">
+          3
+        </span>
+
+        <span class="device-package-text">
+          عدد (1) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط + ياماها ميكسر 12 قناة M-12XU + ميكروفون صوتي ديناميكي
+        </span>
+
+      </button>
+
+
+      <button
+        type="button"
+        class="device-package"
+        data-device-value="عدد (2) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط + ياماها ميكسر 12 قناة M-12XU + ميكروفون صوتي ديناميكي">
+
+        <span class="device-package-number">
+          4
+        </span>
+
+        <span class="device-package-text">
+          عدد (2) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط + ياماها ميكسر 12 قناة M-12XU + ميكروفون صوتي ديناميكي
+        </span>
+
+      </button>
+
+
+    </div>
+
+  </div>
+
+
+  <div
+    id="deviceManualSection"
+    class="device-manual-section hidden">
+
+    <input
+      id="deviceManualInput"
+      type="text"
+      placeholder="اكتب نوع الأجهزة أو تفاصيل الباقة">
+
+  </div>
+
+
+  <input
+    id="deviceValue"
+    name="device"
+    type="hidden"
+    required
+    value="${esc(booking.device || '')}">
+
+</label>
 
 
         <label>
@@ -2148,6 +2258,146 @@ function openBookingForm(
       </form>
     `
   );
+const deviceValue =
+  $('#deviceValue');
+
+const deviceListMode =
+  $('#deviceListMode');
+
+const deviceManualMode =
+  $('#deviceManualMode');
+
+const deviceListSection =
+  $('#deviceListSection');
+
+const deviceManualSection =
+  $('#deviceManualSection');
+
+const deviceManualInput =
+  $('#deviceManualInput');
+
+
+function setDeviceMode(mode) {
+
+  const listMode =
+    mode === 'list';
+
+  deviceListMode?.classList.toggle(
+    'active',
+    listMode
+  );
+
+  deviceManualMode?.classList.toggle(
+    'active',
+    !listMode
+  );
+
+  deviceListSection?.classList.toggle(
+    'hidden',
+    !listMode
+  );
+
+  deviceManualSection?.classList.toggle(
+    'hidden',
+    listMode
+  );
+}
+
+
+if (deviceListMode) {
+  deviceListMode.onclick =
+    () =>
+      setDeviceMode('list');
+}
+
+
+if (deviceManualMode) {
+  deviceManualMode.onclick =
+    () => {
+
+      setDeviceMode('manual');
+
+      if (
+        deviceManualInput &&
+        deviceValue
+      ) {
+        deviceManualInput.value =
+          deviceValue.value || '';
+      }
+
+      setTimeout(
+        () =>
+          deviceManualInput?.focus(),
+        50
+      );
+    };
+}
+
+
+$$('.device-package')
+  .forEach(
+    button => {
+
+      const value =
+        button.dataset.deviceValue;
+
+      if (
+        deviceValue &&
+        deviceValue.value === value
+      ) {
+        button.classList.add(
+          'selected'
+        );
+      }
+
+
+      button.onclick =
+        () => {
+
+          $$('.device-package')
+            .forEach(
+              item =>
+                item.classList.remove(
+                  'selected'
+                )
+            );
+
+          button.classList.add(
+            'selected'
+          );
+
+          if (deviceValue) {
+            deviceValue.value =
+              value;
+          }
+
+          if (deviceManualInput) {
+            deviceManualInput.value =
+              value;
+          }
+        };
+    }
+  );
+
+
+if (deviceManualInput) {
+  deviceManualInput.oninput =
+    () => {
+
+      if (deviceValue) {
+        deviceValue.value =
+          deviceManualInput.value;
+      }
+
+      $$('.device-package')
+        .forEach(
+          item =>
+            item.classList.remove(
+              'selected'
+            )
+        );
+    };
+}
 
   $('#bookingForm').onsubmit =
     event => {
