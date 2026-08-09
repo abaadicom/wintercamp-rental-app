@@ -4211,5 +4211,75 @@ if (
 /* =====================================================
    تشغيل البرنامج
 ===================================================== */
+/* =====================================================
+   فحص بيانات التخزين - مؤقت
+===================================================== */
 
+function inspectLocalStorage() {
+  const result = [];
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    const value = localStorage.getItem(key);
+
+    let parsed = null;
+
+    try {
+      parsed = JSON.parse(value);
+    } catch {
+      parsed = value;
+    }
+
+    result.push({
+      key,
+      value: parsed
+    });
+  }
+
+  console.log(
+    'Winter Camp LocalStorage:',
+    result
+  );
+
+  const readable =
+    result.map(item => {
+
+      let bookings = '-';
+      let expenses = '-';
+
+      if (
+        item.value &&
+        typeof item.value === 'object'
+      ) {
+        if (Array.isArray(item.value.bookings)) {
+          bookings =
+            item.value.bookings.length;
+        }
+
+        if (Array.isArray(item.value.expenses)) {
+          expenses =
+            item.value.expenses.length;
+        }
+      }
+
+      return (
+        'المفتاح: ' +
+        item.key +
+        '\n' +
+        'الحجوزات: ' +
+        bookings +
+        '\n' +
+        'المصاريف: ' +
+        expenses
+      );
+    }).join('\n\n');
+
+
+  alert(
+    readable ||
+    'لا توجد بيانات محفوظة في LocalStorage'
+  );
+}
+
+inspectLocalStorage();
 render();
