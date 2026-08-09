@@ -2306,6 +2306,16 @@ function setDeviceMode(mode) {
 
 if (deviceListMode) {
   deviceListMode.onclick =
+    () => {
+
+      setDeviceMode('list');
+
+      deviceListSection.classList.toggle(
+        'hidden'
+      );
+    };
+}
+  deviceListMode.onclick =
     () =>
       setDeviceMode('list');
 }
