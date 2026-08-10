@@ -39,6 +39,204 @@ let bookingFilter = 'all';
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 
+/* =====================================================
+   تحسينات واجهة Winter Camp
+   - اختيار الباقات / كتابة يدوية
+   - تكبير شعار الفاتورة
+   - منع انقسام نوع المناسبة
+===================================================== */
+
+(function injectWinterCampEnhancements() {
+
+  if (
+    document.getElementById(
+      'wintercamp-enhancement-styles'
+    )
+  ) {
+    return;
+  }
+
+  const style =
+    document.createElement(
+      'style'
+    );
+
+  style.id =
+    'wintercamp-enhancement-styles';
+
+  style.textContent = `
+
+    .device-package-field{
+      display:block;
+    }
+
+    .device-package-label-line{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+    }
+
+    .optional-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:24px;
+      padding:3px 9px;
+      border:1px solid #33424a;
+      border-radius:999px;
+      color:#8f9aa1;
+      background:#0d1418;
+      font-size:11px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    .device-mode-tabs{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .device-mode-btn{
+      min-height:42px;
+      border:1px solid #2b3941;
+      border-radius:12px;
+      background:#0d1418;
+      color:#98a3a9;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .device-mode-btn.active{
+      border-color:#25c16f;
+      background:rgba(37,193,111,.10);
+      color:#dff8e9;
+      box-shadow:inset 0 0 0 1px rgba(37,193,111,.12);
+    }
+
+    .device-list-section,
+    .device-manual-section{
+      margin-top:4px;
+    }
+
+    .device-list-section.hidden,
+    .device-manual-section.hidden{
+      display:none !important;
+    }
+
+    .device-package-list{
+      display:grid;
+      gap:8px;
+    }
+
+    .device-package{
+      width:100%;
+      display:grid;
+      grid-template-columns:38px 1fr;
+      align-items:center;
+      gap:10px;
+      min-height:58px;
+      padding:9px 11px;
+      border:1px solid #2b3941;
+      border-radius:13px;
+      background:#0d1418;
+      color:#e8eeee;
+      text-align:right;
+      cursor:pointer;
+    }
+
+    .device-package.selected{
+      border-color:#25c16f;
+      background:rgba(37,193,111,.09);
+      box-shadow:inset 0 0 0 1px rgba(37,193,111,.10);
+    }
+
+    .device-package-number{
+      width:34px;
+      height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:10px;
+      background:#172129;
+      color:#25c16f;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .device-package.selected
+    .device-package-number{
+      background:#25c16f;
+      color:#07130c;
+    }
+
+    .device-package-text{
+      line-height:1.65;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .device-manual-section input{
+      width:100%;
+    }
+
+    /* الفاتورة */
+    .invoice-header{
+      min-height:230px !important;
+      overflow:hidden;
+    }
+
+    .invoice-logo{
+      width:270px !important;
+      height:125px !important;
+      max-width:74% !important;
+      margin:0 auto 4px !important;
+      object-fit:contain !important;
+      object-position:center !important;
+    }
+
+    .customer-extra
+    .customer-row:first-child{
+      white-space:nowrap;
+    }
+
+    .customer-extra
+    .customer-row:first-child strong,
+    .customer-extra
+    .customer-row:first-child b{
+      white-space:nowrap;
+      overflow-wrap:normal !important;
+    }
+
+    @media (max-width:600px){
+
+      .device-package{
+        grid-template-columns:34px 1fr;
+      }
+
+      .device-package-text{
+        font-size:11.5px;
+      }
+
+      .invoice-logo{
+        width:240px !important;
+        height:112px !important;
+      }
+
+    }
+
+  `;
+
+  document.head.appendChild(
+    style
+  );
+
+})();
+
+
 
 /* =====================================================
    التخزين
@@ -3442,6 +3640,38 @@ function openBookingForm(
     };
 
 
+  const devicePackages = [
+
+    'عدد (1) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط',
+
+    'عدد (2) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط',
+
+    'عدد (1) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط + ياماها ميكسر 12 قناة MG-12XU + ميكروفون صوتي ديناميكي',
+
+    'عدد (2) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط + ياماها ميكسر 12 قناة MG-12XU + ميكروفون صوتي ديناميكي'
+
+  ];
+
+
+  const currentDevice =
+    String(
+      booking.device || ''
+    ).trim();
+
+
+  const currentPackageIndex =
+    devicePackages.indexOf(
+      currentDevice
+    );
+
+
+  const initialDeviceMode =
+    currentDevice &&
+    currentPackageIndex === -1
+      ? 'manual'
+      : 'list';
+
+
   openModal(
 
     existing
@@ -3500,17 +3730,127 @@ function openBookingForm(
         </label>
 
 
-        <label>
+        <label class="device-package-field">
 
-          نوع الأجهزة / الباقة
+          <span class="device-package-label-line">
+            <span>
+              نوع الأجهزة / الباقة
+            </span>
+
+            <span class="optional-badge">
+              اختياري
+            </span>
+          </span>
+
+
+          <div class="device-mode-tabs">
+
+            <button
+              type="button"
+              id="deviceListMode"
+              class="device-mode-btn ${
+                initialDeviceMode === 'list'
+                  ? 'active'
+                  : ''
+              }">
+              اختيار من القائمة
+            </button>
+
+
+            <button
+              type="button"
+              id="deviceManualMode"
+              class="device-mode-btn ${
+                initialDeviceMode === 'manual'
+                  ? 'active'
+                  : ''
+              }">
+              كتابة يدوية
+            </button>
+
+          </div>
+
+
+          <div
+            id="deviceListSection"
+            class="device-list-section ${
+              initialDeviceMode === 'list'
+                ? ''
+                : 'hidden'
+            }">
+
+            <div class="device-package-list">
+
+              ${
+                devicePackages
+                  .map(
+                    (
+                      packageText,
+                      index
+                    ) => `
+
+                      <button
+                        type="button"
+                        class="device-package ${
+                          currentPackageIndex === index
+                            ? 'selected'
+                            : ''
+                        }"
+                        data-device-value="${esc(
+                          packageText
+                        )}">
+
+                        <span class="device-package-number">
+                          ${index + 1}
+                        </span>
+
+                        <span class="device-package-text">
+                          ${esc(
+                            packageText
+                          )}
+                        </span>
+
+                      </button>
+
+                    `
+                  )
+                  .join('')
+              }
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="deviceManualSection"
+            class="device-manual-section ${
+              initialDeviceMode === 'manual'
+                ? ''
+                : 'hidden'
+            }">
+
+            <input
+              id="deviceManualInput"
+              type="text"
+              autocomplete="off"
+              value="${
+                initialDeviceMode === 'manual'
+                  ? esc(currentDevice)
+                  : ''
+              }"
+              placeholder="اكتب نوع الأجهزة أو تفاصيل الباقة">
+
+          </div>
+
 
           <input
+            id="deviceValue"
             name="device"
-            required
+            type="hidden"
             value="${esc(
-              booking.device || ''
-            )}"
-            placeholder="مثال: سماعتين + ميكسر">
+              currentDevice
+            )}">
 
         </label>
 
@@ -3602,6 +3942,196 @@ function openBookingForm(
     `
 
   );
+
+
+  const deviceValue =
+    $('#deviceValue');
+
+  const deviceListMode =
+    $('#deviceListMode');
+
+  const deviceManualMode =
+    $('#deviceManualMode');
+
+  const deviceListSection =
+    $('#deviceListSection');
+
+  const deviceManualSection =
+    $('#deviceManualSection');
+
+  const deviceManualInput =
+    $('#deviceManualInput');
+
+
+  function setDeviceMode(
+    mode
+  ) {
+
+    const listMode =
+      mode === 'list';
+
+
+    deviceListMode
+      ?.classList.toggle(
+        'active',
+        listMode
+      );
+
+
+    deviceManualMode
+      ?.classList.toggle(
+        'active',
+        !listMode
+      );
+
+
+    deviceListSection
+      ?.classList.toggle(
+        'hidden',
+        !listMode
+      );
+
+
+    deviceManualSection
+      ?.classList.toggle(
+        'hidden',
+        listMode
+      );
+
+
+    if (
+      !listMode &&
+      deviceManualInput &&
+      deviceValue
+    ) {
+
+      if (
+        !deviceManualInput.value
+      ) {
+
+        deviceManualInput.value =
+          deviceValue.value || '';
+
+      }
+
+
+      setTimeout(
+        () =>
+          deviceManualInput.focus(),
+        40
+      );
+
+    }
+
+  }
+
+
+  if (deviceListMode) {
+
+    deviceListMode.onclick =
+      () =>
+        setDeviceMode(
+          'list'
+        );
+
+  }
+
+
+  if (deviceManualMode) {
+
+    deviceManualMode.onclick =
+      () =>
+        setDeviceMode(
+          'manual'
+        );
+
+  }
+
+
+  $$('.device-package')
+    .forEach(
+      button => {
+
+        button.onclick =
+          () => {
+
+            const value =
+              String(
+                button.dataset
+                  .deviceValue || ''
+              );
+
+
+            $$('.device-package')
+              .forEach(
+                item =>
+                  item.classList.remove(
+                    'selected'
+                  )
+              );
+
+
+            button.classList.add(
+              'selected'
+            );
+
+
+            if (deviceValue) {
+
+              deviceValue.value =
+                value;
+
+            }
+
+
+            if (deviceManualInput) {
+
+              deviceManualInput.value =
+                value;
+
+            }
+
+
+            deviceListMode.textContent =
+              `الباقة ${
+                Number(
+                  [...$$('.device-package')]
+                    .indexOf(button)
+                ) + 1
+              } محددة ✓`;
+
+          };
+
+      }
+    );
+
+
+  if (
+    deviceManualInput
+  ) {
+
+    deviceManualInput.oninput =
+      () => {
+
+        if (deviceValue) {
+
+          deviceValue.value =
+            deviceManualInput.value;
+
+        }
+
+
+        $$('.device-package')
+          .forEach(
+            item =>
+              item.classList.remove(
+                'selected'
+              )
+          );
+
+      };
+
+  }
 
 
   $('#bookingForm').onsubmit =
@@ -4657,6 +5187,7 @@ function showInvoice(id) {
 
               <img
                 src="invoice_logo.png"
+                onerror="this.onerror=null;this.src='logo.png';"
                 class="invoice-logo"
                 alt="Winter Camp">
 
