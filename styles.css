@@ -4844,3 +4844,540 @@ button{
 
   font-weight:800;
 }
+/* =====================================================
+   تصميم مسحوبات الشركاء - النسخة المعتمدة
+===================================================== */
+
+.partners-withdrawals-section{
+  margin-top:26px;
+  padding:0 2px;
+}
+
+.partners-withdrawals-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.partners-withdrawals-head h3{
+  margin:0;
+  color:#f4f7f5;
+  font-size:21px;
+  font-weight:900;
+}
+
+.partners-withdrawals-head small{
+  display:block;
+  margin-top:5px;
+  color:#8f9aa1;
+  font-size:12px;
+  line-height:1.6;
+}
+
+
+/* =====================================================
+   شبكة المربعين
+===================================================== */
+
+.partner-withdrawal-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+
+/* =====================================================
+   مربع الشريك
+===================================================== */
+
+.partner-withdrawal-card{
+  position:relative;
+
+  min-height:245px;
+
+  padding:
+    22px
+    14px
+    20px;
+
+  border-radius:22px;
+
+  border:
+    1px solid rgba(79,180,94,.45);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20,29,34,.98),
+      rgba(10,18,23,.98)
+    );
+
+  color:#fff;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+
+  gap:8px;
+
+  overflow:hidden;
+
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.02);
+
+  -webkit-tap-highlight-color:transparent;
+
+  transition:
+    transform .15s ease,
+    border-color .15s ease;
+}
+
+
+.partner-withdrawal-card:active{
+  transform:scale(.975);
+
+  border-color:
+    rgba(81,211,103,.75);
+}
+
+
+/* =====================================================
+   أيقونة الشخص
+===================================================== */
+
+.partner-withdrawal-icon{
+  width:78px;
+  height:78px;
+
+  margin-top:2px;
+  margin-bottom:8px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(31,88,48,.30),
+      rgba(10,37,22,.80)
+    );
+
+  border:
+    2px solid #e0a339;
+
+  color:#e0a339;
+
+  box-shadow:
+    0 0 0 1px rgba(224,163,57,.06),
+    0 8px 20px rgba(0,0,0,.25);
+}
+
+
+.partner-withdrawal-icon svg{
+  width:35px;
+  height:35px;
+
+  fill:none;
+  stroke:currentColor;
+
+  stroke-width:1.8;
+
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+
+/* =====================================================
+   اسم الشريك
+===================================================== */
+
+.partner-withdrawal-name{
+  display:block;
+
+  width:100%;
+
+  text-align:center;
+
+  color:#f8faf9;
+
+  font-size:20px;
+
+  font-weight:900;
+
+  margin-bottom:10px;
+}
+
+
+/* =====================================================
+   الخط الفاصل الأخضر
+===================================================== */
+
+.partner-withdrawal-card::before{
+  content:"";
+
+  position:absolute;
+
+  left:18px;
+  right:18px;
+
+  top:132px;
+
+  height:1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(55,158,72,.2),
+      rgba(55,190,82,.95),
+      rgba(55,158,72,.2)
+    );
+}
+
+
+.partner-withdrawal-card::after{
+  content:"";
+
+  position:absolute;
+
+  top:127px;
+
+  left:50%;
+
+  width:9px;
+  height:9px;
+
+  transform:
+    translateX(-50%)
+    rotate(45deg);
+
+  border:
+    1px solid #31bf63;
+
+  background:#14221a;
+}
+
+
+/* =====================================================
+   كلمة إجمالي المسحوبات
+===================================================== */
+
+.partner-withdrawal-name::after{
+  content:"إجمالي المسحوبات";
+
+  display:block;
+
+  margin-top:35px;
+
+  color:#929ca3;
+
+  font-size:12px;
+
+  font-weight:500;
+}
+
+
+/* =====================================================
+   المبلغ
+===================================================== */
+
+.partner-withdrawal-total{
+  display:block;
+
+  margin-top:4px;
+
+  color:#f05a5a !important;
+
+  font-size:25px;
+
+  font-weight:900;
+
+  line-height:1;
+
+  text-align:center;
+}
+
+
+/* نخفي النص القديم */
+
+.partner-withdrawal-open{
+  font-size:0;
+}
+
+
+/* السهم أسفل المربع */
+
+.partner-withdrawal-open::after{
+  content:"‹";
+
+  display:block;
+
+  margin-top:14px;
+
+  color:#f4f7f5;
+
+  font-size:31px;
+
+  font-weight:300;
+
+  line-height:1;
+}
+
+
+/* =====================================================
+   تنسيق سجل الشريك
+===================================================== */
+
+.partner-history{
+  display:grid;
+  gap:12px;
+}
+
+
+.partner-history-summary{
+  padding:15px 14px;
+
+  border-radius:16px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #172126,
+      #10171b
+    );
+
+  border:
+    1px solid rgba(55,190,82,.24);
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:12px;
+}
+
+
+.partner-history-summary span{
+  color:#8f9aa1;
+
+  font-size:12px;
+}
+
+
+.partner-history-summary strong{
+  color:#f05a5a;
+
+  font-size:20px;
+
+  font-weight:900;
+}
+
+
+.partner-history-list{
+  display:grid;
+  gap:9px;
+}
+
+
+.partner-history-row{
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:12px;
+
+  padding:13px;
+
+  border-radius:15px;
+
+  background:#151d22;
+
+  border:
+    1px solid rgba(255,255,255,.06);
+}
+
+
+.partner-history-main{
+  min-width:0;
+}
+
+
+.partner-history-amount{
+  display:block;
+
+  color:#f05a5a;
+
+  font-size:17px;
+
+  font-weight:900;
+}
+
+
+.partner-history-date{
+  display:block;
+
+  margin-top:4px;
+
+  color:#8f9aa1;
+
+  font-size:11px;
+}
+
+
+.partner-history-note{
+  display:block;
+
+  margin-top:5px;
+
+  color:#7d898f;
+
+  font-size:10px;
+}
+
+
+.partner-history-actions{
+  display:flex;
+  gap:10px;
+}
+
+
+/* =====================================================
+   زر إضافة مسحوب
+===================================================== */
+
+.add-partner-withdrawal-btn{
+  width:100%;
+
+  margin-top:3px;
+
+  padding:13px;
+
+  border-radius:14px;
+
+  border:
+    1px solid rgba(37,193,111,.35);
+
+  background:
+    rgba(37,193,111,.08);
+
+  color:#25c16f;
+
+  font-weight:900;
+}
+
+
+/* =====================================================
+   نموذج المسحوب
+===================================================== */
+
+.withdrawal-partner-display{
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  padding:13px;
+
+  border-radius:13px;
+
+  background:#151d22;
+
+  border:
+    1px solid #263239;
+}
+
+
+.withdrawal-partner-display span{
+  color:#8f9aa1;
+
+  font-size:12px;
+}
+
+
+.withdrawal-partner-display strong{
+  color:#e0a339;
+
+  font-size:15px;
+}
+
+
+.withdrawal-form-note{
+  padding:11px 12px;
+
+  border-radius:12px;
+
+  background:
+    rgba(37,193,111,.06);
+
+  border:
+    1px solid rgba(37,193,111,.18);
+
+  color:#8f9aa1;
+
+  font-size:11px;
+
+  line-height:1.7;
+}
+
+
+.withdrawal-submit{
+  background:#25c16f !important;
+
+  color:#07110b !important;
+}
+
+
+/* =====================================================
+   تحسين العرض على الآيفون
+===================================================== */
+
+@media(max-width:430px){
+
+  .partner-withdrawal-grid{
+    gap:10px;
+  }
+
+  .partner-withdrawal-card{
+    min-height:225px;
+
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .partner-withdrawal-icon{
+    width:68px;
+    height:68px;
+  }
+
+  .partner-withdrawal-icon svg{
+    width:30px;
+    height:30px;
+  }
+
+  .partner-withdrawal-name{
+    font-size:18px;
+  }
+
+  .partner-withdrawal-total{
+    font-size:22px;
+  }
+
+  .partner-withdrawal-card::before{
+    top:120px;
+  }
+
+  .partner-withdrawal-card::after{
+    top:115px;
+  }
+
+}
