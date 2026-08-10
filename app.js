@@ -183,6 +183,31 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       width:100%;
     }
 
+    /* إبقاء حقول الحجز متجاورة مثل التصميم الأصلي */
+    .form-row{
+      display:grid !important;
+      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+      gap:10px !important;
+      align-items:end !important;
+    }
+
+    .form-row > label{
+      min-width:0 !important;
+      width:100% !important;
+    }
+
+    .hijri-selects{
+      display:grid !important;
+      grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+      gap:8px !important;
+      width:100% !important;
+    }
+
+    .hijri-selects select{
+      min-width:0 !important;
+      width:100% !important;
+    }
+
     /* الفاتورة */
     .invoice-header{
       min-height:230px !important;
@@ -4099,6 +4124,12 @@ function openBookingForm(
                     .indexOf(button)
                 ) + 1
               } محددة ✓`;
+
+            // إغلاق قائمة الباقات مباشرة بعد الاختيار
+            deviceListSection
+              ?.classList.add(
+                'hidden'
+              );
 
           };
 
