@@ -795,49 +795,82 @@ const $$ = selector => [...document.querySelectorAll(selector)];
     }
 
     .wc-footer{
-      margin-top:auto;
-      min-height:58px;
-      position:relative;
-      z-index:2;
-      background:linear-gradient(90deg,#04522f,#087746);
-      color:#fff;
-      border-radius:0 0 14px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:0 20px;
-      font-size:12px;
-      font-weight:700;
-      direction:ltr !important;
-    }
+  margin-top:auto;
+  min-height:58px;
+  position:relative;
+  z-index:2;
 
-    .wc-footer-brand{
-      order:1;
-      flex:0 0 125px;
-      text-align:left !important;
-      direction:ltr !important;
-    }
+  background:
+    linear-gradient(
+      90deg,
+      #04522f,
+      #087746
+    );
 
-    .wc-footer-location{
-      order:2;
-      flex:1 1 auto;
-      text-align:center !important;
-      direction:rtl !important;
-    }
+  color:#fff;
 
-    .wc-footer-phone{
-  display:flex;
+  border-radius:
+    0 0 14px 14px;
+
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr 1fr;
+
   align-items:center;
-  justify-content:flex-end;
-  gap:6px;
+
+  padding:
+    0 20px;
+
+  font-size:12px;
+  font-weight:700;
+
   direction:ltr !important;
 }
+
+
+/* أقصى اليسار */
+.wc-footer-phone{
+  grid-column:1;
+
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+
+  gap:6px;
+
+  text-align:left;
+
+  direction:ltr !important;
+}
+
+
+/* الوسط */
+.wc-footer-location{
+  grid-column:2;
+
+  text-align:center;
+
+  direction:rtl !important;
+}
+
+
+/* أقصى اليمين */
+.wc-footer-brand{
+  grid-column:3;
+
+  text-align:right;
+
+  direction:ltr !important;
+}
+
 
 .wc-whatsapp-svg{
   width:18px;
   height:18px;
+
   color:#fff;
+
   flex:0 0 auto;
 }
 
