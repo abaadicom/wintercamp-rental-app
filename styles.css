@@ -5311,6 +5311,363 @@ body{
     font-size:25px !important;
   }
 }
+/* =========================================================
+   تعديل آمن لبطاقات مسحوبات الشركاء فقط
+========================================================= */
+
+.partners-withdrawals-section{
+  margin-top:24px !important;
+}
+
+.partner-withdrawal-grid{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:10px !important;
+  width:100% !important;
+}
+
+
+/* البطاقة */
+.partner-withdrawal-card{
+  position:relative !important;
+
+  width:100% !important;
+  min-width:0 !important;
+
+  height:280px !important;
+  min-height:280px !important;
+
+  padding:14px 8px 12px !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+
+  border:1px solid rgba(32,223,114,.38) !important;
+  border-radius:19px !important;
+
+  background:
+    linear-gradient(
+      150deg,
+      #101b21 0%,
+      #091419 100%
+    ) !important;
+
+  overflow:hidden !important;
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,.22) !important;
+}
+
+
+/* الأيقونة الذهبية */
+.partner-withdrawal-icon{
+  position:relative !important;
+
+  width:68px !important;
+  height:68px !important;
+
+  min-width:68px !important;
+  min-height:68px !important;
+
+  margin:0 auto 10px !important;
+
+  display:grid !important;
+  place-items:center !important;
+
+  border-radius:50% !important;
+
+  border:2.5px solid #efa92f !important;
+
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      #247044 0%,
+      #145b37 20%,
+      #0a4329 45%,
+      #052f1e 72%,
+      #031a11 100%
+    ) !important;
+
+  box-shadow:
+    inset 5px 5px 9px rgba(255,255,255,.06),
+    inset -7px -8px 14px rgba(0,0,0,.55),
+    0 5px 9px rgba(0,0,0,.35) !important;
+}
+
+.partner-withdrawal-icon::before{
+  content:none !important;
+  display:none !important;
+}
+
+.partner-withdrawal-icon::after{
+  content:"" !important;
+
+  position:absolute !important;
+  inset:4px !important;
+
+  border-radius:50% !important;
+
+  border:1px solid rgba(255,216,115,.55) !important;
+}
+
+.partner-withdrawal-icon svg{
+  width:30px !important;
+  height:30px !important;
+
+  fill:none !important;
+  stroke:#f0ad31 !important;
+  stroke-width:2.1 !important;
+}
+
+
+/* الاسم */
+.partner-withdrawal-name{
+  width:100% !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#fff !important;
+
+  font-size:16px !important;
+  font-weight:900 !important;
+
+  text-align:center !important;
+
+  z-index:5 !important;
+}
+
+.partner-withdrawal-name::before,
+.partner-withdrawal-name::after{
+  content:none !important;
+  display:none !important;
+}
+
+
+/* الخط */
+.partner-withdrawal-card::after{
+  content:"" !important;
+
+  position:absolute !important;
+
+  top:129px !important;
+  left:16px !important;
+  right:16px !important;
+
+  height:1px !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(32,223,114,.30) 15%,
+      #20df72 50%,
+      rgba(32,223,114,.30) 85%,
+      transparent 100%
+    ) !important;
+
+  z-index:2 !important;
+
+  pointer-events:none !important;
+}
+
+
+/* الماسة */
+.partner-withdrawal-card::before{
+  content:"" !important;
+
+  position:absolute !important;
+
+  top:123px !important;
+  left:50% !important;
+
+  width:9px !important;
+  height:9px !important;
+
+  transform:
+    translateX(-50%)
+    rotate(45deg) !important;
+
+  background:#0a171c !important;
+
+  border:1.6px solid #20df72 !important;
+
+  box-shadow:
+    0 0 5px rgba(32,223,114,.18) !important;
+
+  z-index:3 !important;
+}
+
+
+/* الرقم الأحمر */
+.partner-withdrawal-total{
+  position:absolute !important;
+
+  top:188px !important;
+  left:5px !important;
+  right:5px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#ff5659 !important;
+
+  font-size:19px !important;
+  font-weight:900 !important;
+
+  text-align:center !important;
+
+  z-index:5 !important;
+}
+
+
+/* إجمالي المسحوبات */
+.partner-withdrawal-total::before{
+  content:"إجمالي المسحوبات" !important;
+
+  position:absolute !important;
+
+  left:0 !important;
+  right:0 !important;
+
+  bottom:35px !important;
+
+  color:#8f9aa1 !important;
+
+  font-size:9.5px !important;
+  font-weight:500 !important;
+
+  text-align:center !important;
+
+  white-space:nowrap !important;
+
+  background:none !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+.partner-withdrawal-total::after{
+  content:none !important;
+  display:none !important;
+}
+
+
+/* زر السهم */
+.partner-withdrawal-open,
+.partner-withdrawal-btn{
+  position:absolute !important;
+
+  left:50% !important;
+  bottom:9px !important;
+
+  transform:translateX(-50%) !important;
+
+  width:32px !important;
+  height:32px !important;
+
+  min-width:32px !important;
+  min-height:32px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  border-radius:50% !important;
+
+  border:1.3px solid rgba(32,223,114,.55) !important;
+
+  background:
+    radial-gradient(
+      circle at 35% 28%,
+      #143128,
+      #081b16 55%,
+      #05120f 100%
+    ) !important;
+
+  color:transparent !important;
+
+  font-size:0 !important;
+
+  z-index:10 !important;
+}
+
+.partner-withdrawal-open::before,
+.partner-withdrawal-btn::before{
+  content:none !important;
+  display:none !important;
+}
+
+.partner-withdrawal-open::after,
+.partner-withdrawal-btn::after{
+  content:"›" !important;
+
+  position:absolute !important;
+
+  top:50% !important;
+  left:50% !important;
+
+  transform:translate(-50%,-53%) !important;
+
+  color:#20df72 !important;
+
+  font-family:Arial,sans-serif !important;
+
+  font-size:25px !important;
+  line-height:1 !important;
+}
+
+
+/* تثبيت اللون الأحمر */
+.partner-withdrawal-total,
+.partner-history-summary strong,
+.partner-history-amount{
+  color:#ff5659 !important;
+}
+
+
+/* ضبط الآيفون */
+@media(max-width:430px){
+
+  .partner-withdrawal-grid{
+    gap:8px !important;
+  }
+
+  .partner-withdrawal-card{
+    height:272px !important;
+    min-height:272px !important;
+  }
+
+  .partner-withdrawal-icon{
+    width:64px !important;
+    height:64px !important;
+
+    min-width:64px !important;
+    min-height:64px !important;
+  }
+
+  .partner-withdrawal-icon svg{
+    width:28px !important;
+    height:28px !important;
+  }
+
+  .partner-withdrawal-card::after{
+    top:124px !important;
+  }
+
+  .partner-withdrawal-card::before{
+    top:118px !important;
+  }
+
+  .partner-withdrawal-total{
+    top:181px !important;
+    font-size:18px !important;
+  }
+}
 
 /* =========================================================
    النهاية
