@@ -242,31 +242,27 @@ const $$ = selector => [...document.querySelectorAll(selector)];
     ===================================================== */
 
     .invoice-preview-scroll{
-      display:flex !important;
-      justify-content:center !important;
-      align-items:flex-start !important;
+      display:block !important;
       width:100% !important;
-      overflow:auto !important;
-      padding:8px 0 14px !important;
+      max-width:100% !important;
+      overflow:hidden !important;
+      padding:6px 0 10px !important;
+      direction:ltr !important;
     }
 
     #invoicePaper.invoice-a4{
-      transform:scale(.76);
-      transform-origin:top center;
-      margin-top:0 !important;
-      margin-bottom:-265px !important;
+      margin:0 !important;
+      transform-origin:top left !important;
+      box-shadow:0 7px 22px rgba(0,0,0,.22) !important;
     }
 
-    /* تكبير أرقام الكمية وسعر الوحدة والإجمالي */
-    .invoice-products tbody td{
-      font-size:17px !important;
-      font-weight:700 !important;
+    /* نفس خط الصنف للكمية وسعر الوحدة والإجمالي */
+    .invoice-products tbody td,
+    .invoice-products tbody td strong,
+    .invoice-products .product-title strong{
+      font-size:15px !important;
+      font-weight:800 !important;
       line-height:1.55 !important;
-    }
-
-    .invoice-products tbody td:first-child{
-      font-size:17px !important;
-      font-weight:700 !important;
     }
 
     /* تقليل المسافات البيضاء بين محتوى الفاتورة */
@@ -307,12 +303,6 @@ const $$ = selector => [...document.querySelectorAll(selector)];
         height:112px !important;
       }
 
-      #invoicePaper.invoice-a4{
-        transform:scale(.43);
-        transform-origin:top center;
-        margin-top:0 !important;
-        margin-bottom:-635px !important;
-      }
 
     }
 
@@ -3872,6 +3862,11 @@ function openBookingForm(
               initialDeviceMode === 'list'
                 ? ''
                 : 'hidden'
+            }"
+            style="display:${
+              initialDeviceMode === 'list'
+                ? 'block'
+                : 'none'
             }">
 
             <div class="device-package-list">
@@ -3923,6 +3918,11 @@ function openBookingForm(
               initialDeviceMode === 'manual'
                 ? ''
                 : 'hidden'
+            }"
+            style="display:${
+              initialDeviceMode === 'manual'
+                ? 'block'
+                : 'none'
             }">
 
             <input
@@ -4089,12 +4089,22 @@ function openBookingForm(
         !listMode
       );
 
+    if (deviceListSection) {
+      deviceListSection.style.display =
+        listMode ? 'block' : 'none';
+    }
+
 
     deviceManualSection
       ?.classList.toggle(
         'hidden',
         !manualMode
       );
+
+    if (deviceManualSection) {
+      deviceManualSection.style.display =
+        manualMode ? 'block' : 'none';
+    }
 
 
     if (
@@ -5767,6 +5777,60 @@ function showInvoice(id) {
 
       </div>
     `
+  );
+
+
+  function fitInvoicePreview() {
+
+    const preview =
+      $('.invoice-preview-scroll');
+
+    const paper =
+      $('#invoicePaper');
+
+    if (!preview || !paper) {
+      return;
+    }
+
+    const paperWidth = 794;
+    const paperHeight = 1123;
+
+    const availableWidth =
+      Math.max(
+        240,
+        preview.clientWidth - 2
+      );
+
+    const scale =
+      Math.min(
+        1,
+        availableWidth / paperWidth
+      );
+
+    paper.style.transform =
+      `scale(${scale})`;
+
+    paper.style.transformOrigin =
+      'top left';
+
+    paper.style.margin =
+      '0';
+
+    preview.style.height =
+      `${Math.ceil(paperHeight * scale)}px`;
+
+  }
+
+
+  requestAnimationFrame(
+    () => {
+      fitInvoicePreview();
+
+      setTimeout(
+        fitInvoicePreview,
+        80
+      );
+    }
   );
 
 
