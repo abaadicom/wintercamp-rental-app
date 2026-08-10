@@ -599,7 +599,12 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       font-weight:800;
       overflow-wrap:anywhere;
     }
-
+.wc-phone-value{
+  text-align:right !important;
+  justify-self:stretch !important;
+  direction:ltr !important;
+  unicode-bidi:isolate !important;
+}
     .wc-section-title{
       display:flex;
       align-items:center;
