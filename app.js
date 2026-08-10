@@ -344,6 +344,7 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       justify-content:center !important;
       align-items:flex-start !important;
       padding:0 !important;
+      margin:0 auto 8px !important;
     }
 
     #invoicePaper.invoice-a4{
@@ -386,10 +387,10 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       position:absolute;
       top:0;
       right:0;
-      width:150px;
-      height:145px;
-      background:linear-gradient(135deg,var(--wc-green-dark),#08784a);
-      clip-path:polygon(34% 0,100% 0,100% 100%);
+      width:124px;
+      height:118px;
+      background:linear-gradient(135deg,#0a804b 0%, #055b35 100%);
+      border-bottom-left-radius:72px;
       z-index:0;
     }
 
@@ -792,13 +793,17 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       font-weight:700;
     }
 
+    .wc-footer > div:first-child{
+      text-align:right;
+      direction:ltr;
+    }
+
     .wc-footer > div:nth-child(2){
       text-align:center;
     }
 
     .wc-footer > div:last-child{
       text-align:left;
-      direction:ltr;
     }
 
     .invoice-actions{
@@ -6113,7 +6118,7 @@ function showInvoice(id) {
             <footer class="wc-footer">
 
               <div>
-                Winter Camp
+                0573757275
               </div>
 
               <div>
@@ -6121,7 +6126,7 @@ function showInvoice(id) {
               </div>
 
               <div>
-                0573757275
+                Winter Camp
               </div>
 
             </footer>
@@ -6162,6 +6167,9 @@ function showInvoice(id) {
     const paper =
       $('#invoicePaper');
 
+    const actions =
+      $('.invoice-actions');
+
     if (!preview || !paper) {
       return;
     }
@@ -6175,13 +6183,36 @@ function showInvoice(id) {
     const availableWidth =
       Math.max(
         220,
-        preview.clientWidth - 2
+        preview.clientWidth - 6
       );
+
+    const viewportHeight =
+      window.innerHeight || 0;
+
+    const actionsHeight =
+      actions
+        ? actions.offsetHeight
+        : 86;
+
+    const availableHeight =
+      Math.max(
+        280,
+        viewportHeight -
+          actionsHeight -
+          210
+      );
+
+    const widthScale =
+      availableWidth / paperWidth;
+
+    const heightScale =
+      availableHeight / paperHeight;
 
     const scale =
       Math.min(
         1,
-        availableWidth / paperWidth
+        widthScale,
+        heightScale
       );
 
     paper.style.transform =
@@ -6198,6 +6229,9 @@ function showInvoice(id) {
         paperHeight * scale
       )}px`;
 
+    preview.style.maxHeight =
+      `${availableHeight}px`;
+
   }
 
 
@@ -6212,6 +6246,12 @@ function showInvoice(id) {
       );
 
     }
+  );
+
+  window.addEventListener(
+    'resize',
+    fitInvoicePreview,
+    { passive:true }
   );
 
 
@@ -7189,7 +7229,7 @@ if (
       navigator
         .serviceWorker
         .register(
-          './sw.js?v=111'
+          './sw.js?v=112'
         )
         .catch(
           console.error
