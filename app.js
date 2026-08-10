@@ -236,6 +236,62 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       overflow-wrap:normal !important;
     }
 
+    /* =====================================================
+       تحسين معاينة الفاتورة فقط
+       لا يؤثر على مقاس ملف PDF عند التصدير
+    ===================================================== */
+
+    .invoice-preview-scroll{
+      display:flex !important;
+      justify-content:center !important;
+      align-items:flex-start !important;
+      width:100% !important;
+      overflow:auto !important;
+      padding:8px 0 14px !important;
+    }
+
+    #invoicePaper.invoice-a4{
+      transform:scale(.76);
+      transform-origin:top center;
+      margin-top:0 !important;
+      margin-bottom:-265px !important;
+    }
+
+    /* تكبير أرقام الكمية وسعر الوحدة والإجمالي */
+    .invoice-products tbody td{
+      font-size:17px !important;
+      font-weight:700 !important;
+      line-height:1.55 !important;
+    }
+
+    .invoice-products tbody td:first-child{
+      font-size:17px !important;
+      font-weight:700 !important;
+    }
+
+    /* تقليل المسافات البيضاء بين محتوى الفاتورة */
+    .invoice-products{
+      margin-bottom:12px !important;
+    }
+
+    .invoice-lower{
+      margin-top:10px !important;
+      margin-bottom:8px !important;
+    }
+
+    .invoice-summary{
+      margin-bottom:0 !important;
+    }
+
+    .invoice-green-footer{
+      position:relative !important;
+      inset:auto !important;
+      bottom:auto !important;
+      left:auto !important;
+      right:auto !important;
+      margin-top:16px !important;
+    }
+
     @media (max-width:600px){
 
       .device-package{
@@ -249,6 +305,13 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       .invoice-logo{
         width:240px !important;
         height:112px !important;
+      }
+
+      #invoicePaper.invoice-a4{
+        transform:scale(.43);
+        transform-origin:top center;
+        margin-top:0 !important;
+        margin-bottom:-635px !important;
       }
 
     }
@@ -3691,10 +3754,13 @@ function openBookingForm(
 
 
   const initialDeviceMode =
-    currentDevice &&
-    currentPackageIndex === -1
-      ? 'manual'
-      : 'list';
+    currentDevice
+      ? (
+          currentPackageIndex === -1
+            ? 'manual'
+            : 'list'
+        )
+      : 'closed';
 
 
   openModal(
@@ -3778,7 +3844,11 @@ function openBookingForm(
                   ? 'active'
                   : ''
               }">
-              اختيار من القائمة
+              ${
+                currentPackageIndex >= 0
+                  ? `الباقة ${currentPackageIndex + 1} محددة ✓`
+                  : 'اختيار الباقة'
+              }
             </button>
 
 
@@ -3995,6 +4065,9 @@ function openBookingForm(
     const listMode =
       mode === 'list';
 
+    const manualMode =
+      mode === 'manual';
+
 
     deviceListMode
       ?.classList.toggle(
@@ -4006,7 +4079,7 @@ function openBookingForm(
     deviceManualMode
       ?.classList.toggle(
         'active',
-        !listMode
+        manualMode
       );
 
 
@@ -4020,12 +4093,12 @@ function openBookingForm(
     deviceManualSection
       ?.classList.toggle(
         'hidden',
-        listMode
+        !manualMode
       );
 
 
     if (
-      !listMode &&
+      manualMode &&
       deviceManualInput &&
       deviceValue
     ) {
@@ -4054,10 +4127,22 @@ function openBookingForm(
   if (deviceListMode) {
 
     deviceListMode.onclick =
-      () =>
+      () => {
+
+        const isOpen =
+          deviceListSection &&
+          !deviceListSection.classList.contains(
+            'hidden'
+          );
+
+
         setDeviceMode(
-          'list'
+          isOpen
+            ? 'closed'
+            : 'list'
         );
+
+      };
 
   }
 
@@ -4126,10 +4211,9 @@ function openBookingForm(
               } محددة ✓`;
 
             // إغلاق قائمة الباقات مباشرة بعد الاختيار
-            deviceListSection
-              ?.classList.add(
-                'hidden'
-              );
+            setDeviceMode(
+              'closed'
+            );
 
           };
 
