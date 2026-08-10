@@ -4215,3 +4215,84 @@ body{
   color:#e0a339;
   background:rgba(224,163,57,.12);
 }
+/* =========================================================
+   أيقونات بطاقات التقارير فقط
+========================================================= */
+
+.report-page .stat-card-top,
+.reports-page .stat-card-top,
+.report-stats .stat-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.report-page .dashboard-icon,
+.reports-page .dashboard-icon,
+.report-stats .dashboard-icon {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+}
+
+.report-page .dashboard-icon svg,
+.reports-page .dashboard-icon svg,
+.report-stats .dashboard-icon svg {
+  width: 25px !important;
+  height: 25px !important;
+
+  display: block !important;
+
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 2 !important;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* الإيرادات */
+
+.report-page .green-icon,
+.reports-page .green-icon,
+.report-stats .green-icon {
+  color: #25c16f !important;
+  background: rgba(37, 193, 111, 0.12);
+}
+
+
+/* المصاريف */
+
+.report-page .red-icon,
+.reports-page .red-icon,
+.report-stats .red-icon {
+  color: #ff5b61 !important;
+  background: rgba(255, 91, 97, 0.12);
+}
+
+
+/* صافي الربح */
+
+.report-page .blue-icon,
+.reports-page .blue-icon,
+.report-stats .blue-icon {
+  color: #4c88ff !important;
+  background: rgba(76, 136, 255, 0.12);
+}
+
+
+/* المتبقي */
+
+.report-page .gold-icon,
+.reports-page .gold-icon,
+.report-stats .gold-icon {
+  color: #e0a339 !important;
+  background: rgba(224, 163, 57, 0.12);
+}
