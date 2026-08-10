@@ -1361,6 +1361,13 @@ button{
   margin:0;
 }
 
+
+/*
+  مهم:
+  object-fit:contain يحافظ على نسبة الشعار الأصلية
+  ولا يسمح بتمديده أو ضغطه.
+*/
+
 .invoice-logo,
 .invoice-main-logo{
   display:block!important;
@@ -1994,12 +2001,17 @@ button{
 
 
 /* =========================================================
-   الصور داخل الفاتورة والأزرار
+   الصور داخل الفاتورة
 ========================================================= */
 
 #invoicePaper img{
   flex-shrink:0;
 }
+
+
+/* =========================================================
+   أزرار الفاتورة
+========================================================= */
 
 .invoice-actions{
   display:grid;
@@ -2040,222 +2052,280 @@ button{
 
 
 /* =========================================================
-   مسحوبات الشركاء
+   معاينة الفاتورة على الجوال
 ========================================================= */
 
-.partners-withdrawals-section{
-  margin-top:30px;
-  padding:0 2px;
+@media screen and (max-width:850px){
+
+  .invoice-preview-scroll{
+    width:100%!important;
+
+    display:flex!important;
+
+    justify-content:center!important;
+
+    overflow:hidden!important;
+  }
+
+  .invoice-a4{
+    width:794px!important;
+    height:1123px!important;
+
+    min-width:794px!important;
+    min-height:1123px!important;
+
+    transform:scale(.46)!important;
+
+    transform-origin:top center!important;
+
+    margin-bottom:-600px!important;
+  }
+
+  .invoice-logo,
+  .invoice-main-logo{
+    width:390px!important;
+    height:140px!important;
+
+    max-width:390px!important;
+    max-height:140px!important;
+
+    object-fit:contain!important;
+  }
+
+  .invoice-full-stamp,
+  .invoice-stamp{
+    width:165px!important;
+    height:165px!important;
+
+    max-width:165px!important;
+    max-height:165px!important;
+
+    object-fit:contain!important;
+  }
 }
 
-.partners-withdrawals-head{
-  margin-bottom:18px;
-  text-align:right;
-}
 
-.partners-withdrawals-head h3{
-  margin:0;
-  color:#f7f8f7;
-  font-size:22px;
-  font-weight:900;
-  line-height:1.2;
-}
+@media screen and (max-width:430px){
 
-.partners-withdrawals-head small{
-  display:block;
-  margin-top:7px;
-  color:#8f9aa1;
-  font-size:12px;
-  line-height:1.6;
-}
+  .invoice-a4{
+    transform:scale(.43)!important;
 
-.partner-withdrawal-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
+    transform-origin:top center!important;
 
-.partner-withdrawal-card{
-  position:relative;
-
-  min-height:285px;
-
-  padding:
-    20px
-    12px
-    18px;
-
-  border-radius:25px;
-
-  border:
-    1.5px solid
-    rgba(50,174,74,.55);
-
-  background:
-    linear-gradient(
-      145deg,
-      #111c22 0%,
-      #0b151a 100%
-    );
-
-  color:#fff;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-
-  gap:0;
-
-  overflow:hidden;
-
-  box-shadow:
-    0 12px 30px rgba(0,0,0,.28),
-    inset 0 1px 0 rgba(255,255,255,.025);
-
-  -webkit-tap-highlight-color:transparent;
-}
-
-.partner-withdrawal-icon{
-  width:94px !important;
-  height:94px !important;
-
-  margin:
-    0
-    auto
-    14px !important;
-
-  display:grid !important;
-  place-items:center !important;
-
-  border-radius:50% !important;
-
-  color:#f2b43c !important;
-
-  border:
-    2.5px solid
-    #e7aa38 !important;
-
-  background:
-    radial-gradient(
-      circle at 50% 45%,
-      rgba(15,74,40,.62),
-      rgba(6,36,23,.96)
-    ) !important;
-
-  box-shadow:
-    0 0 0 1px rgba(255,193,75,.08),
-    0 9px 24px rgba(0,0,0,.34),
-    inset 0 0 20px rgba(37,193,111,.07) !important;
-
-  flex-shrink:0;
-}
-
-.partner-withdrawal-icon svg{
-  width:42px !important;
-  height:42px !important;
-
-  fill:none !important;
-
-  stroke:#f2b43c !important;
-  stroke-width:1.8 !important;
-
-  stroke-linecap:round !important;
-  stroke-linejoin:round !important;
-}
-
-.partner-withdrawal-name{
-  position:relative !important;
-
-  display:block !important;
-
-  width:100% !important;
-
-  margin:0 !important;
-  padding:0 !important;
-
-  color:#ffffff !important;
-
-  text-align:center !important;
-
-  font-size:20px !important;
-  font-weight:900 !important;
-
-  line-height:1.35 !important;
-
-  z-index:5 !important;
-}
-
-.partner-withdrawal-name::before{
-  content:"";
-
-  display:block;
-
-  position:absolute;
-
-  left:14px;
-  right:14px;
-
-  top:48px;
-
-  height:1px;
-
-  background:
-    linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(43,178,68,.65) 20%,
-      #25c16f 50%,
-      rgba(43,178,68,.65) 80%,
-      transparent 100%
-    );
-}
-
-.partner-withdrawal-total{
-  position:relative !important;
-
-  display:block !important;
-
-  width:100% !important;
-
-  margin-top:74px !important;
-
-  color:#ff5659 !important;
-
-  text-align:center !important;
-
-  font-size:24px !important;
-  font-weight:900 !important;
-}
-
-.partner-withdrawal-total::before{
-  content:"";
-
-  position:absolute;
-
-  left:50%;
-  top:-39px;
-
-  width:12px;
-  height:12px;
-
-  transform:
-    translateX(-50%)
-    rotate(45deg);
-
-  background:#092016;
-
-  border:
-    2px solid #20d469;
-
-  box-shadow:
-    0 0 8px
-    rgba(32,212,105,.15);
+    margin-bottom:-640px!important;
+  }
 }
 
 
 /* =========================================================
-   الإشعار والتخزين المؤقت
+   شاشات صغيرة
+========================================================= */
+
+@media(max-width:400px){
+
+  .top-logo{
+    width:52px;
+    height:52px;
+  }
+
+  .brand-title h1{
+    font-size:18px;
+  }
+
+  .stat-card .value{
+    font-size:20px;
+  }
+
+  .dashboard-icon{
+    width:34px;
+    height:34px;
+  }
+
+  .dashboard-icon svg{
+    width:19px;
+    height:19px;
+  }
+
+  .form-row{
+    grid-template-columns:1fr;
+  }
+
+  .report-filters{
+    grid-template-columns:1fr;
+  }
+
+  .hijri-selects{
+    grid-template-columns:
+      .7fr
+      1.35fr
+      1fr;
+  }
+}
+
+
+/* =========================================================
+   شاشات كبيرة
+========================================================= */
+
+@media(min-width:700px){
+
+  .cards{
+    grid-template-columns:repeat(4,1fr);
+  }
+
+  .modal{
+    top:5vh;
+    bottom:auto;
+  }
+}
+
+
+/* =========================================================
+   الطباعة A4
+========================================================= */
+
+@media print{
+
+  @page{
+    size:A4 portrait;
+    margin:0;
+  }
+
+  html,
+  body{
+    width:210mm!important;
+    height:297mm!important;
+
+    margin:0!important;
+    padding:0!important;
+
+    background:#fff!important;
+  }
+
+  body *{
+    visibility:hidden!important;
+  }
+
+  #invoicePaper,
+  #invoicePaper *{
+    visibility:visible!important;
+  }
+
+  #invoicePaper{
+    position:absolute!important;
+
+    top:0!important;
+    right:0!important;
+    left:0!important;
+
+    width:210mm!important;
+    height:297mm!important;
+
+    min-width:210mm!important;
+    min-height:297mm!important;
+
+    margin:0!important;
+    padding:0!important;
+
+    transform:none!important;
+
+    box-shadow:none!important;
+
+    overflow:hidden!important;
+  }
+
+  .invoice-frame,
+  .invoice-inner-frame{
+    position:absolute!important;
+
+    inset:3mm!important;
+
+    width:auto!important;
+    height:auto!important;
+
+    margin:0!important;
+
+    overflow:hidden!important;
+  }
+
+  .invoice-preview-scroll{
+    display:block!important;
+
+    width:auto!important;
+
+    overflow:visible!important;
+  }
+
+  .modal,
+  .modal-body{
+    position:static!important;
+
+    width:auto!important;
+    height:auto!important;
+
+    max-width:none!important;
+    max-height:none!important;
+
+    margin:0!important;
+    padding:0!important;
+
+    overflow:visible!important;
+
+    border:0!important;
+
+    background:#fff!important;
+
+    box-shadow:none!important;
+  }
+
+  .modal-head,
+  .invoice-actions,
+  .modal-backdrop{
+    display:none!important;
+  }
+
+  .invoice-logo,
+  .invoice-main-logo{
+    width:103mm!important;
+    height:37mm!important;
+
+    max-width:103mm!important;
+    max-height:37mm!important;
+
+    object-fit:contain!important;
+
+    transform:none!important;
+  }
+
+  .invoice-full-stamp,
+  .invoice-stamp{
+    width:44mm!important;
+    height:44mm!important;
+
+    max-width:44mm!important;
+    max-height:44mm!important;
+
+    object-fit:contain!important;
+
+    transform:none!important;
+  }
+
+  .invoice-title,
+  .invoice-title-pill,
+  .invoice-products thead th,
+  .invoice-items-table thead th,
+  .grand-total,
+  .summary-total,
+  .invoice-green-footer,
+  .invoice-footer{
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+}
+
+
+/* =========================================================
+   الإشعار
 ========================================================= */
 
 .toast{
@@ -2289,40 +2359,1077 @@ button{
 
   font-weight:700;
 }
+/* =========================================================
+   WINTER CAMP INVOICE - FINAL DESIGN
+   ضع هذا الكود في نهاية ملف styles.css
+========================================================= */
 
 
 /* =========================================================
-   الاستجابة والطباعة
+   ورقة الفاتورة
+========================================================= */
+
+.invoice-a4{
+  position:relative !important;
+
+  width:794px !important;
+  height:1123px !important;
+
+  min-width:794px !important;
+  min-height:1123px !important;
+
+  flex:none !important;
+
+  margin:0 auto !important;
+
+  overflow:hidden !important;
+
+  direction:rtl !important;
+
+  background:#ffffff !important;
+  color:#101712 !important;
+
+  font-family:
+    Tahoma,
+    Arial,
+    sans-serif !important;
+
+  box-shadow:
+    0 10px 34px
+    rgba(0,0,0,.20) !important;
+}
+
+
+/* =========================================================
+   الإطار الداخلي
+========================================================= */
+
+.invoice-frame,
+.invoice-inner-frame{
+  position:absolute !important;
+
+  inset:12px !important;
+
+  overflow:hidden !important;
+
+  padding:
+    24px
+    28px
+    64px !important;
+
+  background:#ffffff !important;
+
+  border:
+    1.5px solid
+    #557c6b !important;
+
+  border-radius:20px !important;
+}
+
+
+/* =========================================================
+   موجات الصوت
+========================================================= */
+
+.sound-wave,
+.invoice-sound-wave{
+  position:absolute !important;
+
+  top:38px !important;
+
+  width:155px !important;
+  height:100px !important;
+
+  display:flex !important;
+
+  align-items:center !important;
+  justify-content:center !important;
+
+  gap:4px !important;
+
+  opacity:.11 !important;
+
+  pointer-events:none !important;
+}
+
+.wave-left,
+.wave-a{
+  left:20px !important;
+}
+
+.wave-right,
+.wave-b{
+  right:20px !important;
+}
+
+.sound-wave i,
+.invoice-sound-wave span{
+  display:block !important;
+
+  width:3px !important;
+
+  background:#08704c !important;
+
+  border-radius:20px !important;
+}
+
+.sound-wave i:nth-child(1),
+.sound-wave i:nth-child(15),
+.invoice-sound-wave span:nth-child(1),
+.invoice-sound-wave span:nth-child(15){
+  height:12px !important;
+}
+
+.sound-wave i:nth-child(2),
+.sound-wave i:nth-child(14),
+.invoice-sound-wave span:nth-child(2),
+.invoice-sound-wave span:nth-child(14){
+  height:20px !important;
+}
+
+.sound-wave i:nth-child(3),
+.sound-wave i:nth-child(13),
+.invoice-sound-wave span:nth-child(3),
+.invoice-sound-wave span:nth-child(13){
+  height:30px !important;
+}
+
+.sound-wave i:nth-child(4),
+.sound-wave i:nth-child(12),
+.invoice-sound-wave span:nth-child(4),
+.invoice-sound-wave span:nth-child(12){
+  height:42px !important;
+}
+
+.sound-wave i:nth-child(5),
+.sound-wave i:nth-child(11),
+.invoice-sound-wave span:nth-child(5),
+.invoice-sound-wave span:nth-child(11){
+  height:55px !important;
+}
+
+.sound-wave i:nth-child(6),
+.sound-wave i:nth-child(10),
+.invoice-sound-wave span:nth-child(6),
+.invoice-sound-wave span:nth-child(10){
+  height:68px !important;
+}
+
+.sound-wave i:nth-child(7),
+.sound-wave i:nth-child(9),
+.invoice-sound-wave span:nth-child(7),
+.invoice-sound-wave span:nth-child(9){
+  height:50px !important;
+}
+
+.sound-wave i:nth-child(8),
+.invoice-sound-wave span:nth-child(8){
+  height:82px !important;
+}
+
+
+/* =========================================================
+   رأس الفاتورة
+========================================================= */
+
+.invoice-header,
+.invoice-main-header{
+  position:relative !important;
+
+  z-index:3 !important;
+
+  width:100% !important;
+
+  display:flex !important;
+
+  flex-direction:column !important;
+
+  align-items:center !important;
+  justify-content:flex-start !important;
+
+  text-align:center !important;
+}
+
+
+/* =========================================================
+   الشعار - كبير وبشكله الطبيعي
+========================================================= */
+
+.invoice-logo,
+.invoice-main-logo{
+  display:block !important;
+
+  width:390px !important;
+  height:145px !important;
+
+  max-width:none !important;
+  max-height:none !important;
+
+  margin:
+    -5px
+    auto
+    0 !important;
+
+  padding:0 !important;
+
+  object-fit:contain !important;
+
+  object-position:
+    center center !important;
+
+  background:transparent !important;
+
+  border:0 !important;
+  border-radius:0 !important;
+
+  box-shadow:none !important;
+
+  transform:none !important;
+
+  clip-path:none !important;
+}
+
+
+/* =========================================================
+   اسم Winter Camp
+========================================================= */
+
+.invoice-brand-en,
+.invoice-company-en{
+  margin-top:-7px !important;
+
+  direction:ltr !important;
+
+  color:#111714 !important;
+
+  font-size:20px !important;
+
+  font-weight:400 !important;
+
+  letter-spacing:6px !important;
+
+  line-height:1.2 !important;
+}
+
+
+/* =========================================================
+   الاسم العربي
+========================================================= */
+
+.invoice-brand-ar,
+.invoice-company-ar{
+  margin-top:7px !important;
+
+  color:#07583d !important;
+
+  font-size:17px !important;
+
+  font-weight:800 !important;
+
+  line-height:1.4 !important;
+}
+
+
+/* =========================================================
+   عنوان فاتورة
+========================================================= */
+
+.invoice-title,
+.invoice-title-pill{
+  width:350px !important;
+  min-width:350px !important;
+
+  height:72px !important;
+
+  margin-top:17px !important;
+
+  display:flex !important;
+
+  align-items:center !important;
+  justify-content:center !important;
+
+  gap:27px !important;
+
+  padding:0 30px !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      #08704c 0%,
+      #03482f 100%
+    ) !important;
+
+  border-radius:40px !important;
+
+  color:#ffffff !important;
+
+  box-shadow:
+    0 5px 12px
+    rgba(0,70,45,.16) !important;
+}
+
+.invoice-title strong,
+.invoice-title-pill strong{
+  color:#ffffff !important;
+
+  font-size:32px !important;
+
+  font-weight:800 !important;
+
+  line-height:1 !important;
+}
+
+.invoice-title span,
+.invoice-title-wave{
+  color:#9dc8b9 !important;
+
+  font-size:19px !important;
+
+  font-weight:700 !important;
+
+  letter-spacing:-5px !important;
+}
+
+
+/* =========================================================
+   بيانات الفاتورة
+========================================================= */
+
+.invoice-info,
+.invoice-meta{
+  width:365px !important;
+
+  margin:
+    18px
+    0
+    14px
+    auto !important;
+
+  direction:rtl !important;
+
+  text-align:right !important;
+}
+
+.invoice-info-row,
+.meta-row{
+  min-height:31px !important;
+
+  display:grid !important;
+
+  grid-template-columns:
+    27px
+    112px
+    14px
+    1fr !important;
+
+  align-items:center !important;
+
+  column-gap:5px !important;
+
+  direction:rtl !important;
+
+  font-size:13px !important;
+}
+
+.invoice-info-icon,
+.meta-icon{
+  color:#07583d !important;
+
+  text-align:center !important;
+
+  font-size:16px !important;
+}
+
+.invoice-info-label,
+.meta-label{
+  color:#111 !important;
+
+  text-align:right !important;
+
+  font-weight:700 !important;
+}
+
+.invoice-info-value,
+.meta-value{
+  color:#111 !important;
+
+  text-align:right !important;
+
+  font-weight:700 !important;
+
+  white-space:nowrap !important;
+}
+
+.invoice-number-value{
+  direction:ltr !important;
+
+  text-align:right !important;
+
+  font-family:
+    Arial,
+    sans-serif !important;
+}
+
+
+/* =========================================================
+   صندوق بيانات العميل
+========================================================= */
+
+.invoice-customer,
+.invoice-client-box{
+  width:100% !important;
+
+  min-height:145px !important;
+
+  display:grid !important;
+
+  grid-template-columns:
+    1.25fr
+    .9fr !important;
+
+  overflow:hidden !important;
+
+  background:#ffffff !important;
+
+  border:
+    1.4px solid
+    #47715f !important;
+
+  border-radius:16px !important;
+}
+
+.customer-main,
+.invoice-client-right,
+.customer-extra,
+.invoice-client-left{
+  padding:
+    16px
+    19px !important;
+}
+
+.customer-extra,
+.invoice-client-left{
+  border-right:
+    1px solid
+    #d7dcda !important;
+}
+
+.customer-row,
+.client-field{
+  min-height:37px !important;
+
+  display:grid !important;
+
+  grid-template-columns:
+    25px
+    100px
+    13px
+    1fr !important;
+
+  align-items:center !important;
+
+  column-gap:6px !important;
+
+  color:#111 !important;
+
+  font-size:13px !important;
+}
+
+.invoice-client-left .client-field{
+  grid-template-columns:
+    105px
+    13px
+    1fr !important;
+}
+
+.customer-symbol,
+.client-icon{
+  color:#07583d !important;
+
+  text-align:center !important;
+
+  font-size:15px !important;
+}
+
+.client-label{
+  font-weight:700 !important;
+}
+
+.customer-phone,
+.client-field strong[dir="ltr"]{
+  direction:ltr !important;
+
+  text-align:right !important;
+
+  font-family:
+    Arial,
+    sans-serif !important;
+}
+
+
+/* =========================================================
+   جدول الأصناف
+========================================================= */
+
+.invoice-products,
+.invoice-items-table{
+  width:100% !important;
+
+  margin-top:18px !important;
+
+  overflow:hidden !important;
+
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+
+  background:#ffffff !important;
+
+  border:
+    1px solid
+    #bdc6c1 !important;
+
+  border-radius:9px !important;
+
+  table-layout:fixed !important;
+
+  font-size:13px !important;
+}
+
+.invoice-products thead th,
+.invoice-items-table thead th{
+  height:44px !important;
+
+  padding:6px !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      #08704c 0%,
+      #03472f 100%
+    ) !important;
+
+  border-left:
+    1px solid
+    rgba(255,255,255,.38) !important;
+
+  color:#ffffff !important;
+
+  text-align:center !important;
+
+  vertical-align:middle !important;
+
+  font-size:13px !important;
+
+  font-weight:800 !important;
+}
+
+.invoice-products tbody td,
+.invoice-items-table tbody td{
+  height:85px !important;
+
+  padding:7px !important;
+
+  background:#ffffff !important;
+
+  border-left:
+    1px solid
+    #d7dcda !important;
+
+  color:#111 !important;
+
+  text-align:center !important;
+
+  vertical-align:middle !important;
+
+  font-size:13px !important;
+}
+
+.invoice-products th:last-child,
+.invoice-products td:last-child,
+.invoice-items-table th:last-child,
+.invoice-items-table td:last-child{
+  border-left:0 !important;
+}
+
+
+/* رقم */
+
+.invoice-no,
+.col-no{
+  width:55px !important;
+}
+
+
+/* الكمية */
+
+.invoice-qty,
+.col-qty{
+  width:95px !important;
+}
+
+
+/* السعر */
+
+.invoice-price,
+.col-price,
+.col-total{
+  width:145px !important;
+}
+
+
+/* الصنف يأخذ المساحة الأكبر */
+
+.invoice-product-name,
+.product-title{
+  width:auto !important;
+}
+
+.invoice-product-name strong,
+.product-title strong{
+  display:block !important;
+
+  color:#111 !important;
+
+  font-size:15px !important;
+
+  font-weight:800 !important;
+}
+
+.invoice-product-name small,
+.product-title small{
+  display:block !important;
+
+  margin-top:6px !important;
+
+  color:#747d78 !important;
+
+  font-size:10px !important;
+}
+
+
+/* =========================================================
+   المنطقة السفلية
+========================================================= */
+
+.invoice-lower,
+.invoice-bottom-grid{
+  width:100% !important;
+
+  display:grid !important;
+
+  grid-template-columns:
+    1fr
+    1.15fr !important;
+
+  gap:25px !important;
+
+  align-items:start !important;
+
+  margin-top:22px !important;
+}
+
+
+/* =========================================================
+   المبلغ بالحروف
+========================================================= */
+
+.invoice-words-side,
+.invoice-words-area{
+  position:relative !important;
+
+  min-height:285px !important;
+}
+
+.amount-words-label,
+.words-label{
+  display:block !important;
+
+  margin:
+    0
+    4px
+    8px !important;
+
+  color:#111 !important;
+
+  text-align:right !important;
+
+  font-size:14px !important;
+
+  font-weight:800 !important;
+}
+
+.amount-words-box,
+.words-box{
+  width:100% !important;
+
+  min-height:66px !important;
+
+  display:flex !important;
+
+  align-items:center !important;
+  justify-content:center !important;
+
+  padding:
+    10px
+    17px !important;
+
+  background:#ffffff !important;
+
+  border:
+    1px solid
+    #aeb9b3 !important;
+
+  border-radius:11px !important;
+
+  color:#111 !important;
+
+  text-align:center !important;
+
+  font-size:13px !important;
+
+  font-weight:700 !important;
+
+  line-height:1.7 !important;
+}
+
+
+/* =========================================================
+   الختم - كامل ولا يلامس الشريط
+========================================================= */
+
+.stamp-holder{
+  width:100% !important;
+
+  height:190px !important;
+
+  display:flex !important;
+
+  align-items:center !important;
+  justify-content:center !important;
+
+  margin-top:5px !important;
+
+  overflow:visible !important;
+}
+
+.invoice-full-stamp,
+.invoice-stamp{
+  display:block !important;
+
+  width:165px !important;
+  height:165px !important;
+
+  max-width:165px !important;
+  max-height:165px !important;
+
+  margin:
+    7px
+    auto
+    0 !important;
+
+  padding:0 !important;
+
+  object-fit:contain !important;
+
+  object-position:
+    center center !important;
+
+  background:transparent !important;
+
+  border:0 !important;
+
+  opacity:1 !important;
+
+  transform:none !important;
+
+  clip-path:none !important;
+}
+
+
+/* =========================================================
+   جدول الإجماليات
+========================================================= */
+
+.invoice-totals,
+.invoice-summary{
+  overflow:hidden !important;
+
+  background:#ffffff !important;
+
+  border:
+    1px solid
+    #b6c0bb !important;
+
+  border-radius:10px !important;
+}
+
+.total-row,
+.summary-row{
+  min-height:50px !important;
+
+  display:grid !important;
+
+  grid-template-columns:
+    1.35fr
+    .95fr !important;
+
+  align-items:stretch !important;
+
+  background:#ffffff !important;
+
+  border-bottom:
+    1px solid
+    #d4d9d6 !important;
+
+  color:#111 !important;
+}
+
+.total-row:last-child,
+.summary-row:last-child{
+  border-bottom:0 !important;
+}
+
+.total-row span,
+.total-row strong,
+.summary-row span,
+.summary-row strong{
+  display:flex !important;
+
+  align-items:center !important;
+
+  padding:
+    10px
+    13px !important;
+
+  font-size:13px !important;
+}
+
+.total-row span,
+.summary-row span{
+  justify-content:flex-start !important;
+}
+
+.total-row strong,
+.summary-row strong{
+  justify-content:center !important;
+
+  direction:ltr !important;
+
+  border-right:
+    1px solid
+    #d4d9d6 !important;
+
+  text-align:center !important;
+}
+
+.remaining-number,
+.summary-remaining{
+  color:#e52d2d !important;
+
+  font-weight:800 !important;
+}
+
+.grand-total,
+.summary-total{
+  background:
+    linear-gradient(
+      180deg,
+      #08704c 0%,
+      #03472f 100%
+    ) !important;
+
+  color:#ffffff !important;
+
+  font-size:14px !important;
+}
+
+.grand-total span,
+.grand-total strong,
+.summary-total span,
+.summary-total strong{
+  color:#ffffff !important;
+}
+
+
+/* =========================================================
+   الشريط الأخضر السفلي
+========================================================= */
+
+.invoice-green-footer,
+.invoice-footer{
+  position:absolute !important;
+
+  right:18px !important;
+  bottom:12px !important;
+  left:18px !important;
+
+  height:42px !important;
+
+  display:grid !important;
+
+  grid-template-columns:
+    1fr
+    1.7fr
+    1fr !important;
+
+  align-items:center !important;
+
+  gap:8px !important;
+
+  padding:
+    0
+    18px !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      #08704c 0%,
+      #03472f 100%
+    ) !important;
+
+  border-radius:16px !important;
+
+  color:#ffffff !important;
+
+  text-align:center !important;
+
+  font-size:11px !important;
+
+  overflow:hidden !important;
+}
+
+.invoice-green-footer *,
+.invoice-footer *{
+  color:#ffffff !important;
+}
+
+
+/* =========================================================
+   معاينة الفاتورة
+========================================================= */
+
+.invoice-preview-scroll{
+  width:100% !important;
+
+  display:flex !important;
+
+  justify-content:center !important;
+
+  overflow:hidden !important;
+
+  padding:
+    4px
+    0
+    12px !important;
+}
+
+
+/* =========================================================
+   أزرار الفاتورة
+========================================================= */
+
+.invoice-actions{
+  display:grid !important;
+
+  grid-template-columns:
+    repeat(3,1fr) !important;
+
+  gap:10px !important;
+
+  margin-top:10px !important;
+}
+
+.invoice-actions button{
+  min-height:48px !important;
+
+  padding:10px !important;
+
+  border:
+    1px solid
+    var(--line) !important;
+
+  border-radius:12px !important;
+
+  background:
+    var(--panel2) !important;
+
+  color:
+    var(--text) !important;
+
+  font-size:14px !important;
+}
+
+.invoice-share-btn{
+  background:
+    var(--green) !important;
+
+  border-color:
+    var(--green) !important;
+
+  color:#06130b !important;
+
+  font-weight:900 !important;
+}
+
+
+/* =========================================================
+   معاينة الجوال
 ========================================================= */
 
 @media screen and (max-width:850px){
+
   .invoice-preview-scroll{
-    width:100%!important;
-    display:flex!important;
-    justify-content:center!important;
-    overflow:hidden!important;
+    width:100% !important;
+
+    display:flex !important;
+
+    justify-content:center !important;
+
+    overflow:hidden !important;
   }
 
   .invoice-a4{
-    width:794px!important;
-    height:1123px!important;
-    min-width:794px!important;
-    min-height:1123px!important;
-    transform:scale(.46)!important;
-    transform-origin:top center!important;
-    margin-bottom:-600px!important;
+    width:794px !important;
+    height:1123px !important;
+
+    min-width:794px !important;
+    min-height:1123px !important;
+
+    transform:
+      scale(.46) !important;
+
+    transform-origin:
+      top center !important;
+
+    margin-bottom:
+      -600px !important;
   }
+
 }
+
 
 @media screen and (max-width:430px){
+
   .invoice-a4{
-    transform:scale(.43)!important;
-    transform-origin:top center!important;
-    margin-bottom:-640px!important;
+    transform:
+      scale(.43) !important;
+
+    transform-origin:
+      top center !important;
+
+    margin-bottom:
+      -640px !important;
   }
+
 }
 
+
+/* =========================================================
+   الطباعة A4
+========================================================= */
+
 @media print{
+
   @page{
     size:A4 portrait;
     margin:0;
@@ -2330,41 +3437,686 @@ button{
 
   html,
   body{
-    width:210mm!important;
-    height:297mm!important;
-    margin:0!important;
-    padding:0!important;
-    background:#fff!important;
+    width:210mm !important;
+    height:297mm !important;
+
+    margin:0 !important;
+    padding:0 !important;
+
+    background:#ffffff !important;
   }
 
   body *{
-    visibility:hidden!important;
+    visibility:hidden !important;
   }
 
   #invoicePaper,
   #invoicePaper *{
-    visibility:visible!important;
+    visibility:visible !important;
   }
 
   #invoicePaper{
-    position:absolute!important;
-    top:0!important;
-    right:0!important;
-    left:0!important;
-    width:210mm!important;
-    height:297mm!important;
-    min-width:210mm!important;
-    min-height:297mm!important;
-    margin:0!important;
-    padding:0!important;
-    transform:none!important;
-    box-shadow:none!important;
-    overflow:hidden!important;
+    position:absolute !important;
+
+    top:0 !important;
+    right:0 !important;
+    left:0 !important;
+
+    width:210mm !important;
+    height:297mm !important;
+
+    min-width:210mm !important;
+    min-height:297mm !important;
+
+    margin:0 !important;
+    padding:0 !important;
+
+    transform:none !important;
+
+    transform-origin:
+      top center !important;
+
+    background:#ffffff !important;
+
+    box-shadow:none !important;
+
+    overflow:hidden !important;
+  }
+
+  .invoice-frame,
+  .invoice-inner-frame{
+    position:absolute !important;
+
+    inset:3mm !important;
+
+    width:auto !important;
+    height:auto !important;
+
+    margin:0 !important;
+
+    overflow:hidden !important;
+  }
+
+  .invoice-preview-scroll{
+    width:auto !important;
+
+    display:block !important;
+
+    overflow:visible !important;
+
+    padding:0 !important;
+  }
+
+  .modal,
+  .modal-body{
+    position:static !important;
+
+    width:auto !important;
+    height:auto !important;
+
+    max-width:none !important;
+    max-height:none !important;
+
+    margin:0 !important;
+    padding:0 !important;
+
+    overflow:visible !important;
+
+    border:0 !important;
+
+    background:#ffffff !important;
+
+    box-shadow:none !important;
   }
 
   .modal-head,
   .invoice-actions,
   .modal-backdrop{
-    display:none!important;
+    display:none !important;
   }
+
+  .invoice-title,
+  .invoice-title-pill,
+  .invoice-products thead th,
+  .invoice-items-table thead th,
+  .grand-total,
+  .summary-total,
+  .invoice-green-footer,
+  .invoice-footer{
+    -webkit-print-color-adjust:
+      exact !important;
+
+    print-color-adjust:
+      exact !important;
+  }
+
+  .invoice-logo,
+  .invoice-main-logo{
+    width:103mm !important;
+    height:38mm !important;
+
+    object-fit:contain !important;
+  }
+
+  .invoice-full-stamp,
+  .invoice-stamp{
+    width:44mm !important;
+    height:44mm !important;
+
+    max-width:44mm !important;
+    max-height:44mm !important;
+
+    object-fit:contain !important;
+  }
+
+}
+
+
+/* =========================================================
+   مهم جداً عند إنشاء PDF بـ html2canvas
+========================================================= */
+
+#invoicePaper{
+  background:#ffffff !important;
+}
+
+#invoicePaper img{
+  image-rendering:auto !important;
+}
+
+#invoicePaper .invoice-logo,
+#invoicePaper .invoice-main-logo{
+  object-fit:contain !important;
+}
+
+#invoicePaper .invoice-stamp,
+#invoicePaper .invoice-full-stamp{
+  object-fit:contain !important;
+}
+/* =========================================================
+   شعار الفاتورة الأصلي
+========================================================= */
+
+.invoice-main-logo{
+  display:block !important;
+
+  width:330px !important;
+  height:auto !important;
+
+  max-width:none !important;
+  max-height:none !important;
+
+  margin:0 auto 5px !important;
+  padding:0 !important;
+
+  object-fit:contain !important;
+  object-position:center !important;
+
+  background:transparent !important;
+
+  border:0 !important;
+  border-radius:0 !important;
+
+  box-shadow:none !important;
+
+  transform:none !important;
+}
+
+/* الطباعة و PDF */
+@media print{
+  .invoice-main-logo{
+    width:87mm !important;
+    height:auto !important;
+    max-width:none !important;
+
+    margin-left:auto !important;
+    margin-right:auto !important;
+
+    object-fit:contain !important;
+  }
+}
+/* =========================================================
+   إبقاء نوع المناسبة في سطر واحد
+========================================================= */
+
+.invoice-client-left .client-field{
+  grid-template-columns:105px 12px minmax(0,1fr) !important;
+}
+
+.invoice-client-left .client-field strong{
+  white-space:nowrap !important;
+  overflow:visible !important;
+  font-size:13px !important;
+}
+/* =========================================================
+   إصلاح نوع المناسبة والملاحظات - سطر واحد
+========================================================= */
+
+.customer-extra{
+  padding:18px 12px !important;
+}
+
+.customer-extra .customer-row{
+  grid-template-columns:95px 10px minmax(140px, 1fr) !important;
+  column-gap:5px !important;
+}
+
+.customer-extra .customer-row b,
+.customer-extra .customer-row strong,
+.customer-extra .customer-row span{
+  white-space:nowrap !important;
+  word-break:normal !important;
+  overflow-wrap:normal !important;
+}
+
+/* نوع المناسبة + الملاحظات */
+.customer-row-simple{
+  grid-template-columns:95px 10px minmax(140px, 1fr) !important;
+}
+
+.customer-row-simple b{
+  white-space:nowrap !important;
+  word-break:keep-all !important;
+  overflow-wrap:normal !important;
+}
+/* =========================================================
+   إصلاح نهائي: نوع المناسبة والملاحظات في سطر واحد
+========================================================= */
+
+.customer-extra{
+  padding:18px 12px !important;
+}
+
+.customer-extra .customer-row,
+.customer-extra .customer-row-simple{
+  display:grid !important;
+
+  grid-template-columns:
+    90px
+    10px
+    minmax(0, 1fr) !important;
+
+  column-gap:4px !important;
+
+  align-items:center !important;
+}
+
+.customer-extra .customer-row strong,
+.customer-extra .customer-row b,
+.customer-extra .customer-row span,
+.customer-extra .customer-row div{
+  white-space:nowrap !important;
+  word-break:normal !important;
+  overflow-wrap:normal !important;
+  line-height:1.4 !important;
+}
+
+/* القيمة نفسها: حفل تخرج / شكراً لثقتكم بنا */
+.customer-extra .customer-row > *:last-child{
+  white-space:nowrap !important;
+  word-break:keep-all !important;
+  overflow-wrap:normal !important;
+
+  font-size:12px !important;
+}
+
+/* نعطي جهة المناسبة والملاحظات مساحة أكبر */
+.invoice-customer{
+  grid-template-columns:1.12fr 1fr !important;
+}
+/* =========================================================
+   تكبير خط جدول الفاتورة
+========================================================= */
+
+/* عناوين الجدول */
+.invoice-items-table thead th{
+  font-size:17px !important;
+  font-weight:800 !important;
+}
+
+/* جميع بيانات الجدول */
+.invoice-items-table tbody td{
+  font-size:17px !important;
+  font-weight:700 !important;
+}
+
+/* اسم الصنف */
+.invoice-items-table .invoice-product-name strong{
+  font-size:18px !important;
+  font-weight:800 !important;
+  line-height:1.5 !important;
+}
+
+/* الكمية والسعر والإجمالي */
+.invoice-items-table tbody td:not(.invoice-product-name){
+  font-size:18px !important;
+  font-weight:700 !important;
+}
+
+/* تحسين ارتفاع الصف بعد تكبير الخط */
+.invoice-items-table tbody td{
+  height:82px !important;
+  padding:10px 8px !important;
+}
+/* =========================================================
+   توحيد خط بيانات جدول الفاتورة مع اسم الصنف
+========================================================= */
+
+.invoice-products tbody td,
+.invoice-products tbody td strong,
+.invoice-products tbody td:nth-child(1),
+.invoice-products tbody td:nth-child(2),
+.invoice-products tbody td:nth-child(3),
+.invoice-products tbody td:nth-child(4),
+.invoice-products tbody td:nth-child(5){
+    font-size:15px !important;
+    font-weight:700 !important;
+    line-height:1.5 !important;
+}
+
+/* اسم الصنف */
+.invoice-products .product-title strong{
+    font-size:15px !important;
+    font-weight:700 !important;
+}
+/* =========================================================
+   توحيد خط الصنف والكمية والأسعار - إصلاح نهائي
+========================================================= */
+
+/* جميع خلايا بيانات الجدول */
+.invoice-items-table tbody td,
+.invoice-products tbody td{
+  font-size:17px !important;
+  font-weight:800 !important;
+  line-height:1.4 !important;
+}
+
+/* اسم الصنف */
+.invoice-items-table .invoice-product-name strong,
+.invoice-items-table .product-title strong,
+.invoice-products .invoice-product-name strong,
+.invoice-products .product-title strong{
+  font-size:17px !important;
+  font-weight:800 !important;
+  line-height:1.4 !important;
+}
+
+/* الكمية */
+.invoice-items-table tbody td:nth-child(3),
+.invoice-products tbody td:nth-child(3){
+  font-size:17px !important;
+  font-weight:800 !important;
+}
+
+/* سعر الوحدة */
+.invoice-items-table tbody td:nth-child(4),
+.invoice-products tbody td:nth-child(4){
+  font-size:17px !important;
+  font-weight:800 !important;
+}
+
+/* الإجمالي */
+.invoice-items-table tbody td:nth-child(5),
+.invoice-products tbody td:nth-child(5){
+  font-size:17px !important;
+  font-weight:800 !important;
+}
+
+/* الرقم م */
+.invoice-items-table tbody td:nth-child(1),
+.invoice-products tbody td:nth-child(1){
+  font-size:17px !important;
+  font-weight:800 !important;
+}
+.expense-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+  margin-top:6px;
+}
+
+.edit-mini,
+.delete-mini{
+  border:0;
+  background:none;
+  font-size:11px;
+  padding:3px 0;
+}
+
+.edit-mini{
+  color:var(--green);
+}
+
+.delete-mini{
+  color:var(--red);
+}
+/* =========================================================
+   اختيار نوع الأجهزة / الباقة
+========================================================= */
+
+.optional-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  margin-right:8px;
+  padding:3px 8px;
+
+  border:1px solid var(--green);
+  border-radius:6px;
+
+  color:var(--green);
+
+  font-size:10px;
+  font-weight:700;
+}
+
+.device-mode-tabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+
+  gap:10px;
+
+  margin-top:8px;
+}
+
+.device-mode-btn{
+  min-height:48px;
+
+  padding:10px 12px;
+
+  border:1px solid var(--line);
+  border-radius:13px;
+
+  background:#0c1216;
+
+  color:var(--muted);
+
+  cursor:pointer;
+}
+
+.device-mode-btn.active{
+  border-color:var(--green);
+
+  background:rgba(37,193,111,.07);
+
+  color:var(--green);
+
+  box-shadow:
+    0
+    0
+    0
+    1px
+    rgba(37,193,111,.08);
+}
+
+
+.device-list-section{
+  margin-top:10px;
+}
+
+
+.device-package-list{
+  overflow:hidden;
+
+  border:1px solid var(--line);
+  border-radius:14px;
+
+  background:#0c1216;
+}
+
+
+.device-package{
+  width:100%;
+
+  display:grid;
+  grid-template-columns:48px 1fr;
+
+  align-items:center;
+
+  gap:10px;
+
+  padding:13px 12px;
+
+  border:0;
+  border-bottom:1px solid var(--line);
+
+  background:transparent;
+
+  color:var(--text);
+
+  text-align:right;
+
+  cursor:pointer;
+}
+
+.device-package:last-child{
+  border-bottom:0;
+}
+
+
+.device-package-number{
+  width:36px;
+  height:36px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  justify-self:center;
+
+  flex-shrink:0;
+
+  border-radius:50%;
+
+  background:var(--green);
+
+  color:#06130b;
+
+  font-size:17px;
+  font-weight:900;
+}
+
+
+.device-package-text{
+  display:block;
+
+  font-size:12px;
+  line-height:1.8;
+}
+
+
+.device-package.selected{
+  background:rgba(37,193,111,.09);
+
+  box-shadow:
+    inset
+    0
+    0
+    0
+    1px
+    rgba(37,193,111,.35);
+}
+
+.device-package.selected
+.device-package-number{
+  box-shadow:
+    0
+    0
+    0
+    3px
+    rgba(37,193,111,.15);
+}
+
+
+.device-manual-section{
+  margin-top:10px;
+}
+
+
+.device-manual-section input{
+  width:100%;
+
+  padding:12px;
+
+  border:1px solid var(--line);
+  border-radius:12px;
+
+  outline:none;
+
+  background:#0c1216;
+
+  color:var(--text);
+}
+
+.device-manual-section input:focus{
+  border-color:var(--green);
+
+  box-shadow:
+    0
+    0
+    0
+    2px
+    rgba(37,193,111,.08);
+}
+
+/* =========================================================
+   خط أخضر + ماسة بين الاسم وإجمالي المسحوبات
+   لا يغير أي شيء آخر
+========================================================= */
+
+.partner-withdrawal-card{
+    position: relative !important;
+}
+
+
+/* الخط الأخضر */
+.partner-withdrawal-card::after{
+    content: "" !important;
+
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    position: absolute !important;
+
+    top: 182px !important;
+    left: 35px !important;
+    right: 35px !important;
+
+    width: auto !important;
+    height: 1px !important;
+
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        #18c96b 20%,
+        #20df72 50%,
+        #18c96b 80%,
+        transparent 100%
+    ) !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+
+    transform: none !important;
+
+    z-index: 50 !important;
+
+    pointer-events: none !important;
+}
+
+
+/* الماسة الموجودة في منتصف الخط */
+.partner-withdrawal-card::before{
+    content: "" !important;
+
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    position: absolute !important;
+
+    top: 175px !important;
+    left: 50% !important;
+
+    width: 12px !important;
+    height: 12px !important;
+
+    background: #0b181d !important;
+
+    border: 2px solid #20df72 !important;
+    border-radius: 1px !important;
+
+    transform:
+        translateX(-50%)
+        rotate(45deg) !important;
+
+    box-shadow:
+        0 0 6px rgba(32,223,114,.30) !important;
+
+    z-index: 51 !important;
+
+    pointer-events: none !important;
 }
