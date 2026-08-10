@@ -340,11 +340,11 @@ const $$ = selector => [...document.querySelectorAll(selector)];
     .invoice-preview-scroll{
       width:100% !important;
       overflow:hidden !important;
-      display:flex !important;
-      justify-content:center !important;
-      align-items:flex-start !important;
+      display:block !important;
+      position:relative !important;
       padding:0 !important;
       margin:0 auto 8px !important;
+      direction:ltr !important;
     }
 
     #invoicePaper.invoice-a4{
@@ -352,12 +352,17 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       height:1123px !important;
       min-width:794px !important;
       min-height:1123px !important;
+      max-width:794px !important;
+      max-height:1123px !important;
       background:#fff !important;
       color:#111 !important;
       overflow:hidden !important;
       box-shadow:0 10px 32px rgba(0,0,0,.18);
       border-radius:0 !important;
-      position:relative !important;
+      position:absolute !important;
+      top:0 !important;
+      left:50% !important;
+      margin:0 !important;
       display:block !important;
       flex:0 0 auto !important;
     }
@@ -392,10 +397,9 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       width:150px;
       height:132px;
       background:
-        radial-gradient(circle, rgba(217,180,103,.55) 1.5px, transparent 1.7px),
-        linear-gradient(135deg,#0b8a51 0%, #055b35 100%);
-      background-size:10px 10px, auto;
-      background-position:78px 18px, 0 0;
+        radial-gradient(circle, rgba(223,188,108,.85) 1.7px, transparent 1.9px) 76px 14px / 10px 10px repeat,
+        repeating-linear-gradient(45deg, transparent 0 17px, rgba(255,255,255,.16) 17px 18px),
+        linear-gradient(135deg,#0b8a51 0%,#055b35 100%);
       border-bottom-left-radius:76px;
       z-index:0;
     }
@@ -403,19 +407,17 @@ const $$ = selector => [...document.querySelectorAll(selector)];
     .wc-invoice::after{
       content:"";
       position:absolute;
-      top:18px;
-      right:22px;
-      width:72px;
-      height:72px;
-      border:1.6px solid rgba(255,255,255,.26);
-      border-left:0;
-      border-bottom:0;
+      top:27px;
+      right:40px;
+      width:56px;
+      height:56px;
+      border:1.5px solid rgba(255,255,255,.28);
       transform:rotate(45deg);
       z-index:1;
       box-sizing:border-box;
       box-shadow:
-        -14px 14px 0 -13px rgba(255,255,255,.18),
-        -28px 28px 0 -27px rgba(255,255,255,.12);
+        12px 12px 0 -11px rgba(255,255,255,.22),
+        24px 24px 0 -23px rgba(255,255,255,.14);
     }
 
     .wc-top-waves{
@@ -798,28 +800,32 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:8px;
+      gap:12px;
       padding:0 20px;
       font-size:12px;
       font-weight:700;
-      direction:ltr;
+      direction:ltr !important;
     }
 
     .wc-footer-brand{
-      text-align:left;
-      min-width:120px;
+      order:1;
+      flex:0 0 125px;
+      text-align:left !important;
+      direction:ltr !important;
     }
 
     .wc-footer-location{
-      text-align:center;
-      flex:1;
-      direction:rtl;
+      order:2;
+      flex:1 1 auto;
+      text-align:center !important;
+      direction:rtl !important;
     }
 
     .wc-footer-phone{
-      text-align:right;
-      min-width:120px;
-      direction:ltr;
+      order:3;
+      flex:0 0 125px;
+      text-align:right !important;
+      direction:ltr !important;
     }
 
     .invoice-actions{
@@ -6183,15 +6189,10 @@ function showInvoice(id) {
     const paper =
       $('#invoicePaper');
 
-    const content =
-      paper
-        ? paper.firstElementChild
-        : null;
-
     const actions =
       $('.invoice-actions');
 
-    if (!preview || !paper || !content) {
+    if (!preview || !paper) {
       return;
     }
 
@@ -6203,12 +6204,15 @@ function showInvoice(id) {
 
     const availableWidth =
       Math.max(
-        220,
+        240,
         preview.clientWidth - 8
       );
 
     const viewportHeight =
-      window.innerHeight || 0;
+      Math.max(
+        420,
+        window.innerHeight || 0
+      );
 
     const actionsHeight =
       actions
@@ -6217,74 +6221,30 @@ function showInvoice(id) {
 
     const availableHeight =
       Math.max(
-        300,
+        320,
         viewportHeight -
           actionsHeight -
-          210
+          190
       );
-
-    const widthScale =
-      availableWidth / paperWidth;
-
-    const heightScale =
-      availableHeight / paperHeight;
 
     const scale =
       Math.min(
         1,
-        widthScale,
-        heightScale
+        availableWidth / paperWidth,
+        availableHeight / paperHeight
       );
 
-    paper.style.width =
-      `${Math.ceil(
-        paperWidth * scale
-      )}px`;
+    paper.style.setProperty(
+      'transform',
+      `translateX(-50%) scale(${scale})`,
+      'important'
+    );
 
-    paper.style.minWidth =
-      `${Math.ceil(
-        paperWidth * scale
-      )}px`;
-
-    paper.style.height =
-      `${Math.ceil(
-        paperHeight * scale
-      )}px`;
-
-    paper.style.minHeight =
-      `${Math.ceil(
-        paperHeight * scale
-      )}px`;
-
-    paper.style.margin =
-      '0 auto';
-
-    paper.style.overflow =
-      'hidden';
-
-    paper.style.position =
-      'relative';
-
-    content.style.width =
-      `${paperWidth}px`;
-
-    content.style.height =
-      `${paperHeight}px`;
-
-    content.style.transform =
-      `scale(${scale})`;
-
-    content.style.transformOrigin =
-      'top left';
-
-    content.style.position =
-      'absolute';
-
-    content.style.left =
-      '0';
-
-    content.style.top =
-      '0';
+    paper.style.setProperty(
+      'transform-origin',
+      'top center',
+      'important'
+    );
 
     preview.style.height =
       `${Math.ceil(
@@ -6292,10 +6252,9 @@ function showInvoice(id) {
       )}px`;
 
     preview.style.maxHeight =
-      `${availableHeight}px`;
-
-    preview.style.justifyContent =
-      'center';
+      `${Math.ceil(
+        paperHeight * scale
+      )}px`;
 
   }
 
@@ -6636,6 +6595,39 @@ async function shareInvoicePDF(
       'none',
       'important'
     );
+
+    const exportInvoiceContent =
+      exportPaper.querySelector(
+        '.wc-invoice'
+      );
+
+    if (exportInvoiceContent) {
+
+      exportInvoiceContent.style.setProperty(
+        'transform',
+        'none',
+        'important'
+      );
+
+      exportInvoiceContent.style.setProperty(
+        'transform-origin',
+        'top left',
+        'important'
+      );
+
+      exportInvoiceContent.style.setProperty(
+        'width',
+        '100%',
+        'important'
+      );
+
+      exportInvoiceContent.style.setProperty(
+        'height',
+        '100%',
+        'important'
+      );
+
+    }
 
 
     exportPaper.style.setProperty(
@@ -7294,7 +7286,7 @@ if (
       navigator
         .serviceWorker
         .register(
-          './sw.js?v=114'
+          './sw.js?v=115'
         )
         .catch(
           console.error
