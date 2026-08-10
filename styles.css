@@ -5472,3 +5472,558 @@ button{
 
   color:#ff5a5f !important;
 }
+/* =====================================================
+   مسحوبات الشركاء - التصميم النهائي
+===================================================== */
+
+.partners-withdrawals-section{
+  margin-top:30px;
+  padding:0 2px;
+}
+
+.partners-withdrawals-head{
+  margin-bottom:18px;
+  text-align:right;
+}
+
+.partners-withdrawals-head h3{
+  margin:0;
+  color:#f7f8f7;
+  font-size:22px;
+  font-weight:900;
+  line-height:1.2;
+}
+
+.partners-withdrawals-head small{
+  display:block;
+  margin-top:7px;
+  color:#8f9aa1;
+  font-size:12px;
+  line-height:1.6;
+}
+
+
+/* =====================================================
+   المربعان
+===================================================== */
+
+.partner-withdrawal-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+
+/* =====================================================
+   البطاقة
+===================================================== */
+
+.partner-withdrawal-card{
+  position:relative;
+
+  min-height:285px;
+
+  padding:
+    20px
+    12px
+    18px;
+
+  border-radius:25px;
+
+  border:
+    1.5px solid
+    rgba(50,174,74,.55);
+
+  background:
+    linear-gradient(
+      145deg,
+      #111c22 0%,
+      #0b151a 100%
+    );
+
+  color:#fff;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+
+  gap:0;
+
+  overflow:hidden;
+
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.025);
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+
+/* إلغاء الزخارف القديمة */
+
+.partner-withdrawal-card::before,
+.partner-withdrawal-card::after{
+  content:none !important;
+}
+
+
+/* =====================================================
+   الأيقونة الذهبية
+===================================================== */
+
+.partner-withdrawal-icon{
+  width:94px !important;
+  height:94px !important;
+
+  margin:
+    0
+    auto
+    14px !important;
+
+  display:grid !important;
+  place-items:center !important;
+
+  border-radius:50% !important;
+
+  color:#f2b43c !important;
+
+  border:
+    2.5px solid
+    #e7aa38 !important;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(15,74,40,.62),
+      rgba(6,36,23,.96)
+    ) !important;
+
+  box-shadow:
+    0 0 0 1px rgba(255,193,75,.08),
+    0 9px 24px rgba(0,0,0,.34),
+    inset 0 0 20px rgba(37,193,111,.07) !important;
+
+  flex-shrink:0;
+}
+
+
+/* شكل الشخص */
+
+.partner-withdrawal-icon svg{
+  width:42px !important;
+  height:42px !important;
+
+  fill:none !important;
+
+  stroke:#f2b43c !important;
+  stroke-width:1.8 !important;
+
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+
+
+/* =====================================================
+   الاسم
+===================================================== */
+
+.partner-withdrawal-name{
+  position:relative !important;
+
+  display:block !important;
+
+  width:100% !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#ffffff !important;
+
+  text-align:center !important;
+
+  font-size:20px !important;
+  font-weight:900 !important;
+
+  line-height:1.35 !important;
+
+  z-index:5 !important;
+}
+
+
+/* إزالة النص المضاف سابقًا */
+
+.partner-withdrawal-name::after{
+  content:none !important;
+}
+
+
+/* =====================================================
+   الخط الأخضر تحت الاسم
+===================================================== */
+
+.partner-withdrawal-name::before{
+  content:"";
+
+  display:block;
+
+  position:absolute;
+
+  left:14px;
+  right:14px;
+
+  top:48px;
+
+  height:1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(43,178,68,.65) 20%,
+      #25c16f 50%,
+      rgba(43,178,68,.65) 80%,
+      transparent 100%
+    );
+}
+
+
+/* الماسة */
+
+.partner-withdrawal-total::before{
+  content:"";
+
+  position:absolute;
+
+  left:50%;
+  top:-39px;
+
+  width:12px;
+  height:12px;
+
+  transform:
+    translateX(-50%)
+    rotate(45deg);
+
+  background:#092016;
+
+  border:
+    2px solid #20d469;
+
+  box-shadow:
+    0 0 8px
+    rgba(32,212,105,.15);
+}
+
+
+/* =====================================================
+   إجمالي المسحوبات
+===================================================== */
+
+.partner-withdrawal-total{
+  position:relative !important;
+
+  display:block !important;
+
+  width:100% !important;
+
+  margin-top:74px !important;
+
+  color:#ff5659 !important;
+
+  text-align:center !important;
+
+  font-size:24px !important;
+  font-weight:900 !important;
+
+  line-height:1.1 !important;
+}
+
+
+/* كلمة إجمالي المسحوبات */
+
+.partner-withdrawal-total::after{
+  content:"إجمالي المسحوبات";
+
+  position:absolute;
+
+  left:0;
+  right:0;
+
+  bottom:42px;
+
+  color:#8f9aa1;
+
+  font-size:12px;
+
+  font-weight:500;
+
+  white-space:nowrap;
+}
+
+
+/* =====================================================
+   السهم في الأسفل
+===================================================== */
+
+.partner-withdrawal-open{
+  display:grid !important;
+
+  place-items:center !important;
+
+  width:38px !important;
+  height:38px !important;
+
+  margin-top:18px !important;
+
+  border-radius:50% !important;
+
+  border:
+    1px solid
+    rgba(37,193,111,.18) !important;
+
+  background:
+    rgba(37,193,111,.035) !important;
+
+  color:#25c16f !important;
+
+  font-size:0 !important;
+}
+
+
+.partner-withdrawal-open::after{
+  content:"‹";
+
+  display:block;
+
+  color:#25c16f;
+
+  font-size:30px;
+  font-weight:300;
+
+  line-height:30px;
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* =====================================================
+   الضغط على البطاقة
+===================================================== */
+
+.partner-withdrawal-card:active{
+  transform:scale(.975);
+
+  border-color:
+    rgba(37,193,111,.9);
+
+  background:
+    linear-gradient(
+      145deg,
+      #132229,
+      #0b171c
+    );
+}
+
+
+/* =====================================================
+   سجل المسحوبات
+===================================================== */
+
+.partner-history{
+  display:grid;
+  gap:12px;
+}
+
+
+.partner-history-summary{
+  padding:15px;
+
+  border-radius:17px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #152128,
+      #0e171c
+    );
+
+  border:
+    1px solid
+    rgba(37,193,111,.26);
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:12px;
+}
+
+
+.partner-history-summary span{
+  color:#8f9aa1;
+  font-size:12px;
+}
+
+
+.partner-history-summary strong{
+  color:#ff5659 !important;
+
+  font-size:21px;
+
+  font-weight:900;
+}
+
+
+.partner-history-list{
+  display:grid;
+  gap:9px;
+}
+
+
+.partner-history-row{
+  padding:13px;
+
+  border-radius:15px;
+
+  background:#141e23;
+
+  border:
+    1px solid
+    rgba(255,255,255,.06);
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:12px;
+}
+
+
+.partner-history-main{
+  min-width:0;
+}
+
+
+.partner-history-amount{
+  display:block;
+
+  color:#ff5659 !important;
+
+  font-size:17px;
+
+  font-weight:900;
+}
+
+
+.partner-history-date{
+  display:block;
+
+  margin-top:4px;
+
+  color:#8f9aa1;
+
+  font-size:11px;
+}
+
+
+.partner-history-note{
+  display:block;
+
+  margin-top:5px;
+
+  color:#77858c;
+
+  font-size:10px;
+}
+
+
+.partner-history-actions{
+  display:flex;
+  gap:11px;
+}
+
+
+/* =====================================================
+   زر إضافة مسحوب
+===================================================== */
+
+.add-partner-withdrawal-btn{
+  width:100%;
+
+  padding:13px;
+
+  border-radius:14px;
+
+  border:
+    1px solid
+    rgba(37,193,111,.38);
+
+  background:
+    rgba(37,193,111,.075);
+
+  color:#25c16f;
+
+  font-weight:900;
+}
+
+
+/* =====================================================
+   نسخة الآيفون
+===================================================== */
+
+@media(max-width:430px){
+
+  .partner-withdrawal-grid{
+    gap:10px;
+  }
+
+  .partner-withdrawal-card{
+    min-height:270px;
+
+    padding:
+      18px
+      8px
+      16px;
+  }
+
+  .partner-withdrawal-icon{
+    width:84px !important;
+    height:84px !important;
+  }
+
+  .partner-withdrawal-icon svg{
+    width:38px !important;
+    height:38px !important;
+  }
+
+  .partner-withdrawal-name{
+    font-size:18px !important;
+  }
+
+  .partner-withdrawal-name::before{
+    top:44px;
+  }
+
+  .partner-withdrawal-total{
+    margin-top:70px !important;
+
+    font-size:22px !important;
+  }
+
+  .partner-withdrawal-total::before{
+    top:-37px;
+  }
+
+  .partner-withdrawal-total::after{
+    bottom:40px;
+
+    font-size:11px;
+  }
+
+}
