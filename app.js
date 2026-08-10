@@ -800,12 +800,11 @@ const $$ = selector => [...document.querySelectorAll(selector)];
   position:relative;
   z-index:2;
 
-  background:
-    linear-gradient(
-      90deg,
-      #04522f,
-      #087746
-    );
+  background:linear-gradient(
+    90deg,
+    #04522f,
+    #087746
+  );
 
   color:#fff;
 
@@ -815,12 +814,11 @@ const $$ = selector => [...document.querySelectorAll(selector)];
   display:grid;
 
   grid-template-columns:
-    1fr 1fr 1fr;
+    1fr 1.4fr 1fr;
 
   align-items:center;
 
-  padding:
-    0 20px;
+  padding:0 20px;
 
   font-size:12px;
   font-weight:700;
@@ -839,6 +837,8 @@ const $$ = selector => [...document.querySelectorAll(selector)];
 
   gap:6px;
 
+  white-space:nowrap !important;
+
   text-align:left;
 
   direction:ltr !important;
@@ -848,6 +848,8 @@ const $$ = selector => [...document.querySelectorAll(selector)];
 /* الوسط */
 .wc-footer-location{
   grid-column:2;
+
+  white-space:nowrap !important;
 
   text-align:center;
 
@@ -859,6 +861,8 @@ const $$ = selector => [...document.querySelectorAll(selector)];
 .wc-footer-brand{
   grid-column:3;
 
+  white-space:nowrap !important;
+
   text-align:right;
 
   direction:ltr !important;
@@ -868,12 +872,9 @@ const $$ = selector => [...document.querySelectorAll(selector)];
 .wc-whatsapp-svg{
   width:18px;
   height:18px;
-
   color:#fff;
-
   flex:0 0 auto;
 }
-
     .invoice-actions{
       margin-top:14px !important;
     }
