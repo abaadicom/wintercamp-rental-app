@@ -392,12 +392,12 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       width:150px;
       height:132px;
       background:
-        radial-gradient(circle at 76% 28%, rgba(217,180,103,.55) 1.6px, transparent 1.8px),
+        radial-gradient(circle, rgba(217,180,103,.55) 1.5px, transparent 1.7px),
         linear-gradient(135deg,#0b8a51 0%, #055b35 100%);
       background-size:10px 10px, auto;
+      background-position:78px 18px, 0 0;
       border-bottom-left-radius:76px;
       z-index:0;
-      overflow:hidden;
     }
 
     .wc-invoice::after{
@@ -795,35 +795,31 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       background:linear-gradient(90deg,#04522f,#087746);
       color:#fff;
       border-radius:0 0 14px 14px;
-      display:grid;
-      grid-template-columns:1fr 1.4fr 1fr;
+      display:flex;
       align-items:center;
+      justify-content:space-between;
       gap:8px;
       padding:0 20px;
       font-size:12px;
       font-weight:700;
-    }
-
-    .wc-footer-phone{
-      grid-column:3;
-      text-align:right;
       direction:ltr;
-      justify-self:end;
-      width:100%;
-    }
-
-    .wc-footer-location{
-      grid-column:2;
-      text-align:center;
-      justify-self:center;
-      width:100%;
     }
 
     .wc-footer-brand{
-      grid-column:1;
       text-align:left;
-      justify-self:start;
-      width:100%;
+      min-width:120px;
+    }
+
+    .wc-footer-location{
+      text-align:center;
+      flex:1;
+      direction:rtl;
+    }
+
+    .wc-footer-phone{
+      text-align:right;
+      min-width:120px;
+      direction:ltr;
     }
 
     .invoice-actions{
@@ -6137,16 +6133,16 @@ function showInvoice(id) {
 
             <footer class="wc-footer">
 
-              <div class="wc-footer-phone">
-                0573757275
+              <div class="wc-footer-brand">
+                Winter Camp
               </div>
 
               <div class="wc-footer-location">
                 أبها - المملكة العربية السعودية
               </div>
 
-              <div class="wc-footer-brand">
-                Winter Camp
+              <div class="wc-footer-phone">
+                0573757275
               </div>
 
             </footer>
@@ -6279,7 +6275,16 @@ function showInvoice(id) {
       `scale(${scale})`;
 
     content.style.transformOrigin =
-      'top right';
+      'top left';
+
+    content.style.position =
+      'absolute';
+
+    content.style.left =
+      '0';
+
+    content.style.top =
+      '0';
 
     preview.style.height =
       `${Math.ceil(
@@ -7289,7 +7294,7 @@ if (
       navigator
         .serviceWorker
         .register(
-          './sw.js?v=113'
+          './sw.js?v=114'
         )
         .catch(
           console.error
