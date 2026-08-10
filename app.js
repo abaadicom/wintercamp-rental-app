@@ -320,6 +320,505 @@ const $$ = selector => [...document.querySelectorAll(selector)];
    التخزين
 ===================================================== */
 
+/* =====================================================
+   تصميم الفاتورة المعتمد - Winter Camp
+   الشعار في الوسط + تموجات أعلى اليسار
+   بدون توقيع وبدون ضريبة
+===================================================== */
+
+(function injectApprovedInvoiceDesign() {
+
+  if (document.getElementById('wintercamp-approved-invoice-style')) {
+    return;
+  }
+
+  const style = document.createElement('style');
+  style.id = 'wintercamp-approved-invoice-style';
+
+  style.textContent = `
+
+    .invoice-preview-scroll{
+      width:100% !important;
+      overflow:hidden !important;
+      display:flex !important;
+      justify-content:center !important;
+      align-items:flex-start !important;
+      padding:0 !important;
+    }
+
+    #invoicePaper.invoice-a4{
+      width:794px !important;
+      height:1123px !important;
+      min-width:794px !important;
+      min-height:1123px !important;
+      background:#fff !important;
+      color:#111 !important;
+      overflow:hidden !important;
+      box-shadow:0 10px 32px rgba(0,0,0,.18);
+      border-radius:0 !important;
+      position:relative !important;
+    }
+
+    .wc-invoice{
+      --wc-green:#066b3d;
+      --wc-green-dark:#04522f;
+      --wc-green-soft:#e9f4ee;
+      --wc-line:#cfdad4;
+      --wc-muted:#66736c;
+
+      width:100%;
+      height:100%;
+      box-sizing:border-box;
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      padding:30px 52px 24px;
+      direction:rtl;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;
+      background:
+        radial-gradient(circle at 96% 5%, rgba(6,107,61,.09), transparent 18%),
+        #fff;
+      overflow:hidden;
+    }
+
+    .wc-invoice::before{
+      content:"";
+      position:absolute;
+      top:0;
+      right:0;
+      width:150px;
+      height:145px;
+      background:linear-gradient(135deg,var(--wc-green-dark),#08784a);
+      clip-path:polygon(34% 0,100% 0,100% 100%);
+      z-index:0;
+    }
+
+    .wc-invoice::after{
+      content:"";
+      position:absolute;
+      top:16px;
+      right:18px;
+      width:58px;
+      height:58px;
+      opacity:.45;
+      background-image:radial-gradient(circle,#d7b467 1.6px,transparent 1.8px);
+      background-size:10px 10px;
+      z-index:1;
+    }
+
+    .wc-top-waves{
+      position:absolute;
+      left:-18px;
+      top:12px;
+      width:310px;
+      height:150px;
+      opacity:.22;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .wc-top-waves span{
+      position:absolute;
+      left:0;
+      width:310px;
+      height:58px;
+      border-top:1.8px solid #118457;
+      border-radius:50%;
+      transform:rotate(-7deg);
+    }
+
+    .wc-top-waves span:nth-child(1){top:5px}
+    .wc-top-waves span:nth-child(2){top:14px}
+    .wc-top-waves span:nth-child(3){top:23px}
+    .wc-top-waves span:nth-child(4){top:32px}
+    .wc-top-waves span:nth-child(5){top:41px}
+    .wc-top-waves span:nth-child(6){top:50px}
+    .wc-top-waves span:nth-child(7){top:59px}
+    .wc-top-waves span:nth-child(8){top:68px}
+
+    .wc-invoice-header{
+      position:relative;
+      z-index:2;
+      text-align:center;
+      padding-top:2px;
+      margin-bottom:14px;
+    }
+
+    .wc-invoice-logo{
+      display:block;
+      width:240px;
+      height:96px;
+      object-fit:contain;
+      margin:0 auto 2px;
+    }
+
+    .wc-brand-name{
+      color:#111;
+      font-size:17px;
+      font-weight:700;
+      letter-spacing:2.4px;
+      direction:ltr;
+      margin-top:-2px;
+    }
+
+    .wc-brand-ar{
+      font-size:15px;
+      font-weight:700;
+      color:#27352e;
+      margin-top:3px;
+    }
+
+    .wc-invoice-title{
+      margin:10px auto 0;
+      width:max-content;
+      color:var(--wc-green);
+      font-size:34px;
+      font-weight:900;
+      line-height:1;
+      padding:0 18px 9px;
+      border-bottom:2px solid var(--wc-green);
+    }
+
+    .wc-meta{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-bottom:14px;
+      position:relative;
+      z-index:2;
+    }
+
+    .wc-meta-card{
+      min-height:78px;
+      border:1px solid var(--wc-line);
+      border-radius:12px;
+      background:#fff;
+      display:grid;
+      grid-template-columns:46px 1fr;
+      align-items:center;
+      padding:10px 16px;
+      text-align:center;
+    }
+
+    .wc-meta-icon{
+      width:38px;
+      height:38px;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--wc-green);
+      background:var(--wc-green-soft);
+      font-size:20px;
+      font-weight:900;
+    }
+
+    .wc-meta-label{
+      display:block;
+      font-size:12px;
+      color:var(--wc-muted);
+      margin-bottom:4px;
+    }
+
+    .wc-meta-value{
+      display:block;
+      font-size:16px;
+      font-weight:900;
+      color:#151b18;
+      line-height:1.45;
+    }
+
+    .wc-customer-box{
+      position:relative;
+      z-index:2;
+      border:1px solid var(--wc-line);
+      border-radius:14px;
+      padding:25px 18px 14px;
+      margin-bottom:15px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:0;
+      min-height:172px;
+    }
+
+    .wc-customer-tab{
+      position:absolute;
+      top:-14px;
+      right:24px;
+      background:linear-gradient(180deg,#087746,#055c36);
+      color:#fff;
+      border-radius:8px 8px 5px 5px;
+      padding:7px 24px;
+      font-size:14px;
+      font-weight:800;
+      box-shadow:0 4px 10px rgba(6,107,61,.14);
+    }
+
+    .wc-customer-col{
+      padding:0 18px;
+    }
+
+    .wc-customer-col + .wc-customer-col{
+      border-right:1px dashed #d9e1dd;
+    }
+
+    .wc-data-row{
+      display:grid;
+      grid-template-columns:100px 1fr;
+      gap:8px;
+      align-items:center;
+      min-height:39px;
+      border-bottom:1px dashed #e1e6e3;
+      font-size:13px;
+    }
+
+    .wc-data-row:last-child{
+      border-bottom:0;
+    }
+
+    .wc-data-label{
+      color:#68736d;
+    }
+
+    .wc-data-value{
+      color:#151b18;
+      font-weight:800;
+      overflow-wrap:anywhere;
+    }
+
+    .wc-section-title{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      color:var(--wc-green);
+      font-size:14px;
+      font-weight:800;
+      margin:0 0 7px;
+    }
+
+    .wc-section-title::before,
+    .wc-section-title::after{
+      content:"";
+      height:1px;
+      background:#d7e1dc;
+      flex:1;
+    }
+
+    .wc-products{
+      width:100%;
+      table-layout:fixed;
+      border-collapse:separate;
+      border-spacing:0;
+      border:1px solid var(--wc-line);
+      border-radius:12px;
+      overflow:hidden;
+      margin:0 0 15px;
+      position:relative;
+      z-index:2;
+    }
+
+    .wc-products th{
+      background:linear-gradient(180deg,#087746,#055d37);
+      color:#fff;
+      font-size:13px;
+      font-weight:800;
+      padding:10px 6px;
+      border-left:1px solid rgba(255,255,255,.16);
+    }
+
+    .wc-products td{
+      background:#fff;
+      color:#111;
+      padding:14px 8px;
+      height:82px;
+      text-align:center;
+      vertical-align:middle;
+      border-left:1px solid #d7dfdb;
+      border-top:1px solid #d7dfdb;
+      font-size:15px !important;
+      font-weight:800 !important;
+      line-height:1.55;
+    }
+
+    .wc-products th:last-child,
+    .wc-products td:last-child{
+      border-left:0;
+    }
+
+    .wc-products .wc-item{
+      width:46%;
+    }
+
+    .wc-products .wc-small{
+      width:12%;
+    }
+
+    .wc-products .wc-money{
+      width:15%;
+    }
+
+    .wc-products .wc-item-cell{
+      text-align:right;
+      font-size:15px !important;
+      font-weight:800 !important;
+    }
+
+    .wc-bottom-grid{
+      display:grid;
+      grid-template-columns:43% 57%;
+      gap:14px;
+      position:relative;
+      z-index:2;
+      margin-bottom:12px;
+      align-items:stretch;
+    }
+
+    .wc-totals{
+      border:1px solid var(--wc-line);
+      border-radius:12px;
+      overflow:hidden;
+      background:#fff;
+    }
+
+    .wc-total-row{
+      display:grid;
+      grid-template-columns:1fr auto;
+      align-items:center;
+      min-height:46px;
+      padding:0 14px;
+      border-bottom:1px solid #dce4e0;
+      font-size:13px;
+    }
+
+    .wc-total-row:last-child{
+      border-bottom:0;
+    }
+
+    .wc-total-row strong{
+      font-size:16px;
+      color:#111;
+    }
+
+    .wc-total-row.wc-grand{
+      min-height:60px;
+      background:linear-gradient(180deg,#087746,#055d37);
+      color:#fff;
+      font-weight:900;
+    }
+
+    .wc-total-row.wc-grand strong{
+      color:#fff;
+      font-size:22px;
+    }
+
+    .wc-summary-card{
+      border:1px solid var(--wc-line);
+      border-radius:12px;
+      background:#fff;
+      padding:14px 18px;
+      min-height:206px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+    }
+
+    .wc-words-label{
+      align-self:flex-start;
+      color:#67736d;
+      font-size:12px;
+      margin-bottom:6px;
+    }
+
+    .wc-words{
+      width:100%;
+      color:var(--wc-green);
+      font-size:18px;
+      font-weight:900;
+      text-align:center;
+      line-height:1.55;
+      margin-bottom:8px;
+    }
+
+    .wc-stamp{
+      width:132px;
+      height:132px;
+      object-fit:contain;
+      margin-top:auto;
+    }
+
+    .wc-notes{
+      min-height:62px;
+      border:1px solid var(--wc-line);
+      border-radius:12px;
+      background:#fff;
+      padding:10px 16px;
+      position:relative;
+      z-index:2;
+      margin-bottom:12px;
+      display:grid;
+      grid-template-columns:120px 1fr;
+      align-items:center;
+      gap:8px;
+    }
+
+    .wc-notes-label{
+      color:var(--wc-green);
+      font-weight:800;
+      font-size:13px;
+    }
+
+    .wc-notes-text{
+      color:#202822;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .wc-footer{
+      margin-top:auto;
+      min-height:58px;
+      position:relative;
+      z-index:2;
+      background:linear-gradient(90deg,#04522f,#087746);
+      color:#fff;
+      border-radius:0 0 14px 14px;
+      display:grid;
+      grid-template-columns:1fr 1.4fr 1fr;
+      align-items:center;
+      gap:8px;
+      padding:0 20px;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .wc-footer > div:nth-child(2){
+      text-align:center;
+    }
+
+    .wc-footer > div:last-child{
+      text-align:left;
+      direction:ltr;
+    }
+
+    .invoice-actions{
+      margin-top:14px !important;
+    }
+
+    @media(max-width:600px){
+      .invoice-preview-scroll{
+        overflow:hidden !important;
+      }
+    }
+
+  `;
+
+  document.head.appendChild(style);
+
+})();
+
+
+
 function clone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
@@ -5291,251 +5790,170 @@ function showInvoice(id) {
           id="invoicePaper"
           class="invoice-a4">
 
-          <div class="invoice-frame">
+          <div class="wc-invoice">
 
-
-            <div class="sound-wave wave-left">
-              <i></i><i></i><i></i><i></i><i></i>
-              <i></i><i></i><i></i><i></i><i></i>
-              <i></i><i></i><i></i><i></i><i></i>
+            <div class="wc-top-waves" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
             </div>
 
 
-            <div class="sound-wave wave-right">
-              <i></i><i></i><i></i><i></i><i></i>
-              <i></i><i></i><i></i><i></i><i></i>
-              <i></i><i></i><i></i><i></i><i></i>
-            </div>
-
-
-            <header class="invoice-header">
+            <header class="wc-invoice-header">
 
               <img
                 src="invoice_logo.png"
                 onerror="this.onerror=null;this.src='logo.png';"
-                class="invoice-logo"
+                class="wc-invoice-logo"
                 alt="Winter Camp">
 
-
-              <div class="invoice-brand-en">
+              <div class="wc-brand-name">
                 Winter Camp
               </div>
 
-
-              <div class="invoice-brand-ar">
+              <div class="wc-brand-ar">
                 للصوتيات والإنتاج الصوتي
               </div>
 
-
-              <div class="invoice-title">
-
-                <span>
-                  )))
-                </span>
-
-                <strong>
-                  فاتورة
-                </strong>
-
-                <span>
-                  (((
-                </span>
-
+              <div class="wc-invoice-title">
+                « فاتورة »
               </div>
 
             </header>
 
 
-            <section class="invoice-info">
+            <section class="wc-meta">
 
-              <div class="invoice-info-row">
+              <div class="wc-meta-card">
 
-                <span class="invoice-info-icon">
+                <div class="wc-meta-icon">
                   ▣
-                </span>
+                </div>
 
-                <strong class="invoice-info-label">
-                  رقم الفاتورة
-                </strong>
+                <div>
+                  <span class="wc-meta-label">
+                    رقم الفاتورة
+                  </span>
 
-                <span>
-                  :
-                </span>
-
-                <b class="invoice-info-value invoice-number-value">
-                  ${invoiceNumber}
-                </b>
+                  <strong class="wc-meta-value">
+                    ${invoiceNumber}
+                  </strong>
+                </div>
 
               </div>
 
 
-              <div class="invoice-info-row">
+              <div class="wc-meta-card">
 
-                <span class="invoice-info-icon">
+                <div class="wc-meta-icon">
                   ▦
-                </span>
+                </div>
 
-                <strong class="invoice-info-label">
-                  التاريخ الهجري
-                </strong>
+                <div>
+                  <span class="wc-meta-label">
+                    تاريخ الفاتورة
+                  </span>
 
-                <span>
-                  :
-                </span>
-
-                <b class="invoice-info-value">
-                  ${hijriFull(
-                    booking.date
-                  )}
-                </b>
-
-              </div>
-
-
-              <div class="invoice-info-row">
-
-                <span class="invoice-info-icon">
-                  ◷
-                </span>
-
-                <strong class="invoice-info-label">
-                  اليوم
-                </strong>
-
-                <span>
-                  :
-                </span>
-
-                <b class="invoice-info-value">
-                  ${dayName(
-                    booking.date
-                  )}
-                </b>
+                  <strong class="wc-meta-value">
+                    ${hijriFull(
+                      booking.date
+                    )}
+                    <br>
+                    ${dayName(
+                      booking.date
+                    )}
+                  </strong>
+                </div>
 
               </div>
 
             </section>
 
 
-            <section class="invoice-customer">
+            <section class="wc-customer-box">
 
-              <div class="customer-main">
+              <div class="wc-customer-tab">
+                بيانات العميل
+              </div>
 
 
-                <div class="customer-row">
+              <div class="wc-customer-col">
 
-                  <span class="customer-symbol">
-                    ●
-                  </span>
-
-                  <strong>
+                <div class="wc-data-row">
+                  <span class="wc-data-label">
                     اسم العميل
-                  </strong>
-
-                  <span>
-                    :
                   </span>
-
-                  <b>
+                  <span class="wc-data-value">
                     ${esc(
-                      booking.name
+                      booking.name || '-'
                     )}
-                  </b>
-
+                  </span>
                 </div>
 
-
-                <div class="customer-row">
-
-                  <span class="customer-symbol">
-                    ☎
-                  </span>
-
-                  <strong>
+                <div class="wc-data-row">
+                  <span class="wc-data-label">
                     رقم التواصل
-                  </strong>
-
-                  <span>
-                    :
                   </span>
-
-                  <b
-                    class="customer-phone"
-                    dir="ltr">
-
+                  <span class="wc-data-value" dir="ltr">
                     ${esc(
                       booking.phone || '-'
                     )}
-
-                  </b>
-
+                  </span>
                 </div>
 
-
-                <div class="customer-row">
-
-                  <span class="customer-symbol">
-                    ●
-                  </span>
-
-                  <strong>
+                <div class="wc-data-row">
+                  <span class="wc-data-label">
                     الموقع
-                  </strong>
-
-                  <span>
-                    :
                   </span>
-
-                  <b>
+                  <span class="wc-data-value">
                     ${esc(
-                      booking.location
+                      booking.location || '-'
                     )}
-                  </b>
-
+                  </span>
                 </div>
 
               </div>
 
 
-              <div class="customer-extra">
+              <div class="wc-customer-col">
 
-
-                <div class="customer-row customer-row-simple">
-
-                  <strong>
+                <div class="wc-data-row">
+                  <span class="wc-data-label">
                     نوع المناسبة
-                  </strong>
-
-                  <span>
-                    :
                   </span>
-
-                  <b>
+                  <span class="wc-data-value">
                     ${esc(
                       booking.eventType || '-'
                     )}
-                  </b>
-
+                  </span>
                 </div>
 
-
-                <div class="customer-row customer-row-simple">
-
-                  <strong>
-                    ملاحظات
-                  </strong>
-
-                  <span>
-                    :
+                <div class="wc-data-row">
+                  <span class="wc-data-label">
+                    تاريخ الفعالية
                   </span>
+                  <span class="wc-data-value">
+                    ${hijriFull(
+                      booking.date
+                    )}
+                  </span>
+                </div>
 
-                  <b>
+                <div class="wc-data-row">
+                  <span class="wc-data-label">
+                    ملاحظات
+                  </span>
+                  <span class="wc-data-value">
                     ${esc(
                       booking.notes ||
                       'شكراً لثقتكم بنا'
                     )}
-                  </b>
-
+                  </span>
                 </div>
 
               </div>
@@ -5543,61 +5961,48 @@ function showInvoice(id) {
             </section>
 
 
-            <table class="invoice-products">
+            <div class="wc-section-title">
+              تفاصيل المنتجات والخدمات
+            </div>
+
+
+            <table class="wc-products">
 
               <thead>
-
                 <tr>
-
-                  <th class="invoice-no">
+                  <th class="wc-small">
                     م
                   </th>
-
-                  <th>
+                  <th class="wc-item">
                     الصنف
                   </th>
-
-                  <th class="invoice-qty">
+                  <th class="wc-small">
                     الكمية
                   </th>
-
-                  <th class="invoice-price">
+                  <th class="wc-money">
                     سعر الوحدة
                   </th>
-
-                  <th class="invoice-price">
+                  <th class="wc-money">
                     الإجمالي
                   </th>
-
                 </tr>
-
               </thead>
 
-
               <tbody>
-
                 <tr>
-
                   <td>
                     1
                   </td>
 
-
-                  <td class="product-title">
-
-                    <strong>
-                      ${esc(
-                        booking.device
-                      )}
-                    </strong>
-
+                  <td class="wc-item-cell">
+                    ${esc(
+                      booking.device || '-'
+                    )}
                   </td>
-
 
                   <td>
                     1
                   </td>
-
 
                   <td>
                     ${money(
@@ -5605,144 +6010,121 @@ function showInvoice(id) {
                     )}
                   </td>
 
-
                   <td>
                     ${money(
                       agreed
                     )}
                   </td>
-
                 </tr>
-
               </tbody>
 
             </table>
 
 
-            <section class="invoice-lower">
+            <section class="wc-bottom-grid">
 
+              <div class="wc-totals">
 
-              <div class="invoice-words-side">
-
-                <strong class="amount-words-label">
-                  المبلغ بالحروف :
-                </strong>
-
-
-                <div class="amount-words-box">
-
-                  ${amountInWords(
-                    agreed
-                  )}
-
-                </div>
-
-
-                <div class="stamp-holder">
-
-                  <img
-                    src="stamp.png?v=100"
-                    class="invoice-full-stamp"
-                    alt="ختم Winter Camp">
-
-                </div>
-
-              </div>
-
-
-              <div class="invoice-totals">
-
-
-                <div class="total-row">
-
+                <div class="wc-total-row">
                   <span>
                     المبلغ المتفق عليه
                   </span>
-
                   <strong>
                     ${money(
                       agreed
                     )}
                   </strong>
-
                 </div>
 
-
-                <div class="total-row">
-
+                <div class="wc-total-row">
                   <span>
                     الواصل
                   </span>
-
                   <strong>
                     ${money(
                       paid
                     )}
                   </strong>
-
                 </div>
 
-
-                <div class="total-row">
-
+                <div class="wc-total-row">
                   <span>
                     المتبقي
                   </span>
-
-                  <strong class="remaining-number">
-
+                  <strong>
                     ${money(
                       remaining
                     )}
-
                   </strong>
-
                 </div>
 
-
-                <div class="total-row grand-total">
-
+                <div class="wc-total-row wc-grand">
                   <span>
-                    الإجمالي
+                    المبلغ الإجمالي
                   </span>
-
                   <strong>
                     ${money(
                       agreed
                     )}
                   </strong>
-
                 </div>
+
+              </div>
+
+
+              <div class="wc-summary-card">
+
+                <div class="wc-words-label">
+                  المبلغ كتابة
+                </div>
+
+                <div class="wc-words">
+                  ${amountInWords(
+                    agreed
+                  )}
+                </div>
+
+                <img
+                  src="stamp.png?v=100"
+                  class="wc-stamp"
+                  alt="ختم Winter Camp">
 
               </div>
 
             </section>
 
 
-            <footer class="invoice-green-footer">
+            <section class="wc-notes">
 
-              <div>
-
-                ☎
-
-                <span dir="ltr">
-                  0573757275
-                </span>
-
+              <div class="wc-notes-label">
+                ملاحظات إضافية
               </div>
 
-
-              <div>
-                ● أبها - المملكة العربية السعودية
+              <div class="wc-notes-text">
+                ${esc(
+                  booking.notes ||
+                  'نعتز بثقتكم ونسعد بخدمتكم دائماً'
+                )}
               </div>
 
+            </section>
+
+
+            <footer class="wc-footer">
 
               <div>
                 Winter Camp
               </div>
 
-            </footer>
+              <div>
+                أبها - المملكة العربية السعودية
+              </div>
 
+              <div>
+                0573757275
+              </div>
+
+            </footer>
 
           </div>
 
@@ -5756,23 +6138,15 @@ function showInvoice(id) {
         <button
           id="shareInvoice"
           class="invoice-share-btn">
-
           مشاركة PDF
-
         </button>
-
 
         <button id="printInvoice">
-
           طباعة
-
         </button>
 
-
         <button id="closeInvoice">
-
           إغلاق
-
         </button>
 
       </div>
@@ -5792,12 +6166,15 @@ function showInvoice(id) {
       return;
     }
 
-    const paperWidth = 794;
-    const paperHeight = 1123;
+    const paperWidth =
+      794;
+
+    const paperHeight =
+      1123;
 
     const availableWidth =
       Math.max(
-        240,
+        220,
         preview.clientWidth - 2
       );
 
@@ -5811,25 +6188,29 @@ function showInvoice(id) {
       `scale(${scale})`;
 
     paper.style.transformOrigin =
-      'top left';
+      'top center';
 
     paper.style.margin =
-      '0';
+      '0 auto';
 
     preview.style.height =
-      `${Math.ceil(paperHeight * scale)}px`;
+      `${Math.ceil(
+        paperHeight * scale
+      )}px`;
 
   }
 
 
   requestAnimationFrame(
     () => {
+
       fitInvoicePreview();
 
       setTimeout(
         fitInvoicePreview,
         80
       );
+
     }
   );
 
@@ -6808,7 +7189,7 @@ if (
       navigator
         .serviceWorker
         .register(
-          './sw.js?v=110'
+          './sw.js?v=111'
         )
         .catch(
           console.error
