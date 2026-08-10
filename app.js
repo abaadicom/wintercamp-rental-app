@@ -19,10 +19,7 @@ const HIJRI_MONTHS = [
 const seed = {
   bookings: [],
   expenses: [],
-
-  // مسحوبات الشركاء مستقلة تماماً عن المصاريف
   withdrawals: [],
-
   devices: [
     { id: 1, name: 'RCF ART 715-A MK5', qty: 2 },
     { id: 2, name: 'سماعة بلوتوث', qty: 1 },
@@ -69,96 +66,67 @@ function load() {
       data.expenses = [];
     }
 
-    // إضافة مسحوبات الشركاء للبيانات القديمة
     if (!Array.isArray(data.withdrawals)) {
       data.withdrawals = [];
+
+      // ترحيل المسحوبات القديمة من المصاريف تلقائياً مرة واحدة
+      const oldPartnerExpenses = [];
+      const operatingExpenses = [];
+
+      data.expenses.forEach(item => {
+        const name = String(item.item || '')
+          .trim()
+          .replace(/\s+/g, ' ');
+
+        if (
+          ['انا', 'أنا', 'ثامر'].includes(name)
+        ) {
+          oldPartnerExpenses.push({
+            id:
+              Number(item.id) ||
+              Date.now() +
+              oldPartnerExpenses.length,
+
+            partner:
+              name === 'ثامر'
+                ? 'ثامر'
+                : 'عبدالله',
+
+            amount:
+              Number(item.amount || 0),
+
+            date:
+              item.date || todayISO(),
+
+            note:
+              'تم ترحيله تلقائياً من المصاريف'
+          });
+
+        } else {
+
+          operatingExpenses.push(item);
+
+        }
+      });
+
+      data.withdrawals =
+        oldPartnerExpenses;
+
+      data.expenses =
+        operatingExpenses;
     }
 
     if (!Array.isArray(data.devices)) {
-      data.devices = clone(seed.devices);
-    }
-
-    /*
-      نقل المسحوبات القديمة من المصاريف تلقائياً.
-
-      إذا كان لديك سابقاً مصروف باسم:
-      أنا
-      انا
-      عبدالله
-      عبد الله
-      ثامر
-
-      سيتم نقله إلى مسحوبات الشركاء ولن يبقى
-      محسوباً ضمن المصاريف أو صافي الربح.
-    */
-
-    const partnerNames = [
-      'انا',
-      'أنا',
-      'عبدالله',
-      'عبد الله',
-      'ثامر'
-    ];
-
-    const oldPartnerExpenses = data.expenses.filter(expense => {
-      const item = String(expense.item || '').trim();
-
-      return partnerNames.some(name =>
-        item === name ||
-        item.includes(`(${name})`) ||
-        item.includes(name)
-      );
-    });
-
-    if (oldPartnerExpenses.length) {
-
-      oldPartnerExpenses.forEach(expense => {
-
-        const item = String(expense.item || '');
-
-        let partner = 'عبدالله';
-
-        if (item.includes('ثامر')) {
-          partner = 'ثامر';
-        }
-
-        const alreadyMoved = data.withdrawals.some(withdrawal =>
-          Number(withdrawal.originalExpenseId || 0) ===
-          Number(expense.id || 0)
-        );
-
-        if (!alreadyMoved) {
-          data.withdrawals.push({
-            id: Date.now() + Math.floor(Math.random() * 100000),
-            partner,
-            amount: Number(expense.amount || 0),
-            date: expense.date || todayISO(),
-            note: '',
-            originalExpenseId: expense.id
-          });
-        }
-      });
-
-      data.expenses = data.expenses.filter(expense => {
-        const item = String(expense.item || '').trim();
-
-        return !partnerNames.some(name =>
-          item === name ||
-          item.includes(`(${name})`) ||
-          item.includes(name)
-        );
-      });
-
-      localStorage.setItem(
-        DB_KEY,
-        JSON.stringify(data)
-      );
+      data.devices =
+        clone(seed.devices);
     }
 
     return data;
 
   } catch (error) {
+
     console.error(error);
+
     return clone(seed);
   }
 }
@@ -195,7 +163,9 @@ function money(value) {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2
     }
-  ).format(Number(value || 0)) + ' ر.س';
+  ).format(
+    Number(value || 0)
+  ) + ' ر.س';
 }
 
 
@@ -209,50 +179,69 @@ function todayISO() {
   return (
     d.getFullYear() +
     '-' +
-    String(d.getMonth() + 1).padStart(2, '0') +
+    String(
+      d.getMonth() + 1
+    ).padStart(2, '0') +
     '-' +
-    String(d.getDate()).padStart(2, '0')
+    String(
+      d.getDate()
+    ).padStart(2, '0')
   );
 }
 
 function getHijriParts(isoDate) {
+
   try {
 
-    const date = new Date(
-      isoDate + 'T12:00:00'
-    );
+    const date =
+      new Date(
+        isoDate +
+        'T12:00:00'
+      );
 
-    const formatter = new Intl.DateTimeFormat(
-      'en-u-ca-islamic-umalqura',
-      {
-        day: 'numeric',
-        month: 'numeric',
-        year: 'numeric',
-        timeZone: 'Asia/Riyadh'
-      }
-    );
+    const formatter =
+      new Intl.DateTimeFormat(
+        'en-u-ca-islamic-umalqura',
+        {
+          day: 'numeric',
+          month: 'numeric',
+          year: 'numeric',
+          timeZone:
+            'Asia/Riyadh'
+        }
+      );
 
     const parts =
-      formatter.formatToParts(date);
+      formatter.formatToParts(
+        date
+      );
 
     return {
-      day: Number(
-        parts.find(
-          x => x.type === 'day'
-        )?.value
-      ),
 
-      month: Number(
-        parts.find(
-          x => x.type === 'month'
-        )?.value
-      ),
+      day:
+        Number(
+          parts.find(
+            x =>
+              x.type === 'day'
+          )?.value
+        ),
 
-      year: Number(
-        parts.find(
-          x => x.type === 'year'
-        )?.value
-      )
+      month:
+        Number(
+          parts.find(
+            x =>
+              x.type === 'month'
+          )?.value
+        ),
+
+      year:
+        Number(
+          parts.find(
+            x =>
+              x.type === 'year'
+          )?.value
+        )
+
     };
 
   } catch {
@@ -275,7 +264,9 @@ function currentHijri() {
 function hijriFull(isoDate) {
 
   const h =
-    getHijriParts(isoDate);
+    getHijriParts(
+      isoDate
+    );
 
   return (
     `${h.day} ` +
@@ -292,11 +283,13 @@ function dayName(isoDate) {
       'ar-SA',
       {
         weekday: 'long',
-        timeZone: 'Asia/Riyadh'
+        timeZone:
+          'Asia/Riyadh'
       }
     ).format(
       new Date(
-        isoDate + 'T12:00:00'
+        isoDate +
+        'T12:00:00'
       )
     );
 
@@ -308,10 +301,12 @@ function dayName(isoDate) {
 }
 
 function hijriWithDay(isoDate) {
+
   return (
     `${dayName(isoDate)}، ` +
     `${hijriFull(isoDate)}`
   );
+
 }
 
 function hijriToGregorian(
@@ -329,11 +324,14 @@ function hijriToGregorian(
   hijriDay =
     Number(hijriDay);
 
+
   const estimatedYear =
     Math.floor(
-      hijriYear * 0.970224 +
+      hijriYear *
+      0.970224 +
       621.5774
     );
+
 
   const start =
     new Date(
@@ -345,6 +343,7 @@ function hijriToGregorian(
       0
     );
 
+
   for (
     let offset = 0;
     offset < 900;
@@ -354,10 +353,12 @@ function hijriToGregorian(
     const date =
       new Date(start);
 
+
     date.setDate(
       start.getDate() +
       offset
     );
+
 
     const iso =
       `${date.getFullYear()}-` +
@@ -368,24 +369,32 @@ function hijriToGregorian(
         date.getDate()
       ).padStart(2, '0')}`;
 
+
     const h =
-      getHijriParts(iso);
+      getHijriParts(
+        iso
+      );
+
 
     if (
       h.year === hijriYear &&
       h.month === hijriMonth &&
       h.day === hijriDay
     ) {
+
       return iso;
+
     }
+
   }
+
 
   return null;
 }
 
 
 /* =====================================================
-   حقول التاريخ الهجري
+   حقول التاريخ
 ===================================================== */
 
 function hijriDateFields(
@@ -394,14 +403,18 @@ function hijriDateFields(
 ) {
 
   const selected =
-    getHijriParts(isoDate);
+    getHijriParts(
+      isoDate
+    );
 
   const current =
     currentHijri();
 
+
   let days = '';
   let months = '';
   let years = '';
+
 
   for (
     let day = 1;
@@ -422,6 +435,7 @@ function hijriDateFields(
     `;
   }
 
+
   for (
     let month = 1;
     month <= 12;
@@ -440,6 +454,7 @@ function hijriDateFields(
       </option>
     `;
   }
+
 
   for (
     let year = 1446;
@@ -460,8 +475,10 @@ function hijriDateFields(
     `;
   }
 
+
   return `
     <label>
+
       التاريخ الهجري
 
       <div class="hijri-selects">
@@ -469,22 +486,31 @@ function hijriDateFields(
         <select
           name="${prefix}_day"
           required>
+
           ${days}
+
         </select>
+
 
         <select
           name="${prefix}_month"
           required>
+
           ${months}
+
         </select>
+
 
         <select
           name="${prefix}_year"
           required>
+
           ${years}
+
         </select>
 
       </div>
+
     </label>
   `;
 }
@@ -503,38 +529,39 @@ function totals(
     bookings.reduce(
       (sum, item) =>
         sum +
-        Number(item.agreed || 0),
+        Number(
+          item.agreed || 0
+        ),
       0
     );
+
 
   const paid =
     bookings.reduce(
       (sum, item) =>
         sum +
-        Number(item.paid || 0),
+        Number(
+          item.paid || 0
+        ),
       0
     );
 
-  /*
-    مهم:
-    المصاريف هنا هي المصاريف التشغيلية فقط.
-
-    مسحوبات عبدالله وثامر موجودة في:
-    db.withdrawals
-
-    لذلك لا يتم خصمها من صافي الربح.
-  */
 
   const expensesTotal =
     expenses.reduce(
       (sum, item) =>
         sum +
-        Number(item.amount || 0),
+        Number(
+          item.amount || 0
+        ),
       0
     );
 
+
   return {
+
     revenue,
+
     paid,
 
     remaining:
@@ -544,48 +571,12 @@ function totals(
       expensesTotal,
 
     profit:
-      revenue - expensesTotal
+      revenue -
+      expensesTotal
+
   };
 }
 
-
-/* =====================================================
-   حساب مسحوبات الشركاء
-===================================================== */
-
-function withdrawalsTotal(
-  withdrawals = db.withdrawals
-) {
-
-  return withdrawals.reduce(
-    (sum, item) =>
-      sum +
-      Number(item.amount || 0),
-    0
-  );
-}
-
-function partnerWithdrawalTotal(
-  partner
-) {
-
-  return db.withdrawals
-    .filter(
-      item =>
-        item.partner === partner
-    )
-    .reduce(
-      (sum, item) =>
-        sum +
-        Number(item.amount || 0),
-      0
-    );
-}
-
-
-/* =====================================================
-   حالة الحجز
-===================================================== */
 
 function status(booking) {
 
@@ -597,74 +588,134 @@ function status(booking) {
       booking.paid || 0
     );
 
-  if (remaining <= 0) {
+
+  if (
+    remaining <= 0
+  ) {
+
     return [
       'مدفوعة بالكامل',
       'paid'
     ];
+
   }
+
 
   if (
     Number(
       booking.paid || 0
     ) > 0
   ) {
+
     return [
       'مدفوعة جزئياً',
       'partial'
     ];
+
   }
+
 
   return [
     'لم يتم الدفع',
     'unpaid'
   ];
 }
+
+
 /* =====================================================
    الرئيسية
 ===================================================== */
 
 function homeView() {
-  const t = totals();
 
-  const upcoming = [...db.bookings]
-    .filter(b => b.date >= todayISO())
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(0, 5);
+  const t =
+    totals();
+
+
+  const upcoming =
+    [...db.bookings]
+
+      .filter(
+        b =>
+          b.date >= todayISO()
+      )
+
+      .sort(
+        (a, b) =>
+          a.date.localeCompare(
+            b.date
+          )
+      )
+
+      .slice(
+        0,
+        5
+      );
+
 
   return `
+
     <section class="hero">
+
       <div>
-        <h2>مرحباً بك 👋</h2>
-        <p>ملخص نشاط Winter Camp</p>
+
+        <h2>
+          مرحباً بك 👋
+        </h2>
+
+        <p>
+          ملخص نشاط Winter Camp
+        </p>
+
       </div>
+
     </section>
+
 
     <div class="cards">
 
+
       <div class="stat-card stat-revenue">
+
         <div class="stat-card-top">
 
           <span class="label">
             إجمالي الإيرادات
           </span>
 
+
           <span class="dashboard-icon green-icon">
+
             <svg viewBox="0 0 24 24">
-              <path d="M4 18L10 12L14 16L21 7"/>
-              <path d="M15 7H21V13"/>
+
+              <path
+                d="M4 18L10 12L14 16L21 7"
+              />
+
+              <path
+                d="M15 7H21V13"
+              />
+
             </svg>
+
           </span>
 
         </div>
 
+
         <span class="value green">
-          ${money(t.revenue)}
+
+          ${money(
+            t.revenue
+          )}
+
         </span>
+
 
         <small class="stat-description">
           الحجوزات المسجلة
         </small>
+
       </div>
 
 
@@ -676,8 +727,11 @@ function homeView() {
             إجمالي المصاريف
           </span>
 
+
           <span class="dashboard-icon red-icon">
+
             <svg viewBox="0 0 24 24">
+
               <rect
                 x="3"
                 y="6"
@@ -686,16 +740,29 @@ function homeView() {
                 rx="3"
               />
 
-              <path d="M3 10H21"/>
-              <path d="M16 15H18"/>
+              <path
+                d="M3 10H21"
+              />
+
+              <path
+                d="M16 15H18"
+              />
+
             </svg>
+
           </span>
 
         </div>
 
+
         <span class="value red">
-          ${money(t.expenses)}
+
+          ${money(
+            t.expenses
+          )}
+
         </span>
+
 
         <small class="stat-description">
           المصروفات المسجلة
@@ -712,28 +779,48 @@ function homeView() {
             صافي الربح
           </span>
 
+
           <span class="dashboard-icon blue-icon">
+
             <svg viewBox="0 0 24 24">
-              <path d="M4 20V13"/>
-              <path d="M10 20V8"/>
-              <path d="M16 20V4"/>
-              <path d="M22 20H2"/>
+
+              <path
+                d="M4 20V13"
+              />
+
+              <path
+                d="M10 20V8"
+              />
+
+              <path
+                d="M16 20V4"
+              />
+
+              <path
+                d="M22 20H2"
+              />
+
             </svg>
+
           </span>
 
         </div>
 
+
         <span class="value blue">
-          ${money(t.profit)}
+
+          ${money(
+            t.profit
+          )}
+
         </span>
+
 
         <small class="stat-description">
           الإيرادات ناقص المصاريف
         </small>
 
       </div>
-
-
       <div class="stat-card stat-remaining">
 
         <div class="stat-card-top">
@@ -742,23 +829,36 @@ function homeView() {
             المتبقي للتحصيل
           </span>
 
+
           <span class="dashboard-icon gold-icon">
+
             <svg viewBox="0 0 24 24">
+
               <circle
                 cx="12"
                 cy="12"
                 r="9"
               />
 
-              <path d="M12 7V12L15 14"/>
+              <path
+                d="M12 7V12L15 14"
+              />
+
             </svg>
+
           </span>
 
         </div>
 
+
         <span class="value gold">
-          ${money(t.remaining)}
+
+          ${money(
+            t.remaining
+          )}
+
         </span>
+
 
         <small class="stat-description">
           المبالغ المتبقية من العملاء
@@ -775,10 +875,13 @@ function homeView() {
         الحجوزات القادمة
       </h3>
 
+
       <button
         class="link-btn"
         data-go="bookings">
+
         عرض الكل
+
       </button>
 
     </div>
@@ -786,15 +889,20 @@ function homeView() {
 
     ${
       upcoming.length
+
         ? upcoming
-            .map(bookingCard)
+            .map(
+              bookingCard
+            )
             .join('')
+
         : `
           <div class="empty">
             لا توجد حجوزات قادمة
           </div>
         `
     }
+
   `;
 }
 
@@ -803,20 +911,33 @@ function homeView() {
    بطاقة الحجز
 ===================================================== */
 
-function bookingCard(booking) {
+function bookingCard(
+  booking
+) {
 
   const [
     statusText,
     statusClass
-  ] = status(booking);
+  ] =
+    status(
+      booking
+    );
 
-  const remaining = Math.max(
-    0,
-    Number(booking.agreed || 0) -
-    Number(booking.paid || 0)
-  );
+
+  const remaining =
+    Math.max(
+      0,
+      Number(
+        booking.agreed || 0
+      ) -
+      Number(
+        booking.paid || 0
+      )
+    );
+
 
   return `
+
     <article class="booking-card">
 
       <div class="booking-top">
@@ -824,30 +945,52 @@ function bookingCard(booking) {
         <div>
 
           <div class="booking-name">
-            ${esc(booking.name)}
+
+            ${esc(
+              booking.name
+            )}
+
           </div>
+
 
           <div class="booking-meta">
 
             <div>
-              🔊 ${esc(booking.device)}
+              🔊
+              ${esc(
+                booking.device
+              )}
             </div>
 
-            <div>
-              📍 ${esc(booking.location)}
-            </div>
 
             <div>
-              📅 ${hijriWithDay(booking.date)}
+              📍
+              ${esc(
+                booking.location
+              )}
             </div>
+
+
+            <div>
+              📅
+              ${hijriWithDay(
+                booking.date
+              )}
+            </div>
+
 
             ${
               booking.phone
+
                 ? `
                   <div>
-                    ☎ ${esc(booking.phone)}
+                    ☎
+                    ${esc(
+                      booking.phone
+                    )}
                   </div>
                 `
+
                 : ''
             }
 
@@ -855,7 +998,9 @@ function bookingCard(booking) {
 
 
           <span class="badge ${statusClass}">
+
             ${statusText}
+
           </span>
 
         </div>
@@ -863,14 +1008,23 @@ function bookingCard(booking) {
 
         <div class="amount">
 
-          ${money(booking.agreed)}
+          ${money(
+            booking.agreed
+          )}
+
 
           <small>
+
             متبقي
 
             <span class="red">
-              ${money(remaining)}
+
+              ${money(
+                remaining
+              )}
+
             </span>
+
           </small>
 
         </div>
@@ -883,18 +1037,24 @@ function bookingCard(booking) {
         <button
           class="small-btn"
           data-detail="${booking.id}">
+
           تفاصيل
+
         </button>
+
 
         <button
           class="small-btn primary"
           data-invoice="${booking.id}">
+
           عرض الفاتورة
+
         </button>
 
       </div>
 
     </article>
+
   `;
 }
 
@@ -903,20 +1063,30 @@ function bookingCard(booking) {
    البحث
 ===================================================== */
 
-function normalizePhone(value) {
+function normalizePhone(
+  value
+) {
 
-  return String(value || '')
-    .replace(
-      /[^\d٠-٩]/g,
-      ''
-    );
+  return String(
+    value || ''
+  ).replace(
+    /[^\d٠-٩]/g,
+    ''
+  );
+
 }
 
-function normalizeSearch(value) {
 
-  return String(value || '')
+function normalizeSearch(
+  value
+) {
+
+  return String(
+    value || ''
+  )
     .trim()
     .toLowerCase();
+
 }
 
 
@@ -924,6 +1094,7 @@ function getFilteredBookings() {
 
   let bookings =
     [...db.bookings];
+
 
   const today =
     todayISO();
@@ -939,6 +1110,7 @@ function getFilteredBookings() {
         item =>
           item.date >= today
       );
+
   }
 
 
@@ -952,6 +1124,7 @@ function getFilteredBookings() {
         item =>
           item.date < today
       );
+
   }
 
 
@@ -959,6 +1132,7 @@ function getFilteredBookings() {
     normalizeSearch(
       bookingSearch
     );
+
 
   const phoneSearch =
     normalizePhone(
@@ -977,23 +1151,33 @@ function getFilteredBookings() {
               item.name
             );
 
+
           const phone =
             normalizePhone(
               item.phone
             );
 
+
           return (
-            name.includes(search) ||
+
+            name.includes(
+              search
+            )
+
+            ||
+
             (
               phoneSearch &&
               phone.includes(
                 phoneSearch
               )
             )
+
           );
 
         }
       );
+
   }
 
 
@@ -1004,7 +1188,9 @@ function getFilteredBookings() {
       )
   );
 
+
   return bookings;
+
 }
 
 
@@ -1019,10 +1205,15 @@ function bookingsView() {
 
 
   const title =
-    bookingFilter === 'upcoming'
+
+    bookingFilter ===
+    'upcoming'
+
       ? 'الحجوزات القادمة'
 
-      : bookingFilter === 'past'
+      : bookingFilter ===
+        'past'
+
         ? 'الحجوزات السابقة'
 
         : 'جميع الحجوزات';
@@ -1062,7 +1253,9 @@ function bookingsView() {
           spellcheck="false"
           enterkeyhint="search"
           placeholder="بحث بالاسم أو رقم الجوال"
-          value="${esc(bookingSearch)}">
+          value="${esc(
+            bookingSearch
+          )}">
 
       </div>
 
@@ -1076,7 +1269,9 @@ function bookingsView() {
               ? 'active'
               : ''
           }">
+
           الكل
+
         </button>
 
 
@@ -1085,10 +1280,13 @@ function bookingsView() {
           class="${
             bookingFilter ===
             'upcoming'
+
               ? 'active'
               : ''
           }">
+
           القادمة
+
         </button>
 
 
@@ -1099,7 +1297,9 @@ function bookingsView() {
               ? 'active'
               : ''
           }">
+
           السابقة
+
         </button>
 
       </div>
@@ -1110,8 +1310,11 @@ function bookingsView() {
     <div class="section-head">
 
       <h3>
+
         ${title}
+
       </h3>
+
 
       <span
         id="bookingCount"
@@ -1130,7 +1333,9 @@ function bookingsView() {
         bookings.length
 
           ? bookings
-              .map(bookingCard)
+              .map(
+                bookingCard
+              )
               .join('')
 
           : `
@@ -1141,6 +1346,7 @@ function bookingsView() {
       }
 
     </div>
+
   `;
 }
 
@@ -1150,8 +1356,10 @@ function refreshBookingResults() {
   const bookings =
     getFilteredBookings();
 
+
   const list =
     $('#bookingResults');
+
 
   const count =
     $('#bookingCount');
@@ -1160,10 +1368,13 @@ function refreshBookingResults() {
   if (list) {
 
     list.innerHTML =
+
       bookings.length
 
         ? bookings
-            .map(bookingCard)
+            .map(
+              bookingCard
+            )
             .join('')
 
         : `
@@ -1171,29 +1382,76 @@ function refreshBookingResults() {
             لا توجد نتائج مطابقة
           </div>
         `;
+
   }
 
 
   if (count) {
+
     count.textContent =
       bookings.length;
+
   }
 
 
   bindBookingResultEvents();
+
 }
 
 
 /* =====================================================
-   المصاريف + مسحوبات الشركاء
+   مسحوبات شريك محدد
+===================================================== */
+
+function partnerWithdrawals(
+  partner
+) {
+
+  return (
+    db.withdrawals || []
+  )
+    .filter(
+      item =>
+        item.partner ===
+        partner
+    )
+    .sort(
+      (a, b) =>
+        String(
+          b.date || ''
+        ).localeCompare(
+          String(
+            a.date || ''
+          )
+        )
+    );
+
+}
+
+
+function partnerWithdrawalTotal(
+  partner
+) {
+
+  return partnerWithdrawals(
+    partner
+  ).reduce(
+    (sum, item) =>
+      sum +
+      Number(
+        item.amount || 0
+      ),
+    0
+  );
+
+}
+
+
+/* =====================================================
+   صفحة المصاريف
 ===================================================== */
 
 function expensesView() {
-
-  /*
-    هذه مصاريف المشروع الحقيقية فقط.
-    هي التي تخصم من صافي الربح.
-  */
 
   const expenses =
     [...db.expenses]
@@ -1205,39 +1463,19 @@ function expensesView() {
       );
 
 
-  /*
-    المسحوبات منفصلة عن المصاريف.
-
-    عبدالله وثامر لا يدخلان
-    في حساب صافي الربح.
-  */
-
-  const withdrawals =
-    [...(db.withdrawals || [])]
-      .sort(
-        (a, b) =>
-          b.date.localeCompare(
-            a.date
-          )
-      );
+  const abdullahTotal =
+    partnerWithdrawalTotal(
+      'عبدالله'
+    );
 
 
-  const totalWithdrawals =
-    withdrawals.reduce(
-      (sum, item) =>
-        sum +
-        Number(
-          item.amount || 0
-        ),
-      0
+  const thamerTotal =
+    partnerWithdrawalTotal(
+      'ثامر'
     );
 
 
   return `
-
-    <!-- =========================
-         المصاريف التشغيلية
-    ========================== -->
 
     <div class="section-head">
 
@@ -1255,7 +1493,11 @@ function expensesView() {
 
 
       <strong class="red">
-        ${money(totals().expenses)}
+
+        ${money(
+          totals().expenses
+        )}
+
       </strong>
 
     </div>
@@ -1264,153 +1506,42 @@ function expensesView() {
     ${
       expenses.length
 
-        ? expenses.map(
-            expense => `
+        ? expenses
+            .map(
+              expense => `
 
-              <div class="expense-row">
+                <div class="expense-row">
 
-                <div>
+                  <div>
 
-                  <strong>
-                    ${esc(expense.item)}
-                  </strong>
+                    <strong>
 
-                  <small>
-                    ${hijriWithDay(
-                      expense.date
-                    )}
-                  </small>
-
-                </div>
-
-
-                <div>
-
-                  <strong class="red">
-                    ${money(
-                      expense.amount
-                    )}
-                  </strong>
-
-
-                  <div class="expense-actions">
-
-                    <button
-                      type="button"
-                      class="edit-mini"
-                      data-edit-expense="${expense.id}">
-                      تعديل
-                    </button>
-
-
-                    <button
-                      type="button"
-                      class="delete-mini"
-                      data-del-expense="${expense.id}">
-                      حذف
-                    </button>
-
-                  </div>
-
-                </div>
-
-              </div>
-            `
-          ).join('')
-
-        : `
-          <div class="empty compact-empty">
-            لا توجد مصاريف تشغيلية
-          </div>
-        `
-    }
-
-
-
-    <!-- =========================
-         مسحوبات الشركاء
-    ========================== -->
-
-    <section class="withdrawals-box">
-
-      <div class="withdrawals-head">
-
-        <div>
-
-          <h3>
-            مسحوبات الشركاء
-          </h3>
-
-          <small>
-            لا تدخل ضمن المصاريف ولا تخصم من صافي الربح
-          </small>
-
-        </div>
-
-
-        <strong>
-          ${money(totalWithdrawals)}
-        </strong>
-
-      </div>
-
-
-      ${
-        withdrawals.length
-
-          ? withdrawals.map(
-              withdrawal => `
-
-                <div class="withdrawal-row">
-
-                  <div class="withdrawal-person">
-
-                    <span class="partner-icon">
-                      👤
-                    </span>
-
-
-                    <div>
-
-                      <strong>
-                        ${esc(
-                          withdrawal.partner
-                        )}
-                      </strong>
-
-
-                      <small>
-                        ${hijriWithDay(
-                          withdrawal.date
-                        )}
-                      </small>
-
-
-                      ${
-                        withdrawal.note
-
-                          ? `
-                            <small class="withdrawal-note">
-                              ${esc(
-                                withdrawal.note
-                              )}
-                            </small>
-                          `
-
-                          : ''
-                      }
-
-                    </div>
-
-                  </div>
-
-
-                  <div class="withdrawal-side">
-
-                    <strong class="gold">
-                      ${money(
-                        withdrawal.amount
+                      ${esc(
+                        expense.item
                       )}
+
+                    </strong>
+
+
+                    <small>
+
+                      ${hijriWithDay(
+                        expense.date
+                      )}
+
+                    </small>
+
+                  </div>
+
+
+                  <div>
+
+                    <strong class="red">
+
+                      ${money(
+                        expense.amount
+                      )}
+
                     </strong>
 
 
@@ -1419,16 +1550,20 @@ function expensesView() {
                       <button
                         type="button"
                         class="edit-mini"
-                        data-edit-withdrawal="${withdrawal.id}">
+                        data-edit-expense="${expense.id}">
+
                         تعديل
+
                       </button>
 
 
                       <button
                         type="button"
                         class="delete-mini"
-                        data-del-withdrawal="${withdrawal.id}">
+                        data-del-expense="${expense.id}">
+
                         حذف
+
                       </button>
 
                     </div>
@@ -1436,45 +1571,411 @@ function expensesView() {
                   </div>
 
                 </div>
+
               `
-            ).join('')
+            )
+            .join('')
 
-          : `
-            <div class="empty compact-empty">
-              لا توجد مسحوبات شركاء
-            </div>
-          `
-      }
+        : `
+          <div class="empty compact-empty">
 
+            لا توجد مصاريف تشغيلية
 
-      <button
-        type="button"
-        class="add-withdrawal-btn"
-        data-add-withdrawal>
-
-        + إضافة مسحوب
-
-      </button>
-
-    </section>
+          </div>
+        `
+    }
 
 
-    <div class="withdrawals-info">
+    <div class="partners-withdrawals-section">
 
-      <strong>
-        ملاحظة محاسبية
-      </strong>
+      <div class="partners-withdrawals-head">
 
-      <span>
-        المصاريف التشغيلية فقط تؤثر على صافي الربح،
-        أما مسحوبات الشركاء فتُسجل بشكل مستقل.
-      </span>
+        <div>
+
+          <h3>
+            مسحوبات الشركاء
+          </h3>
+
+          <small>
+            لا تدخل ضمن المصاريف أو صافي الربح
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <div class="partner-withdrawal-grid">
+
+
+        <button
+          type="button"
+          class="partner-withdrawal-card"
+          data-partner-history="عبدالله">
+
+          <div class="partner-withdrawal-icon">
+
+            <svg viewBox="0 0 24 24">
+
+              <circle
+                cx="12"
+                cy="8"
+                r="4"
+              />
+
+              <path
+                d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7"
+              />
+
+            </svg>
+
+          </div>
+
+
+          <span class="partner-withdrawal-name">
+
+            عبدالله
+
+          </span>
+
+
+          <strong class="partner-withdrawal-total">
+
+            ${money(
+              abdullahTotal
+            )}
+
+          </strong>
+
+
+          <small class="partner-withdrawal-open">
+
+            اضغط لعرض السجل
+
+          </small>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="partner-withdrawal-card"
+          data-partner-history="ثامر">
+
+          <div class="partner-withdrawal-icon">
+
+            <svg viewBox="0 0 24 24">
+
+              <circle
+                cx="12"
+                cy="8"
+                r="4"
+              />
+
+              <path
+                d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7"
+              />
+
+            </svg>
+
+          </div>
+
+
+          <span class="partner-withdrawal-name">
+
+            ثامر
+
+          </span>
+
+
+          <strong class="partner-withdrawal-total">
+
+            ${money(
+              thamerTotal
+            )}
+
+          </strong>
+
+
+          <small class="partner-withdrawal-open">
+
+            اضغط لعرض السجل
+
+          </small>
+
+        </button>
+
+
+      </div>
 
     </div>
+
   `;
 }
 
 
+/* =====================================================
+   نافذة سجل مسحوبات الشريك
+===================================================== */
+
+function showPartnerWithdrawals(
+  partner
+) {
+
+  const withdrawals =
+    partnerWithdrawals(
+      partner
+    );
+
+
+  const total =
+    partnerWithdrawalTotal(
+      partner
+    );
+
+
+  const rows =
+
+    withdrawals.length
+
+      ? withdrawals
+          .map(
+            item => `
+
+              <div class="partner-history-row">
+
+                <div class="partner-history-main">
+
+                  <strong class="partner-history-amount">
+
+                    ${money(
+                      item.amount
+                    )}
+
+                  </strong>
+
+
+                  <span class="partner-history-date">
+
+                    ${hijriWithDay(
+                      item.date
+                    )}
+
+                  </span>
+
+
+                  ${
+                    item.note
+
+                      ? `
+                        <small class="partner-history-note">
+
+                          ${esc(
+                            item.note
+                          )}
+
+                        </small>
+                      `
+
+                      : ''
+                  }
+
+                </div>
+
+
+                <div class="partner-history-actions">
+
+                  <button
+                    type="button"
+                    class="edit-mini"
+                    data-history-edit="${item.id}">
+
+                    تعديل
+
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="delete-mini"
+                    data-history-delete="${item.id}">
+
+                    حذف
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            `
+          )
+          .join('')
+
+      : `
+        <div class="empty compact-empty">
+
+          لا توجد مسحوبات مسجلة
+
+        </div>
+      `;
+
+
+  openModal(
+
+    `مسحوبات ${partner}`,
+
+    `
+
+      <div class="partner-history">
+
+        <div class="partner-history-summary">
+
+          <span>
+            مجموع مسحوبات ${esc(
+              partner
+            )}
+          </span>
+
+
+          <strong>
+
+            ${money(
+              total
+            )}
+
+          </strong>
+
+        </div>
+
+
+        <div class="partner-history-list">
+
+          ${rows}
+
+        </div>
+
+
+        <button
+          type="button"
+          class="add-partner-withdrawal-btn"
+          id="addPartnerWithdrawal">
+
+          + إضافة مسحوب
+
+        </button>
+
+      </div>
+
+    `
+
+  );
+
+
+  $$('[data-history-edit]')
+    .forEach(
+      button => {
+
+        button.onclick =
+          () => {
+
+            const id =
+              Number(
+                button.dataset
+                  .historyEdit
+              );
+
+
+            closeModal();
+
+
+            editWithdrawal(
+              id
+            );
+
+          };
+
+      }
+    );
+
+
+  $$('[data-history-delete]')
+    .forEach(
+      button => {
+
+        button.onclick =
+          () => {
+
+            const id =
+              Number(
+                button.dataset
+                  .historyDelete
+              );
+
+
+            if (
+              !confirm(
+                'هل تريد حذف هذا المسحوب؟'
+              )
+            ) {
+
+              return;
+
+            }
+
+
+            db.withdrawals =
+              (
+                db.withdrawals || []
+              ).filter(
+                item =>
+                  Number(
+                    item.id
+                  ) !==
+                  id
+              );
+
+
+            save();
+
+
+            showPartnerWithdrawals(
+              partner
+            );
+
+
+            toast(
+              'تم حذف المسحوب'
+            );
+
+          };
+
+      }
+    );
+
+
+  const addButton =
+    $('#addPartnerWithdrawal');
+
+
+  if (addButton) {
+
+    addButton.onclick =
+      () => {
+
+        closeModal();
+
+
+        openWithdrawalForm(
+          null,
+          partner
+        );
+
+      };
+
+  }
+
+}
 /* =====================================================
    التقارير
 ===================================================== */
@@ -1484,7 +1985,9 @@ function getAvailableHijriYears() {
   const current =
     currentHijri().year;
 
-  const years = [];
+
+  const years =
+    [];
 
 
   for (
@@ -1493,12 +1996,15 @@ function getAvailableHijriYears() {
     year++
   ) {
 
-    years.push(year);
+    years.push(
+      year
+    );
 
   }
 
 
   return years;
+
 }
 
 
@@ -1518,30 +2024,45 @@ function filterByHijriPeriod(
 
 
       const monthMatch =
-        month === 'all' ||
+
+        month === 'all'
+
+        ||
+
         h.month ===
-          Number(month);
+          Number(
+            month
+          );
 
 
       const yearMatch =
-        year === 'all' ||
+
+        year === 'all'
+
+        ||
+
         h.year ===
-          Number(year);
+          Number(
+            year
+          );
 
 
       return (
         monthMatch &&
         yearMatch
       );
+
     }
   );
+
 }
 
 
 function reportPeriodTitle() {
 
   if (
-    reportMonth === 'all' &&
+    reportMonth === 'all'
+    &&
     reportYear === 'all'
   ) {
 
@@ -1554,7 +2075,9 @@ function reportPeriodTitle() {
     reportMonth === 'all'
   ) {
 
-    return `جميع أشهر سنة ${reportYear} هـ`;
+    return (
+      `جميع أشهر سنة ${reportYear} هـ`
+    );
 
   }
 
@@ -1565,7 +2088,9 @@ function reportPeriodTitle() {
 
     return (
       `${HIJRI_MONTHS[
-        Number(reportMonth)
+        Number(
+          reportMonth
+        )
       ]} - جميع السنوات`
     );
 
@@ -1574,9 +2099,12 @@ function reportPeriodTitle() {
 
   return (
     `${HIJRI_MONTHS[
-      Number(reportMonth)
+      Number(
+        reportMonth
+      )
     ]} ${reportYear} هـ`
   );
+
 }
 
 
@@ -1587,7 +2115,8 @@ function reportPeriodTitle() {
 function monthlyBreakdownView() {
 
   if (
-    reportMonth !== 'all' ||
+    reportMonth !== 'all'
+    ||
     reportYear === 'all'
   ) {
 
@@ -1608,6 +2137,7 @@ function monthlyBreakdownView() {
 
 
     <div class="months-list">
+
   `;
 
 
@@ -1620,7 +2150,9 @@ function monthlyBreakdownView() {
     const bookings =
       filterByHijriPeriod(
         db.bookings,
-        String(month),
+        String(
+          month
+        ),
         reportYear
       );
 
@@ -1628,7 +2160,9 @@ function monthlyBreakdownView() {
     const expenses =
       filterByHijriPeriod(
         db.expenses,
-        String(month),
+        String(
+          month
+        ),
         reportYear
       );
 
@@ -1662,25 +2196,36 @@ function monthlyBreakdownView() {
         <div class="month-report-money">
 
           <span class="green">
-            ${money(t.revenue)}
+
+            ${money(
+              t.revenue
+            )}
+
           </span>
+
 
           <small>
 
             المصاريف:
-            ${money(t.expenses)}
+            ${money(
+              t.expenses
+            )}
 
             <br>
 
             الصافي:
-            ${money(t.profit)}
+            ${money(
+              t.profit
+            )}
 
           </small>
 
         </div>
 
       </button>
+
     `;
+
   }
 
 
@@ -1690,9 +2235,12 @@ function monthlyBreakdownView() {
 
 
   return html;
+
 }
+
+
 /* =====================================================
-   التقرير المالي
+   صفحة التقارير
 ===================================================== */
 
 function reportsView() {
@@ -1702,16 +2250,19 @@ function reportsView() {
       db.bookings
     );
 
+
   const expenses =
     filterByHijriPeriod(
       db.expenses
     );
+
 
   const t =
     totals(
       bookings,
       expenses
     );
+
 
   const years =
     getAvailableHijriYears();
@@ -1725,6 +2276,7 @@ function reportsView() {
         التقرير المالي
       </h2>
 
+
       <p>
         ${reportPeriodTitle()}
       </p>
@@ -1734,11 +2286,13 @@ function reportsView() {
 
     <div class="report-filters">
 
+
       <label>
 
         الشهر الهجري
 
         <select id="reportMonthFilter">
+
 
           <option
             value="all"
@@ -1747,35 +2301,53 @@ function reportsView() {
                 ? 'selected'
                 : ''
             }>
+
             جميع الأشهر
+
           </option>
 
 
           ${
             HIJRI_MONTHS
+
               .map(
-                (month, index) => {
+                (
+                  month,
+                  index
+                ) => {
 
                   if (!index) {
+
                     return '';
+
                   }
+
 
                   return `
 
                     <option
                       value="${index}"
                       ${
-                        String(index) ===
-                        String(reportMonth)
+                        String(
+                          index
+                        ) ===
+                        String(
+                          reportMonth
+                        )
+
                           ? 'selected'
                           : ''
                       }>
+
                       ${month}
+
                     </option>
 
                   `;
+
                 }
               )
+
               .join('')
           }
 
@@ -1790,6 +2362,7 @@ function reportsView() {
 
         <select id="reportYearFilter">
 
+
           <option
             value="all"
             ${
@@ -1797,28 +2370,39 @@ function reportsView() {
                 ? 'selected'
                 : ''
             }>
+
             جميع السنوات
+
           </option>
 
 
           ${
             years
+
               .map(
                 year => `
 
                   <option
                     value="${year}"
                     ${
-                      String(year) ===
-                      String(reportYear)
+                      String(
+                        year
+                      ) ===
+                      String(
+                        reportYear
+                      )
+
                         ? 'selected'
                         : ''
                     }>
+
                     ${year} هـ
+
                   </option>
 
                 `
               )
+
               .join('')
           }
 
@@ -1831,6 +2415,7 @@ function reportsView() {
 
     <div class="cards">
 
+
       <div class="stat-card">
 
         <span class="label">
@@ -1838,7 +2423,11 @@ function reportsView() {
         </span>
 
         <span class="value green">
-          ${money(t.revenue)}
+
+          ${money(
+            t.revenue
+          )}
+
         </span>
 
       </div>
@@ -1851,7 +2440,11 @@ function reportsView() {
         </span>
 
         <span class="value red">
-          ${money(t.expenses)}
+
+          ${money(
+            t.expenses
+          )}
+
         </span>
 
       </div>
@@ -1864,7 +2457,11 @@ function reportsView() {
         </span>
 
         <span class="value blue">
-          ${money(t.profit)}
+
+          ${money(
+            t.profit
+          )}
+
         </span>
 
       </div>
@@ -1877,7 +2474,11 @@ function reportsView() {
         </span>
 
         <span class="value gold">
-          ${money(t.remaining)}
+
+          ${money(
+            t.remaining
+          )}
+
         </span>
 
       </div>
@@ -1888,6 +2489,7 @@ function reportsView() {
     ${monthlyBreakdownView()}
 
   `;
+
 }
 
 
@@ -1910,27 +2512,34 @@ function devicesView() {
 
     ${
       db.devices
+
         .map(
           device => `
 
             <div class="device-card">
 
               <strong>
-                ${esc(device.name)}
+                ${esc(
+                  device.name
+                )}
               </strong>
 
+
               <small>
-                الكمية: ${device.qty}
+                الكمية:
+                ${device.qty}
               </small>
 
             </div>
 
           `
         )
+
         .join('')
     }
 
   `;
+
 }
 
 
@@ -1942,6 +2551,7 @@ function invoicesView() {
 
   const bookings =
     [...db.bookings]
+
       .sort(
         (a, b) =>
           b.date.localeCompare(
@@ -1964,47 +2574,55 @@ function invoicesView() {
     ${
       bookings.length
 
-        ? bookings.map(
-            booking => `
+        ? bookings
 
-              <div class="invoice-row">
+            .map(
+              booking => `
 
-                <div>
+                <div class="invoice-row">
 
-                  <strong>
-                    فاتورة #${String(
-                      booking.id
-                    ).slice(-6)}
-                  </strong>
+                  <div>
+
+                    <strong>
+
+                      فاتورة #${String(
+                        booking.id
+                      ).slice(-6)}
+
+                    </strong>
 
 
-                  <small>
+                    <small>
 
-                    ${esc(
-                      booking.name
-                    )}
+                      ${esc(
+                        booking.name
+                      )}
 
-                    <br>
+                      <br>
 
-                    ${hijriFull(
-                      booking.date
-                    )}
+                      ${hijriFull(
+                        booking.date
+                      )}
 
-                  </small>
+                    </small>
+
+                  </div>
+
+
+                  <button
+                    class="small-btn primary"
+                    data-invoice="${booking.id}">
+
+                    عرض
+
+                  </button>
 
                 </div>
 
+              `
+            )
 
-                <button
-                  class="small-btn primary"
-                  data-invoice="${booking.id}">
-                  عرض
-                </button>
-
-              </div>
-
-            `
-          ).join('')
+            .join('')
 
         : `
           <div class="empty">
@@ -2014,6 +2632,7 @@ function invoicesView() {
     }
 
   `;
+
 }
 
 
@@ -2069,6 +2688,7 @@ function settingsView() {
     </button>
 
   `;
+
 }
 
 
@@ -2111,20 +2731,27 @@ function render() {
   if (pageTitle) {
 
     pageTitle.textContent =
-      titles[currentPage] ||
+      titles[
+        currentPage
+      ]
+      ||
       'الرئيسية';
 
   }
 
 
   $$('.nav-item')
+
     .forEach(
       button => {
 
         button.classList.toggle(
+
           'active',
+
           button.dataset.page ===
             currentPage
+
         );
 
       }
@@ -2165,7 +2792,10 @@ function render() {
 
     main.innerHTML =
       (
-        views[currentPage] ||
+        views[
+          currentPage
+        ]
+        ||
         homeView
       )();
 
@@ -2173,6 +2803,7 @@ function render() {
 
 
   bindViewEvents();
+
 }
 
 
@@ -2181,7 +2812,54 @@ function go(page) {
   currentPage =
     page;
 
+
   render();
+
+}
+
+
+/* =====================================================
+   أحداث الحجوزات
+===================================================== */
+
+function bindBookingResultEvents() {
+
+  $$('[data-detail]')
+
+    .forEach(
+      button => {
+
+        button.onclick =
+          () =>
+            showDetail(
+
+              Number(
+                button.dataset.detail
+              )
+
+            );
+
+      }
+    );
+
+
+  $$('[data-invoice]')
+
+    .forEach(
+      button => {
+
+        button.onclick =
+          () =>
+            showInvoice(
+
+              Number(
+                button.dataset.invoice
+              )
+
+            );
+
+      }
+    );
 
 }
 
@@ -2190,48 +2868,15 @@ function go(page) {
    أحداث الصفحة
 ===================================================== */
 
-function bindBookingResultEvents() {
-
-  $$('[data-detail]')
-    .forEach(
-      button => {
-
-        button.onclick =
-          () =>
-            showDetail(
-              Number(
-                button.dataset.detail
-              )
-            );
-
-      }
-    );
-
-
-  $$('[data-invoice]')
-    .forEach(
-      button => {
-
-        button.onclick =
-          () =>
-            showInvoice(
-              Number(
-                button.dataset.invoice
-              )
-            );
-
-      }
-    );
-}
-
-
 function bindViewEvents() {
 
-  /*
-    التنقل بين الصفحات
-  */
+
+  /* -------------------------
+     التنقل
+  ------------------------- */
 
   $$('[data-go]')
+
     .forEach(
       button => {
 
@@ -2248,105 +2893,80 @@ function bindViewEvents() {
   bindBookingResultEvents();
 
 
-  /*
-    تعديل المصاريف
-  */
+  /* -------------------------
+     المصاريف
+  ------------------------- */
 
   $$('[data-edit-expense]')
+
     .forEach(
       button => {
 
         button.onclick =
           () =>
             editExpense(
+
               Number(
-                button.dataset.editExpense
+                button.dataset
+                  .editExpense
               )
+
             );
 
       }
     );
 
 
-  /*
-    حذف المصاريف
-  */
-
   $$('[data-del-expense]')
+
     .forEach(
       button => {
 
         button.onclick =
           () =>
             deleteExpense(
+
               Number(
-                button.dataset.delExpense
+                button.dataset
+                  .delExpense
               )
+
             );
 
       }
     );
 
 
-  /*
-    إضافة مسحوب شريك
-  */
+  /* -------------------------
+     مربعات الشركاء
+  ------------------------- */
 
-  $$('[data-add-withdrawal]')
+  $$('[data-partner-history]')
+
     .forEach(
       button => {
 
         button.onclick =
-          () =>
-            openWithdrawalForm();
+          () => {
 
-      }
-    );
+            const partner =
+              button.dataset
+                .partnerHistory;
 
 
-  /*
-    تعديل مسحوب شريك
-  */
-
-  $$('[data-edit-withdrawal]')
-    .forEach(
-      button => {
-
-        button.onclick =
-          () =>
-            editWithdrawal(
-              Number(
-                button.dataset.editWithdrawal
-              )
+            showPartnerWithdrawals(
+              partner
             );
 
-      }
-    );
-
-
-  /*
-    حذف مسحوب شريك
-  */
-
-  $$('[data-del-withdrawal]')
-    .forEach(
-      button => {
-
-        button.onclick =
-          () =>
-            deleteWithdrawal(
-              Number(
-                button.dataset.delWithdrawal
-              )
-            );
+          };
 
       }
     );
 
 
-  /*
-    البحث في الحجوزات
-  */
+  /* -------------------------
+     بحث الحجوزات
+  ------------------------- */
 
   const searchInput =
     $('#bookingSearch');
@@ -2355,25 +2975,30 @@ function bindViewEvents() {
   if (searchInput) {
 
     searchInput.addEventListener(
+
       'input',
+
       event => {
 
         bookingSearch =
           event.target.value;
 
+
         refreshBookingResults();
 
       }
+
     );
 
   }
 
 
-  /*
-    فلترة الحجوزات
-  */
+  /* -------------------------
+     فلترة الحجوزات
+  ------------------------- */
 
   $$('[data-booking-filter]')
+
     .forEach(
       button => {
 
@@ -2384,6 +3009,7 @@ function bindViewEvents() {
               button.dataset
                 .bookingFilter;
 
+
             render();
 
           };
@@ -2392,9 +3018,9 @@ function bindViewEvents() {
     );
 
 
-  /*
-    فلتر الشهر في التقارير
-  */
+  /* -------------------------
+     الشهر
+  ------------------------- */
 
   const monthFilter =
     $('#reportMonthFilter');
@@ -2408,6 +3034,7 @@ function bindViewEvents() {
         reportMonth =
           event.target.value;
 
+
         render();
 
       };
@@ -2415,9 +3042,9 @@ function bindViewEvents() {
   }
 
 
-  /*
-    فلتر السنة في التقارير
-  */
+  /* -------------------------
+     السنة
+  ------------------------- */
 
   const yearFilter =
     $('#reportYearFilter');
@@ -2431,6 +3058,7 @@ function bindViewEvents() {
         reportYear =
           event.target.value;
 
+
         render();
 
       };
@@ -2438,11 +3066,12 @@ function bindViewEvents() {
   }
 
 
-  /*
-    فتح شهر محدد
-  */
+  /* -------------------------
+     فتح تقرير شهر
+  ------------------------- */
 
   $$('[data-report-month]')
+
     .forEach(
       button => {
 
@@ -2453,6 +3082,7 @@ function bindViewEvents() {
               button.dataset
                 .reportMonth;
 
+
             render();
 
           };
@@ -2461,9 +3091,9 @@ function bindViewEvents() {
     );
 
 
-  /*
-    النسخة الاحتياطية
-  */
+  /* -------------------------
+     النسخة الاحتياطية
+  ------------------------- */
 
   const settingsExport =
     $('#settingsExport');
@@ -2488,46 +3118,60 @@ function openModal(
   content
 ) {
 
-  if ($('#modalTitle')) {
-
-    $('#modalTitle')
-      .textContent =
-        title;
-
-  }
+  const modalTitle =
+    $('#modalTitle');
 
 
-  if ($('#modalBody')) {
+  const modalBody =
+    $('#modalBody');
 
-    $('#modalBody')
-      .innerHTML =
-        content;
+
+  if (modalTitle) {
+
+    modalTitle.textContent =
+      title;
 
   }
 
 
-  $('#modal')
-    ?.classList
-    .remove('hidden');
+  if (modalBody) {
+
+    modalBody.innerHTML =
+      content;
+
+  }
 
 
   $('#modalBackdrop')
     ?.classList
-    .remove('hidden');
+    .remove(
+      'hidden'
+    );
+
+
+  $('#modal')
+    ?.classList
+    .remove(
+      'hidden'
+    );
 
 }
 
 
 function closeModal() {
 
-  $('#modal')
-    ?.classList
-    .add('hidden');
-
-
   $('#modalBackdrop')
     ?.classList
-    .add('hidden');
+    .add(
+      'hidden'
+    );
+
+
+  $('#modal')
+    ?.classList
+    .add(
+      'hidden'
+    );
 
 }
 /* =====================================================
@@ -2552,25 +3196,19 @@ function showDetail(id) {
   const remaining =
     Math.max(
       0,
-      Number(
-        booking.agreed || 0
-      ) -
-      Number(
-        booking.paid || 0
-      )
+      Number(booking.agreed || 0) -
+      Number(booking.paid || 0)
     );
 
 
   openModal(
     'تفاصيل الحجز',
     `
+
       <div class="detail-list">
 
         <div>
-          <span>
-            اسم العميل
-          </span>
-
+          <span>اسم العميل</span>
           <strong>
             ${esc(booking.name)}
           </strong>
@@ -2578,36 +3216,23 @@ function showDetail(id) {
 
 
         <div>
-          <span>
-            رقم الجوال
-          </span>
-
+          <span>رقم الجوال</span>
           <strong dir="ltr">
-            ${esc(
-              booking.phone || '-'
-            )}
+            ${esc(booking.phone || '-')}
           </strong>
         </div>
 
 
         <div>
-          <span>
-            نوع المناسبة
-          </span>
-
+          <span>نوع المناسبة</span>
           <strong>
-            ${esc(
-              booking.eventType || '-'
-            )}
+            ${esc(booking.eventType || '-')}
           </strong>
         </div>
 
 
         <div>
-          <span>
-            الباقة / الأجهزة
-          </span>
-
+          <span>الباقة / الأجهزة</span>
           <strong>
             ${esc(booking.device)}
           </strong>
@@ -2615,10 +3240,7 @@ function showDetail(id) {
 
 
         <div>
-          <span>
-            الموقع
-          </span>
-
+          <span>الموقع</span>
           <strong>
             ${esc(booking.location)}
           </strong>
@@ -2626,53 +3248,33 @@ function showDetail(id) {
 
 
         <div>
-          <span>
-            التاريخ
-          </span>
-
+          <span>التاريخ</span>
           <strong>
-            ${hijriWithDay(
-              booking.date
-            )}
+            ${hijriWithDay(booking.date)}
           </strong>
         </div>
 
 
         <div>
-          <span>
-            المبلغ
-          </span>
-
+          <span>المبلغ</span>
           <strong class="green">
-            ${money(
-              booking.agreed
-            )}
+            ${money(booking.agreed)}
           </strong>
         </div>
 
 
         <div>
-          <span>
-            الواصل
-          </span>
-
+          <span>الواصل</span>
           <strong class="blue">
-            ${money(
-              booking.paid
-            )}
+            ${money(booking.paid)}
           </strong>
         </div>
 
 
         <div>
-          <span>
-            المتبقي
-          </span>
-
+          <span>المتبقي</span>
           <strong class="red">
-            ${money(
-              remaining
-            )}
+            ${money(remaining)}
           </strong>
         </div>
 
@@ -2708,6 +3310,7 @@ function showDetail(id) {
         حذف الحجز
 
       </button>
+
     `
   );
 
@@ -2754,6 +3357,7 @@ function showDetail(id) {
       }
 
     };
+
 }
 
 
@@ -2769,24 +3373,34 @@ function openBookingForm(
     existing || {
 
       name: '',
+
       phone: '',
+
       eventType: '',
+
       device: '',
+
       location: '',
+
       date: todayISO(),
+
       agreed: '',
+
       paid: '',
+
       notes: ''
 
     };
 
 
   openModal(
+
     existing
       ? 'تعديل الحجز'
       : 'حجز جديد',
 
     `
+
       <form
         id="bookingForm"
         class="form-grid">
@@ -2867,15 +3481,14 @@ function openBookingForm(
         </label>
 
 
-        ${
-          hijriDateFields(
-            booking.date,
-            'booking'
-          )
-        }
+        ${hijriDateFields(
+          booking.date,
+          'booking'
+        )}
 
 
         <div class="form-row">
+
 
           <label>
 
@@ -2887,9 +3500,7 @@ function openBookingForm(
               inputmode="decimal"
               min="0"
               required
-              value="${
-                booking.agreed
-              }">
+              value="${booking.agreed}">
 
           </label>
 
@@ -2903,11 +3514,11 @@ function openBookingForm(
               type="number"
               inputmode="decimal"
               min="0"
-              value="${
-                booking.paid
-              }">
+              required
+              value="${booking.paid}">
 
           </label>
+
 
         </div>
 
@@ -2918,7 +3529,7 @@ function openBookingForm(
 
           <textarea
             name="notes"
-            placeholder="ملاحظات اختيارية">${esc(
+            rows="3">${esc(
               booking.notes || ''
             )}</textarea>
 
@@ -2926,19 +3537,21 @@ function openBookingForm(
 
 
         <button
-          class="submit-btn"
-          type="submit">
+          type="submit"
+          class="submit-btn">
 
           ${
             existing
               ? 'حفظ التعديلات'
-              : 'حفظ الحجز'
+              : 'إضافة الحجز'
           }
 
         </button>
 
       </form>
+
     `
+
   );
 
 
@@ -2948,70 +3561,135 @@ function openBookingForm(
       event.preventDefault();
 
 
-      const formData =
-        Object.fromEntries(
-          new FormData(
-            event.currentTarget
-          ).entries()
+      const form =
+        new FormData(
+          event.target
         );
 
 
       const date =
         hijriToGregorian(
 
-          formData.booking_year,
-          formData.booking_month,
-          formData.booking_day
+          form.get(
+            'booking_year'
+          ),
+
+          form.get(
+            'booking_month'
+          ),
+
+          form.get(
+            'booking_day'
+          )
 
         );
 
 
       if (!date) {
 
-        alert(
-          'التاريخ الهجري غير صحيح'
+        toast(
+          'تعذر تحويل التاريخ الهجري'
         );
 
         return;
+
       }
 
 
-      delete formData.booking_day;
-      delete formData.booking_month;
-      delete formData.booking_year;
-
-
-      formData.date =
-        date;
-
-
-      formData.agreed =
+      const agreed =
         Number(
-          formData.agreed || 0
+          form.get('agreed') || 0
         );
 
 
-      formData.paid =
+      const paid =
         Number(
-          formData.paid || 0
+          form.get('paid') || 0
         );
+
+
+      if (
+        paid > agreed
+      ) {
+
+        toast(
+          'الواصل لا يمكن أن يكون أكبر من المبلغ المتفق عليه'
+        );
+
+        return;
+
+      }
+
+
+      const data = {
+
+        id:
+          existing
+            ? existing.id
+            : Date.now(),
+
+        name:
+          String(
+            form.get('name') || ''
+          ).trim(),
+
+        phone:
+          String(
+            form.get('phone') || ''
+          ).trim(),
+
+        eventType:
+          String(
+            form.get('eventType') || ''
+          ).trim(),
+
+        device:
+          String(
+            form.get('device') || ''
+          ).trim(),
+
+        location:
+          String(
+            form.get('location') || ''
+          ).trim(),
+
+        date,
+
+        agreed,
+
+        paid,
+
+        notes:
+          String(
+            form.get('notes') || ''
+          ).trim()
+
+      };
 
 
       if (existing) {
 
-        Object.assign(
-          existing,
-          formData
-        );
+        const index =
+          db.bookings.findIndex(
+            item =>
+              Number(item.id) ===
+              Number(existing.id)
+          );
+
+
+        if (
+          index !== -1
+        ) {
+
+          db.bookings[index] =
+            data;
+
+        }
 
       } else {
 
-        formData.id =
-          Date.now();
-
-
         db.bookings.push(
-          formData
+          data
         );
 
       }
@@ -3026,31 +3704,30 @@ function openBookingForm(
 
       toast(
         existing
-          ? 'تم تحديث الحجز'
-          : 'تم حفظ الحجز'
+          ? 'تم تعديل الحجز'
+          : 'تم إضافة الحجز'
       );
 
     };
+
 }
 
 
 /* =====================================================
-   إضافة / تعديل المصروف
+   نموذج المصروف
 ===================================================== */
 
 function openExpenseForm(
   existing = null
 ) {
 
-  const isEdit =
-    Boolean(existing);
-
-
   const expense =
     existing || {
 
       item: '',
+
       amount: '',
+
       date: todayISO()
 
     };
@@ -3058,11 +3735,12 @@ function openExpenseForm(
 
   openModal(
 
-    isEdit
+    existing
       ? 'تعديل المصروف'
       : 'إضافة مصروف',
 
     `
+
       <form
         id="expenseForm"
         class="form-grid">
@@ -3070,14 +3748,15 @@ function openExpenseForm(
 
         <label>
 
-          بند المصروف
+          اسم المصروف
 
           <input
             name="item"
             required
             value="${esc(
               expense.item || ''
-            )}">
+            )}"
+            placeholder="مثال: وقود">
 
         </label>
 
@@ -3091,145 +3770,125 @@ function openExpenseForm(
             type="number"
             inputmode="decimal"
             min="0"
+            step="0.01"
             required
-            value="${esc(
-              expense.amount || ''
-            )}">
+            value="${expense.amount}">
 
         </label>
 
 
-        ${
-          hijriDateFields(
-            expense.date ||
-              todayISO(),
-            'expense'
-          )
-        }
+        ${hijriDateFields(
+          expense.date,
+          'expense'
+        )}
 
 
         <button
-          class="submit-btn"
-          type="submit">
+          type="submit"
+          class="submit-btn">
 
           ${
-            isEdit
+            existing
               ? 'حفظ التعديلات'
-              : 'حفظ المصروف'
+              : 'إضافة المصروف'
           }
 
         </button>
 
       </form>
+
     `
+
   );
 
 
-  const form =
-    $('#expenseForm');
-
-
-  if (!form) {
-    return;
-  }
-
-
-  form.onsubmit =
+  $('#expenseForm').onsubmit =
     event => {
 
       event.preventDefault();
 
 
-      const data =
-        Object.fromEntries(
-
-          new FormData(
-            event.currentTarget
-          ).entries()
-
+      const form =
+        new FormData(
+          event.target
         );
 
 
       const date =
         hijriToGregorian(
 
-          data.expense_year,
-          data.expense_month,
-          data.expense_day
+          form.get(
+            'expense_year'
+          ),
+
+          form.get(
+            'expense_month'
+          ),
+
+          form.get(
+            'expense_day'
+          )
 
         );
 
 
       if (!date) {
 
-        alert(
-          'التاريخ الهجري غير صحيح'
+        toast(
+          'تعذر تحويل التاريخ الهجري'
         );
 
         return;
+
       }
 
 
-      const item =
-        String(
-          data.item || ''
-        ).trim();
+      const data = {
+
+        id:
+          existing
+            ? existing.id
+            : Date.now(),
+
+        item:
+          String(
+            form.get('item') || ''
+          ).trim(),
+
+        amount:
+          Number(
+            form.get('amount') || 0
+          ),
+
+        date
+
+      };
 
 
-      const amount =
-        Number(
-          data.amount || 0
-        );
+      if (existing) {
+
+        const index =
+          db.expenses.findIndex(
+            item =>
+              Number(item.id) ===
+              Number(existing.id)
+          );
 
 
-      if (!item) {
+        if (
+          index !== -1
+        ) {
 
-        alert(
-          'يرجى كتابة بند المصروف'
-        );
+          db.expenses[index] =
+            data;
 
-        return;
-      }
-
-
-      if (
-        !Number.isFinite(amount) ||
-        amount < 0
-      ) {
-
-        alert(
-          'المبلغ غير صحيح'
-        );
-
-        return;
-      }
-
-
-      if (isEdit) {
-
-        existing.item =
-          item;
-
-        existing.amount =
-          amount;
-
-        existing.date =
-          date;
+        }
 
       } else {
 
-        db.expenses.push({
-
-          id:
-            Date.now(),
-
-          item,
-
-          amount,
-
-          date
-
-        });
+        db.expenses.push(
+          data
+        );
 
       }
 
@@ -3242,35 +3901,31 @@ function openExpenseForm(
 
 
       toast(
-
-        isEdit
+        existing
           ? 'تم تعديل المصروف'
-          : 'تم حفظ المصروف'
-
+          : 'تم إضافة المصروف'
       );
 
     };
+
 }
 
+
+/* =====================================================
+   تعديل وحذف المصروف
+===================================================== */
 
 function editExpense(id) {
 
   const expense =
     db.expenses.find(
-
       item =>
         Number(item.id) ===
         Number(id)
-
     );
 
 
   if (!expense) {
-
-    alert(
-      'لم يتم العثور على المصروف'
-    );
-
     return;
   }
 
@@ -3278,28 +3933,41 @@ function editExpense(id) {
   openExpenseForm(
     expense
   );
+
 }
 
 
 function deleteExpense(id) {
 
+  const expense =
+    db.expenses.find(
+      item =>
+        Number(item.id) ===
+        Number(id)
+    );
+
+
+  if (!expense) {
+    return;
+  }
+
+
   if (
     !confirm(
-      'هل تريد حذف المصروف؟'
+      `هل تريد حذف المصروف "${expense.item}"؟`
     )
   ) {
 
     return;
+
   }
 
 
   db.expenses =
     db.expenses.filter(
-
       item =>
         Number(item.id) !==
         Number(id)
-
     );
 
 
@@ -3307,88 +3975,79 @@ function deleteExpense(id) {
 
   render();
 
+
   toast(
     'تم حذف المصروف'
   );
+
 }
 
 
 /* =====================================================
-   إضافة / تعديل مسحوبات الشركاء
+   نموذج مسحوبات الشركاء
 ===================================================== */
 
 function openWithdrawalForm(
-  existing = null
+  existing = null,
+  selectedPartner = ''
 ) {
-
-  const isEdit =
-    Boolean(existing);
-
 
   const withdrawal =
     existing || {
 
       partner:
+        selectedPartner ||
         'عبدالله',
 
-      amount:
-        '',
+      amount: '',
 
-      date:
-        todayISO(),
+      date: todayISO(),
 
-      note:
-        ''
+      note: ''
 
     };
 
 
+  const partner =
+    existing
+      ? withdrawal.partner
+      : (
+          selectedPartner ||
+          withdrawal.partner ||
+          'عبدالله'
+        );
+
+
   openModal(
 
-    isEdit
-      ? 'تعديل مسحوب شريك'
-      : 'إضافة مسحوب شريك',
+    existing
+      ? `تعديل مسحوب ${partner}`
+      : `إضافة مسحوب لـ ${partner}`,
 
     `
+
       <form
         id="withdrawalForm"
         class="form-grid">
 
 
-        <label>
+        <div class="withdrawal-partner-display">
 
-          الشريك
+          <span>
+            الشريك
+          </span>
 
-          <select
-            name="partner"
-            required>
+          <strong>
+            ${esc(partner)}
+          </strong>
 
-            <option
-              value="عبدالله"
-              ${
-                withdrawal.partner ===
-                'عبدالله'
-                  ? 'selected'
-                  : ''
-              }>
-              عبدالله
-            </option>
+        </div>
 
 
-            <option
-              value="ثامر"
-              ${
-                withdrawal.partner ===
-                'ثامر'
-                  ? 'selected'
-                  : ''
-              }>
-              ثامر
-            </option>
-
-          </select>
-
-        </label>
+        <input
+          type="hidden"
+          name="partner"
+          value="${esc(partner)}">
 
 
         <label>
@@ -3402,192 +4061,166 @@ function openWithdrawalForm(
             min="0"
             step="0.01"
             required
-            value="${esc(
-              withdrawal.amount || ''
-            )}">
+            value="${withdrawal.amount}">
 
         </label>
+
+
+        ${hijriDateFields(
+          withdrawal.date,
+          'withdrawal'
+        )}
 
 
         <label>
 
           ملاحظة
-          <small>
-            (اختياري)
-          </small>
 
-          <input
+          <textarea
             name="note"
-            value="${esc(
+            rows="3"
+            placeholder="مثال: سحب شخصي">${esc(
               withdrawal.note || ''
-            )}"
-            placeholder="مثال: سحب شخصي">
+            )}</textarea>
 
         </label>
 
 
-        ${
-          hijriDateFields(
+        <div class="withdrawal-form-note">
 
-            withdrawal.date ||
-              todayISO(),
+          هذا المبلغ لا يعتبر مصروفاً
+          ولا يخصم من صافي الربح.
 
-            'withdrawal'
-
-          )
-        }
+        </div>
 
 
         <button
-          class="submit-btn withdrawal-submit"
-          type="submit">
+          type="submit"
+          class="submit-btn withdrawal-submit">
 
           ${
-            isEdit
+            existing
               ? 'حفظ التعديلات'
-              : 'حفظ المسحوب'
+              : 'إضافة المسحوب'
           }
 
         </button>
 
       </form>
+
     `
+
   );
 
 
-  const form =
-    $('#withdrawalForm');
-
-
-  if (!form) {
-    return;
-  }
-
-
-  form.onsubmit =
+  $('#withdrawalForm').onsubmit =
     event => {
 
       event.preventDefault();
 
 
-      const data =
-        Object.fromEntries(
-
-          new FormData(
-            event.currentTarget
-          ).entries()
-
+      const form =
+        new FormData(
+          event.target
         );
 
 
       const date =
         hijriToGregorian(
 
-          data.withdrawal_year,
-          data.withdrawal_month,
-          data.withdrawal_day
+          form.get(
+            'withdrawal_year'
+          ),
+
+          form.get(
+            'withdrawal_month'
+          ),
+
+          form.get(
+            'withdrawal_day'
+          )
 
         );
 
 
       if (!date) {
 
-        alert(
-          'التاريخ الهجري غير صحيح'
+        toast(
+          'تعذر تحويل التاريخ الهجري'
         );
 
         return;
+
       }
-
-
-      const partner =
-        String(
-          data.partner || ''
-        ).trim();
 
 
       const amount =
         Number(
-          data.amount || 0
+          form.get('amount') || 0
         );
 
 
-      const note =
-        String(
-          data.note || ''
-        ).trim();
-
-
       if (
-        ![
-          'عبدالله',
-          'ثامر'
-        ].includes(partner)
-      ) {
-
-        alert(
-          'يرجى اختيار الشريك'
-        );
-
-        return;
-      }
-
-
-      if (
-        !Number.isFinite(amount) ||
         amount <= 0
       ) {
 
-        alert(
-          'المبلغ غير صحيح'
+        toast(
+          'أدخل مبلغ المسحوب'
         );
 
         return;
-      }
-
-
-      if (
-        !Array.isArray(
-          db.withdrawals
-        )
-      ) {
-
-        db.withdrawals =
-          [];
 
       }
 
 
-      if (isEdit) {
+      const data = {
 
-        existing.partner =
-          partner;
+        id:
+          existing
+            ? existing.id
+            : Date.now(),
 
-        existing.amount =
-          amount;
+        partner:
+          String(
+            form.get('partner') || ''
+          ).trim(),
 
-        existing.date =
-          date;
+        amount,
 
-        existing.note =
-          note;
+        date,
+
+        note:
+          String(
+            form.get('note') || ''
+          ).trim()
+
+      };
+
+
+      if (existing) {
+
+        const index =
+          db.withdrawals.findIndex(
+            item =>
+              Number(item.id) ===
+              Number(existing.id)
+          );
+
+
+        if (
+          index !== -1
+        ) {
+
+          db.withdrawals[index] =
+            data;
+
+        }
 
       } else {
 
-        db.withdrawals.push({
-
-          id:
-            Date.now(),
-
-          partner,
-
-          amount,
-
-          date,
-
-          note
-
-        });
+        db.withdrawals.push(
+          data
+        );
 
       }
 
@@ -3600,16 +4233,19 @@ function openWithdrawalForm(
 
 
       toast(
-
-        isEdit
+        existing
           ? 'تم تعديل المسحوب'
-          : 'تم حفظ مسحوب الشريك'
-
+          : `تم إضافة مسحوب ${partner}`
       );
 
     };
+
 }
 
+
+/* =====================================================
+   تعديل مسحوب
+===================================================== */
 
 function editWithdrawal(id) {
 
@@ -3617,39 +4253,58 @@ function editWithdrawal(id) {
     (
       db.withdrawals || []
     ).find(
-
       item =>
         Number(item.id) ===
         Number(id)
-
     );
 
 
   if (!withdrawal) {
 
-    alert(
-      'لم يتم العثور على المسحوب'
-    );
-
     return;
+
   }
 
 
   openWithdrawalForm(
-    withdrawal
+    withdrawal,
+    withdrawal.partner
   );
+
 }
 
 
+/* =====================================================
+   حذف مسحوب
+===================================================== */
+
 function deleteWithdrawal(id) {
+
+  const withdrawal =
+    (
+      db.withdrawals || []
+    ).find(
+      item =>
+        Number(item.id) ===
+        Number(id)
+    );
+
+
+  if (!withdrawal) {
+
+    return;
+
+  }
+
 
   if (
     !confirm(
-      'هل تريد حذف مسحوب الشريك؟'
+      `هل تريد حذف مسحوب ${withdrawal.partner}؟`
     )
   ) {
 
     return;
+
   }
 
 
@@ -3657,11 +4312,9 @@ function deleteWithdrawal(id) {
     (
       db.withdrawals || []
     ).filter(
-
       item =>
         Number(item.id) !==
         Number(id)
-
     );
 
 
@@ -3669,37 +4322,30 @@ function deleteWithdrawal(id) {
 
   render();
 
+
   toast(
     'تم حذف المسحوب'
   );
+
 }
-
-
 /* =====================================================
-   المبلغ بالحروف
+   تحويل الرقم إلى كلمات عربية
 ===================================================== */
 
-function numberToArabicWords(
-  number
-) {
+function numberToArabicWords(number) {
 
   number =
     Math.floor(
-      Number(
-        number || 0
-      )
+      Number(number || 0)
     );
 
 
   if (number === 0) {
-
     return 'صفر';
-
   }
 
 
   const ones = [
-
     '',
     'واحد',
     'اثنان',
@@ -3720,12 +4366,10 @@ function numberToArabicWords(
     'سبعة عشر',
     'ثمانية عشر',
     'تسعة عشر'
-
   ];
 
 
   const tens = [
-
     '',
     '',
     'عشرون',
@@ -3736,12 +4380,10 @@ function numberToArabicWords(
     'سبعون',
     'ثمانون',
     'تسعون'
-
   ];
 
 
   const hundreds = [
-
     '',
     'مائة',
     'مائتان',
@@ -3752,28 +4394,21 @@ function numberToArabicWords(
     'سبعمائة',
     'ثمانمائة',
     'تسعمائة'
-
   ];
 
 
   function under1000(n) {
 
-    const parts =
-      [];
+    const parts = [];
 
 
     if (n >= 100) {
 
       parts.push(
-
         hundreds[
-          Math.floor(
-            n / 100
-          )
+          Math.floor(n / 100)
         ]
-
       );
-
 
       n %= 100;
     }
@@ -3792,19 +4427,14 @@ function numberToArabicWords(
         const unit =
           n % 10;
 
-
         const ten =
-          Math.floor(
-            n / 10
-          );
+          Math.floor(n / 10);
 
 
         if (unit) {
 
           parts.push(
-
             `${ones[unit]} و${tens[ten]}`
-
           );
 
         } else {
@@ -3820,19 +4450,14 @@ function numberToArabicWords(
     }
 
 
-    return parts.join(
-      ' و'
-    );
+    return parts.join(' و');
   }
 
 
-  const parts =
-    [];
+  const parts = [];
 
 
-  if (
-    number >= 1000000
-  ) {
+  if (number >= 1000000) {
 
     const millions =
       Math.floor(
@@ -3841,11 +4466,7 @@ function numberToArabicWords(
 
 
     parts.push(
-
-      `${under1000(
-        millions
-      )} مليون`
-
+      `${under1000(millions)} مليون`
     );
 
 
@@ -3854,9 +4475,7 @@ function numberToArabicWords(
   }
 
 
-  if (
-    number >= 1000
-  ) {
+  if (number >= 1000) {
 
     const thousands =
       Math.floor(
@@ -3864,30 +4483,18 @@ function numberToArabicWords(
       );
 
 
-    if (
-      thousands === 1
-    ) {
+    if (thousands === 1) {
 
-      parts.push(
-        'ألف'
-      );
+      parts.push('ألف');
 
-    } else if (
-      thousands === 2
-    ) {
+    } else if (thousands === 2) {
 
-      parts.push(
-        'ألفان'
-      );
+      parts.push('ألفان');
 
     } else {
 
       parts.push(
-
-        `${under1000(
-          thousands
-        )} ألف`
-
+        `${under1000(thousands)} ألف`
       );
 
     }
@@ -3898,48 +4505,38 @@ function numberToArabicWords(
   }
 
 
-  if (
-    number > 0
-  ) {
+  if (number > 0) {
 
     parts.push(
-      under1000(
-        number
-      )
+      under1000(number)
     );
 
   }
 
 
-  return parts.join(
-    ' و'
-  );
+  return parts.join(' و');
 }
 
 
-function amountInWords(
-  amount
-) {
+function amountInWords(amount) {
 
   const value =
     Math.floor(
-      Number(
-        amount || 0
-      )
+      Number(amount || 0)
     );
 
 
   return (
-    `${numberToArabicWords(
-      value
-    )} ريال سعودي فقط لا غير`
+    `${numberToArabicWords(value)} ريال سعودي فقط لا غير`
   );
+
 }
 
 
 /* =====================================================
    الفاتورة
 ===================================================== */
+
 function showInvoice(id) {
 
   const booking =
@@ -4492,11 +5089,12 @@ function showInvoice(id) {
 
   $('#closeInvoice').onclick =
     closeModal;
+
 }
 
 
 /* =====================================================
-   PDF
+   تحميل مكتبات PDF
 ===================================================== */
 
 function loadExternalScript(
@@ -4522,6 +5120,7 @@ function loadExternalScript(
         resolve();
 
         return;
+
       }
 
 
@@ -4543,13 +5142,13 @@ function loadExternalScript(
         reject;
 
 
-      document.head
-        .appendChild(
-          script
-        );
+      document.head.appendChild(
+        script
+      );
 
     }
   );
+
 }
 
 
@@ -4585,8 +5184,9 @@ async function waitForImages(
 
   const images =
     [
-      ...element
-        .querySelectorAll('img')
+      ...element.querySelectorAll(
+        'img'
+      )
     ];
 
 
@@ -4621,8 +5221,13 @@ async function waitForImages(
     )
 
   );
+
 }
 
+
+/* =====================================================
+   مشاركة الفاتورة PDF
+===================================================== */
 
 async function shareInvoicePDF(
   booking
@@ -4842,52 +5447,22 @@ async function shareInvoicePDF(
 
     const canvas =
       await window.html2canvas(
-
         exportPaper,
-
         {
-
-          scale:
-            2,
-
-          width:
-            794,
-
-          height:
-            1123,
-
-          windowWidth:
-            794,
-
-          windowHeight:
-            1123,
-
-          backgroundColor:
-            '#ffffff',
-
-          useCORS:
-            true,
-
-          allowTaint:
-            false,
-
-          logging:
-            false,
-
-          scrollX:
-            0,
-
-          scrollY:
-            0,
-
-          x:
-            0,
-
-          y:
-            0
-
+          scale: 2,
+          width: 794,
+          height: 1123,
+          windowWidth: 794,
+          windowHeight: 1123,
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          allowTaint: false,
+          logging: false,
+          scrollX: 0,
+          scrollY: 0,
+          x: 0,
+          y: 0
         }
-
       );
 
 
@@ -4899,7 +5474,6 @@ async function shareInvoicePDF(
 
     const pdf =
       new jsPDF({
-
         orientation:
           'portrait',
 
@@ -4911,31 +5485,21 @@ async function shareInvoicePDF(
 
         compress:
           true
-
       });
 
 
     pdf.addImage(
-
       canvas.toDataURL(
         'image/jpeg',
         0.98
       ),
-
       'JPEG',
-
       0,
-
       0,
-
       210,
-
       297,
-
       undefined,
-
       'FAST'
-
     );
 
 
@@ -4957,16 +5521,12 @@ async function shareInvoicePDF(
 
     const file =
       new File(
-
         [blob],
-
         fileName,
-
         {
           type:
             'application/pdf'
         }
-
       );
 
 
@@ -4979,7 +5539,6 @@ async function shareInvoicePDF(
     ) {
 
       await navigator.share({
-
         files:
           [file],
 
@@ -4987,10 +5546,7 @@ async function shareInvoicePDF(
           'فاتورة Winter Camp',
 
         text:
-          `فاتورة ${
-            booking.name || ''
-          }`
-
+          `فاتورة ${booking.name || ''}`
       });
 
 
@@ -5080,6 +5636,7 @@ async function shareInvoicePDF(
     }
 
   }
+
 }
 
 
@@ -5148,6 +5705,7 @@ function exportData() {
   toast(
     'تم تجهيز النسخة الاحتياطية'
   );
+
 }
 
 
@@ -5185,11 +5743,12 @@ function toast(message) {
     },
     1800
   );
+
 }
 
 
 /* =====================================================
-   القائمة
+   القائمة الجانبية
 ===================================================== */
 
 function toggleMenu(show) {
@@ -5208,11 +5767,12 @@ function toggleMenu(show) {
       'hidden',
       !show
     );
+
 }
 
 
 /* =====================================================
-   الأزرار
+   أزرار التنقل الرئيسية
 ===================================================== */
 
 $$('.nav-item')
@@ -5229,13 +5789,9 @@ $$('.nav-item')
   );
 
 
-/*
-  الزر الأخضر +
-  في صفحة المصاريف يضيف مصروف تشغيلي فقط.
-
-  أما مسحوبات الشركاء فلها زر مستقل
-  داخل قسم "مسحوبات الشركاء".
-*/
+/* =====================================================
+   زر الإضافة الأخضر
+===================================================== */
 
 if ($('#fabBtn')) {
 
@@ -5256,8 +5812,13 @@ if ($('#fabBtn')) {
       }
 
     };
+
 }
 
+
+/* =====================================================
+   القائمة
+===================================================== */
 
 if ($('#menuBtn')) {
 
@@ -5292,6 +5853,10 @@ if ($('#sheetBackdrop')) {
 }
 
 
+/* =====================================================
+   صفحات القائمة الجانبية
+===================================================== */
+
 $$('[data-sheet-page]')
   .forEach(
     button => {
@@ -5315,6 +5880,10 @@ $$('[data-sheet-page]')
   );
 
 
+/* =====================================================
+   إغلاق النافذة
+===================================================== */
+
 if ($('#modalClose')) {
 
   $('#modalClose').onclick =
@@ -5330,6 +5899,10 @@ if ($('#modalBackdrop')) {
 
 }
 
+
+/* =====================================================
+   النسخة الاحتياطية من القائمة
+===================================================== */
 
 if ($('#exportBtn')) {
 
@@ -5376,7 +5949,8 @@ if ($('#importInput')) {
         if (
           !Array.isArray(
             imported.bookings
-          ) ||
+          )
+          ||
           !Array.isArray(
             imported.expenses
           )
@@ -5400,12 +5974,6 @@ if ($('#importInput')) {
 
         }
 
-
-        /*
-          مهم:
-          دعم النسخ الاحتياطية القديمة
-          التي لم يكن فيها قسم المسحوبات.
-        */
 
         if (
           !Array.isArray(
@@ -5447,11 +6015,12 @@ if ($('#importInput')) {
       }
 
     };
+
 }
 
 
 /* =====================================================
-   تاريخ اليوم في الأعلى
+   تاريخ اليوم
 ===================================================== */
 
 if ($('#hijriToday')) {
@@ -5470,8 +6039,7 @@ if ($('#hijriToday')) {
 ===================================================== */
 
 if (
-  'serviceWorker' in
-  navigator
+  'serviceWorker' in navigator
 ) {
 
   window.addEventListener(
@@ -5481,7 +6049,7 @@ if (
       navigator
         .serviceWorker
         .register(
-          './sw.js?v=102'
+          './sw.js?v=103'
         )
         .catch(
           console.error
