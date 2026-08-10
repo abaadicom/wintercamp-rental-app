@@ -4164,3 +4164,54 @@ body{
   }
 
 }
+/* =========================================================
+   أيقونات التقارير فقط
+========================================================= */
+
+.report-stat-icon{
+  width:42px;
+  height:42px;
+
+  min-width:42px;
+  min-height:42px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:12px;
+
+  flex-shrink:0;
+}
+
+.report-stat-icon svg{
+  width:24px;
+  height:24px;
+
+  fill:none;
+
+  stroke:currentColor;
+  stroke-width:2;
+
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.report-income-icon{
+  color:#25c16f;
+  background:rgba(37,193,111,.12);
+}
+
+.report-expense-icon{
+  color:#ff5659;
+  background:rgba(255,86,89,.12);
+}
+
+.report-profit-icon{
+  color:#4c88ff;
+  background:rgba(76,136,255,.12);
+}
+
+.report-remaining-icon{
+  color:#e0a339;
+  background:rgba(224,163,57,.12);
+}
