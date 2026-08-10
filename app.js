@@ -4098,7 +4098,7 @@ function openBookingForm(
       [...$$('.device-package')]
         .indexOf(button)
     ) + 1
-  } محددة ✓`;
+
 
 
 // إغلاق قائمة الباقات بعد الاختيار
