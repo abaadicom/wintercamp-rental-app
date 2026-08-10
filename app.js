@@ -6157,7 +6157,7 @@ function showInvoice(id) {
               </div>
 
               <div class="wc-footer-phone">
-                0573757275
+                0573757275 https://png.pngtree.com/png-clipart/20190516/original/pngtree-whatsapp-icon-png-image_3584844.jpg
               </div>
 
             </footer>
