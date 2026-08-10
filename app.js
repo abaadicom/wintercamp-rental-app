@@ -796,7 +796,9 @@ const $$ = selector => [...document.querySelectorAll(selector)];
 
     .wc-footer{
   margin-top:auto;
+  height:58px;
   min-height:58px;
+
   position:relative;
   z-index:2;
 
@@ -811,15 +813,6 @@ const $$ = selector => [...document.querySelectorAll(selector)];
   border-radius:
     0 0 14px 14px;
 
-  display:grid;
-
-  grid-template-columns:
-    1fr 1.4fr 1fr;
-
-  align-items:center;
-
-  padding:0 20px;
-
   font-size:12px;
   font-weight:700;
 
@@ -827,39 +820,14 @@ const $$ = selector => [...document.querySelectorAll(selector)];
 }
 
 
-/* أقصى اليسار */
-.wc-footer-phone{
-  grid-column:1;
-
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-
-  gap:6px;
-
-  white-space:nowrap !important;
-
-  text-align:left;
-
-  direction:ltr !important;
-}
-
-
-/* الوسط */
-.wc-footer-location{
-  grid-column:2;
-
-  white-space:nowrap !important;
-
-  text-align:center;
-
-  direction:rtl !important;
-}
-
-
-/* أقصى اليمين */
+/* Winter Camp — أقصى اليمين */
 .wc-footer-brand{
-  grid-column:3;
+  position:absolute;
+
+  right:20px;
+  top:50%;
+
+  transform:translateY(-50%);
 
   white-space:nowrap !important;
 
@@ -869,10 +837,52 @@ const $$ = selector => [...document.querySelectorAll(selector)];
 }
 
 
+/* أبها - المملكة العربية السعودية — الوسط */
+.wc-footer-location{
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  transform:
+    translate(-50%,-50%);
+
+  white-space:nowrap !important;
+
+  text-align:center;
+
+  direction:rtl !important;
+}
+
+
+/* واتساب + الرقم — أقصى اليسار */
+.wc-footer-phone{
+  position:absolute;
+
+  left:20px;
+  top:50%;
+
+  transform:translateY(-50%);
+
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+
+  gap:6px;
+
+  white-space:nowrap !important;
+
+  direction:ltr !important;
+}
+
+
+/* أيقونة واتساب */
 .wc-whatsapp-svg{
   width:18px;
   height:18px;
+
   color:#fff;
+
   flex:0 0 auto;
 }
     .invoice-actions{
