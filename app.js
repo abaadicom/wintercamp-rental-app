@@ -2415,76 +2415,125 @@ function reportsView() {
 
     <div class="cards">
 
+  <div class="stat-card stat-revenue">
 
-      <div class="stat-card">
+    <div class="stat-card-top">
 
-        <span class="label">
-          الإيرادات
-        </span>
+      <span class="label">
+        الإيرادات
+      </span>
 
-        <span class="value green">
-
-          ${money(
-            t.revenue
-          )}
-
-        </span>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <span class="label">
-          المصاريف
-        </span>
-
-        <span class="value red">
-
-          ${money(
-            t.expenses
-          )}
-
-        </span>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <span class="label">
-          صافي الربح
-        </span>
-
-        <span class="value blue">
-
-          ${money(
-            t.profit
-          )}
-
-        </span>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <span class="label">
-          المتبقي
-        </span>
-
-        <span class="value gold">
-
-          ${money(
-            t.remaining
-          )}
-
-        </span>
-
-      </div>
+      <span class="dashboard-icon green-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 18L10 12L14 16L21 7"/>
+          <path d="M15 7H21V13"/>
+        </svg>
+      </span>
 
     </div>
 
+    <span class="value green">
+      ${money(
+        t.revenue
+      )}
+    </span>
+
+  </div>
+
+
+  <div class="stat-card stat-expenses">
+
+    <div class="stat-card-top">
+
+      <span class="label">
+        المصاريف
+      </span>
+
+      <span class="dashboard-icon red-icon">
+        <svg viewBox="0 0 24 24">
+          <rect
+            x="3"
+            y="6"
+            width="18"
+            height="14"
+            rx="3"
+          />
+          <path d="M3 10H21"/>
+          <path d="M16 15H18"/>
+        </svg>
+      </span>
+
+    </div>
+
+    <span class="value red">
+      ${money(
+        t.expenses
+      )}
+    </span>
+
+  </div>
+
+
+  <div class="stat-card stat-profit">
+
+    <div class="stat-card-top">
+
+      <span class="label">
+        صافي الربح
+      </span>
+
+      <span class="dashboard-icon blue-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 20V13"/>
+          <path d="M10 20V8"/>
+          <path d="M16 20V4"/>
+          <path d="M22 20H2"/>
+        </svg>
+      </span>
+
+    </div>
+
+    <span class="value blue">
+      ${money(
+        t.profit
+      )}
+    </span>
+
+  </div>
+
+
+  <div class="stat-card stat-remaining">
+
+    <div class="stat-card-top">
+
+      <span class="label">
+        المتبقي
+      </span>
+
+      <span class="dashboard-icon gold-icon">
+        <svg viewBox="0 0 24 24">
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+          />
+          <path d="M12 7V12L15 14"/>
+        </svg>
+      </span>
+
+    </div>
+
+    <span class="value gold">
+      ${money(
+        t.remaining
+      )}
+    </span>
+
+  </div>
+
+</div>
+
+${monthlyBreakdownView()}
 
     ${monthlyBreakdownView()}
 
