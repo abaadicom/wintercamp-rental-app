@@ -5381,3 +5381,18 @@ button{
   }
 
 }
+/* =====================================================
+   تثبيت لون أرقام مسحوبات الشركاء بالأحمر
+===================================================== */
+
+.partner-withdrawal-card .partner-withdrawal-total{
+  color:#f05a5a !important;
+}
+
+.partner-withdrawal-card strong.partner-withdrawal-total{
+  color:#f05a5a !important;
+}
+
+.partner-withdrawal-grid .partner-withdrawal-card .partner-withdrawal-total{
+  color:#f05a5a !important;
+}
