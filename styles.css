@@ -8312,3 +8312,70 @@ button{
 
   border-color:#20df72 !important;
 }
+/* =========================================================
+   الخط + الماسة فقط بين الاسم وإجمالي المسحوبات
+========================================================= */
+
+/* إزالة الأيقونات السابقة نهائياً */
+.partner-withdrawal-total::after,
+.partner-withdrawal-open::before{
+    content:none !important;
+    display:none !important;
+}
+
+
+/* الخط الأخضر */
+.partner-withdrawal-card::after{
+    content:"" !important;
+
+    position:absolute !important;
+
+    top:179px !important;
+
+    left:24px !important;
+    right:24px !important;
+
+    height:1px !important;
+
+    background:linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(32,223,114,.25) 10%,
+        #20df72 50%,
+        rgba(32,223,114,.25) 90%,
+        transparent 100%
+    ) !important;
+
+    z-index:2 !important;
+
+    pointer-events:none !important;
+}
+
+
+/* الماسة في منتصف الخط */
+.partner-withdrawal-card::before{
+    content:"" !important;
+
+    position:absolute !important;
+
+    top:172px !important;
+    left:50% !important;
+
+    width:12px !important;
+    height:12px !important;
+
+    transform:
+        translateX(-50%)
+        rotate(45deg) !important;
+
+    background:#0a181d !important;
+
+    border:2px solid #20df72 !important;
+
+    box-shadow:
+        0 0 6px rgba(32,223,114,.20) !important;
+
+    z-index:4 !important;
+
+    pointer-events:none !important;
+}
