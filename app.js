@@ -6808,7 +6808,7 @@ if (
       navigator
         .serviceWorker
         .register(
-          './sw.js?v=103'
+          './sw.js?v=110'
         )
         .catch(
           console.error
