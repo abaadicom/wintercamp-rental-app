@@ -5432,3 +5432,43 @@ button{
 .partner-card .partner-name{
   z-index: 6 !important;
 }
+/* =====================================================
+   إصلاح تداخل الخط والماسة مع اسم الشريك
+===================================================== */
+
+.partner-withdrawal-card::before{
+  top:155px !important;
+}
+
+.partner-withdrawal-card::after{
+  top:150px !important;
+}
+
+.partner-withdrawal-name{
+  position:relative !important;
+  z-index:10 !important;
+
+  margin-top:4px !important;
+  margin-bottom:34px !important;
+
+  padding:0 !important;
+
+  color:#ffffff !important;
+  font-size:19px !important;
+  font-weight:900 !important;
+
+  text-align:center !important;
+}
+
+/* إجمالي المسحوبات */
+.partner-withdrawal-name::after{
+  margin-top:34px !important;
+}
+
+/* الرقم */
+.partner-withdrawal-total{
+  position:relative !important;
+  z-index:10 !important;
+
+  color:#ff5a5f !important;
+}
