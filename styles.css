@@ -7508,3 +7508,156 @@ button{
   }
 
 }
+/* =========================================================
+   تعديل نهائي لبطاقات مسحوبات الشركاء
+   1- إزالة اللمعة البيضاء فوق الأيقونة
+   2- ضبط السهم السفلي داخل الدائرة
+========================================================= */
+
+
+/* إزالة اللمعة البيضاء نهائياً */
+.partner-withdrawal-icon::before{
+    content:none !important;
+    display:none !important;
+}
+
+
+/* الإبقاء على الحافة الداخلية للأيقونة */
+.partner-withdrawal-icon::after{
+    content:"" !important;
+
+    position:absolute !important;
+    inset:4px !important;
+
+    border-radius:50% !important;
+
+    border:1px solid rgba(255,213,111,.45) !important;
+
+    box-shadow:
+        inset 0 0 8px rgba(255,184,53,.12) !important;
+
+    pointer-events:none !important;
+}
+
+
+/* =========================================================
+   زر السهم السفلي
+========================================================= */
+
+.partner-withdrawal-open{
+    position:absolute !important;
+
+    left:50% !important;
+    right:auto !important;
+    bottom:16px !important;
+
+    transform:translateX(-50%) !important;
+
+    width:43px !important;
+    height:43px !important;
+
+    min-width:43px !important;
+    min-height:43px !important;
+
+    padding:0 !important;
+    margin:0 !important;
+
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+
+    border-radius:50% !important;
+
+    border:1.5px solid rgba(37,193,111,.55) !important;
+
+    background:
+        radial-gradient(
+            circle at 35% 28%,
+            #17372c 0%,
+            #0b211b 48%,
+            #061510 100%
+        ) !important;
+
+    box-shadow:
+        inset 3px 3px 6px rgba(255,255,255,.04),
+        inset -4px -5px 8px rgba(0,0,0,.60),
+        0 5px 12px rgba(0,0,0,.35) !important;
+
+    color:transparent !important;
+
+    font-size:0 !important;
+    line-height:0 !important;
+
+    overflow:hidden !important;
+
+    z-index:10 !important;
+}
+
+
+/* إزالة أي سهم قديم */
+.partner-withdrawal-open::before{
+    content:none !important;
+    display:none !important;
+}
+
+
+/* السهم الجديد */
+.partner-withdrawal-open::after{
+    content:"‹" !important;
+
+    position:absolute !important;
+
+    top:50% !important;
+    left:50% !important;
+
+    width:auto !important;
+    height:auto !important;
+
+    margin:0 !important;
+    padding:0 !important;
+
+    transform:
+        translate(-50%, -54%) !important;
+
+    display:block !important;
+
+    color:#18df70 !important;
+
+    font-family:Arial, sans-serif !important;
+
+    font-size:34px !important;
+    font-weight:400 !important;
+
+    line-height:1 !important;
+
+    background:none !important;
+    border:0 !important;
+    box-shadow:none !important;
+
+    pointer-events:none !important;
+}
+
+
+/* =========================================================
+   ضبط الآيفون
+========================================================= */
+
+@media(max-width:430px){
+
+    .partner-withdrawal-open{
+        width:40px !important;
+        height:40px !important;
+
+        min-width:40px !important;
+        min-height:40px !important;
+
+        bottom:15px !important;
+    }
+
+    .partner-withdrawal-open::after{
+        font-size:32px !important;
+
+        transform:
+            translate(-50%, -54%) !important;
+    }
+}
