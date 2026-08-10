@@ -3995,3 +3995,172 @@ footer,
 .partners-withdrawals-section{
   max-width:100%;
 }
+/* =========================================================
+   إصلاح الشعار العلوي نهائياً
+========================================================= */
+
+.top-logo{
+  display:block !important;
+
+  width:58px !important;
+  height:58px !important;
+
+  min-width:58px !important;
+  min-height:58px !important;
+
+  max-width:58px !important;
+  max-height:58px !important;
+
+  flex:0 0 58px !important;
+
+  object-fit:contain !important;
+
+  padding:4px !important;
+
+  margin:0 !important;
+
+  border-radius:14px !important;
+
+  background:#ffffff !important;
+
+  box-shadow:
+    0 4px 14px
+    rgba(0,0,0,.22) !important;
+}
+
+
+/* =========================================================
+   إصلاح أيقونات SVG الموجودة في index
+========================================================= */
+
+.svg-icon{
+  width:24px !important;
+  height:24px !important;
+
+  fill:none !important;
+  stroke:currentColor !important;
+
+  stroke-width:1.8 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+
+
+.nav-icon{
+  width:24px !important;
+  height:24px !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+
+.nav-icon svg{
+  width:24px !important;
+  height:24px !important;
+
+  fill:none !important;
+  stroke:currentColor !important;
+
+  stroke-width:1.8 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+
+
+.side-icon{
+  width:22px !important;
+  height:22px !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  flex-shrink:0 !important;
+}
+
+
+.side-icon svg{
+  width:22px !important;
+  height:22px !important;
+
+  fill:none !important;
+  stroke:currentColor !important;
+
+  stroke-width:1.8 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+
+
+.fab-icon{
+  width:30px !important;
+  height:30px !important;
+
+  fill:none !important;
+  stroke:currentColor !important;
+
+  stroke-width:2 !important;
+  stroke-linecap:round !important;
+}
+
+
+/* =========================================================
+   تثبيت الشريط العلوي
+========================================================= */
+
+.topbar{
+  width:100% !important;
+  max-width:100% !important;
+
+  min-height:83px !important;
+
+  overflow:hidden !important;
+}
+
+
+.brand-title{
+  display:flex !important;
+
+  align-items:center !important;
+
+  gap:10px !important;
+
+  min-width:0 !important;
+}
+
+
+.brand-title > div{
+  min-width:0 !important;
+  flex:1 !important;
+}
+
+
+/* =========================================================
+   حماية نهائية للجوال
+========================================================= */
+
+html,
+body{
+  width:100% !important;
+  max-width:100% !important;
+
+  overflow-x:hidden !important;
+}
+
+
+@media(max-width:430px){
+
+  .top-logo{
+    width:58px !important;
+    height:58px !important;
+
+    min-width:58px !important;
+    min-height:58px !important;
+
+    max-width:58px !important;
+    max-height:58px !important;
+  }
+
+}
