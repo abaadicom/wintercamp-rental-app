@@ -728,7 +728,7 @@ function homeView() {
           </span>
 
 
-          <span class="dashboard-icon red-icon">
+          <span class="report-stat-icon report-expense-icon">
 
             <svg viewBox="0 0 24 24">
 
@@ -830,7 +830,7 @@ function homeView() {
           </span>
 
 
-          <span class="dashboard-icon gold-icon">
+          <span class="report-stat-icon report-remaining-icon">
 
             <svg viewBox="0 0 24 24">
 
