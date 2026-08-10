@@ -4093,18 +4093,12 @@ function openBookingForm(
 
 
             deviceListMode.textContent =
-  `الباقة ${
-    Number(
-      [...$$('.device-package')]
-        .indexOf(button)
-    ) + 1
-
-
-
-// إغلاق قائمة الباقات بعد الاختيار
-deviceListSection?.classList.add(
-  'hidden'
-); } محددة ✓`;
+              `الباقة ${
+                Number(
+                  [...$$('.device-package')]
+                    .indexOf(button)
+                ) + 1
+              } محددة ✓`;
 
           };
 
