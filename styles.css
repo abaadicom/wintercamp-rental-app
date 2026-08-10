@@ -8379,3 +8379,82 @@ button{
 
     pointer-events:none !important;
 }
+/* =========================================================
+   خط أخضر + ماسة بين الاسم وإجمالي المسحوبات
+   لا يغير أي شيء آخر
+========================================================= */
+
+.partner-withdrawal-card{
+    position: relative !important;
+}
+
+
+/* الخط الأخضر */
+.partner-withdrawal-card::after{
+    content: "" !important;
+
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    position: absolute !important;
+
+    top: 182px !important;
+    left: 35px !important;
+    right: 35px !important;
+
+    width: auto !important;
+    height: 1px !important;
+
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        #18c96b 20%,
+        #20df72 50%,
+        #18c96b 80%,
+        transparent 100%
+    ) !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+
+    transform: none !important;
+
+    z-index: 50 !important;
+
+    pointer-events: none !important;
+}
+
+
+/* الماسة الموجودة في منتصف الخط */
+.partner-withdrawal-card::before{
+    content: "" !important;
+
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    position: absolute !important;
+
+    top: 175px !important;
+    left: 50% !important;
+
+    width: 12px !important;
+    height: 12px !important;
+
+    background: #0b181d !important;
+
+    border: 2px solid #20df72 !important;
+    border-radius: 1px !important;
+
+    transform:
+        translateX(-50%)
+        rotate(45deg) !important;
+
+    box-shadow:
+        0 0 6px rgba(32,223,114,.30) !important;
+
+    z-index: 51 !important;
+
+    pointer-events: none !important;
+}
