@@ -5923,14 +5923,18 @@ function showInvoice(id) {
                 </div>
 
                 <div class="wc-data-row">
-                  <span class="wc-data-label">
-                    رقم التواصل
-                  </span>
-                  <span class="wc-data-value" dir="ltr">
-                    ${esc(
-                      booking.phone || '-'
-                    )}
-                  </span>
+                 <span class="wc-data-label">
+  رقم التواصل
+</span>
+
+<span
+  class="wc-data-value wc-phone-value"
+  dir="ltr"
+>
+  ${esc(
+    booking.phone || '-'
+  )}
+</span>
                 </div>
 
                 <div class="wc-data-row">
