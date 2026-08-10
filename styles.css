@@ -7842,3 +7842,473 @@ button{
         font-size:31px !important;
     }
 }
+/* =========================================================
+   مسحوبات الشركاء - التصميم النهائي المطابق
+========================================================= */
+
+.partner-withdrawal-grid{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  gap:10px !important;
+  width:100% !important;
+}
+
+
+/* =========================================================
+   البطاقة
+========================================================= */
+
+.partner-withdrawal-card{
+  position:relative !important;
+
+  width:100% !important;
+  height:335px !important;
+
+  padding:18px 8px 15px !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+
+  border-radius:24px !important;
+
+  border:1.5px solid rgba(32,212,105,.70) !important;
+
+  background:
+    radial-gradient(
+      circle at 50% 8%,
+      rgba(21,60,63,.20),
+      transparent 38%
+    ),
+    linear-gradient(
+      150deg,
+      #101d23 0%,
+      #09151a 100%
+    ) !important;
+
+  overflow:hidden !important;
+
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+
+
+/* =========================================================
+   أيقونة الشريك الذهبية ثلاثية الأبعاد
+========================================================= */
+
+.partner-withdrawal-icon{
+  position:relative !important;
+
+  width:90px !important;
+  height:90px !important;
+
+  min-width:90px !important;
+  min-height:90px !important;
+
+  margin:0 auto 14px !important;
+
+  display:grid !important;
+  place-items:center !important;
+
+  border-radius:50% !important;
+
+  border:3px solid #efa92f !important;
+
+  background:
+    radial-gradient(
+      circle at 36% 25%,
+      #28784a 0%,
+      #155f39 16%,
+      #0b452b 39%,
+      #06321f 68%,
+      #031b11 100%
+    ) !important;
+
+  color:#f0ad31 !important;
+
+  box-shadow:
+    inset 6px 7px 12px rgba(255,255,255,.08),
+    inset -9px -10px 18px rgba(0,0,0,.62),
+    0 7px 12px rgba(0,0,0,.42),
+    0 0 0 3px rgba(240,173,49,.12) !important;
+
+  overflow:hidden !important;
+}
+
+
+/* لا يوجد أي لمعان أبيض زائد */
+.partner-withdrawal-icon::before{
+  content:none !important;
+  display:none !important;
+}
+
+
+/* الحلقة الذهبية الداخلية */
+.partner-withdrawal-icon::after{
+  content:"" !important;
+
+  position:absolute !important;
+  inset:5px !important;
+
+  border-radius:50% !important;
+
+  border:1px solid rgba(255,216,115,.65) !important;
+
+  box-shadow:
+    inset 0 0 8px rgba(255,182,48,.12) !important;
+
+  pointer-events:none !important;
+}
+
+
+.partner-withdrawal-icon svg{
+  position:relative !important;
+  z-index:5 !important;
+
+  width:40px !important;
+  height:40px !important;
+
+  fill:none !important;
+
+  stroke:#f0ad31 !important;
+  stroke-width:2.2 !important;
+
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.5)) !important;
+}
+
+
+/* =========================================================
+   اسم عبدالله / ثامر
+========================================================= */
+
+.partner-withdrawal-name{
+  position:relative !important;
+  z-index:5 !important;
+
+  width:100% !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#fff !important;
+
+  font-size:18px !important;
+  font-weight:900 !important;
+
+  text-align:center !important;
+
+  line-height:1.3 !important;
+}
+
+.partner-withdrawal-name::before,
+.partner-withdrawal-name::after{
+  content:none !important;
+}
+
+
+/* =========================================================
+   الخط الأخضر
+========================================================= */
+
+.partner-withdrawal-card::after{
+  content:"" !important;
+
+  position:absolute !important;
+
+  top:179px !important;
+
+  left:22px !important;
+  right:22px !important;
+
+  height:1px !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(32,212,105,.55) 15%,
+      #20d469 50%,
+      rgba(32,212,105,.55) 85%,
+      transparent 100%
+    ) !important;
+
+  z-index:1 !important;
+
+  pointer-events:none !important;
+}
+
+
+/* الماسة */
+.partner-withdrawal-card::before{
+  content:"" !important;
+
+  position:absolute !important;
+
+  top:172px !important;
+  left:50% !important;
+
+  width:11px !important;
+  height:11px !important;
+
+  transform:
+    translateX(-50%)
+    rotate(45deg) !important;
+
+  background:#081a13 !important;
+
+  border:2px solid #20df72 !important;
+
+  box-shadow:
+    0 0 7px rgba(32,223,114,.16) !important;
+
+  z-index:4 !important;
+
+  pointer-events:none !important;
+}
+
+
+/* =========================================================
+   الرقم الأحمر
+========================================================= */
+
+.partner-withdrawal-total{
+  position:absolute !important;
+
+  top:247px !important;
+
+  left:6px !important;
+  right:6px !important;
+
+  width:auto !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#ff5659 !important;
+
+  font-size:22px !important;
+  font-weight:900 !important;
+
+  text-align:center !important;
+
+  line-height:1 !important;
+
+  z-index:5 !important;
+}
+
+
+/* =========================================================
+   عبارة إجمالي المسحوبات
+========================================================= */
+
+.partner-withdrawal-total::before{
+  content:"إجمالي المسحوبات" !important;
+
+  position:absolute !important;
+
+  left:0 !important;
+  right:0 !important;
+
+  bottom:45px !important;
+
+  width:100% !important;
+  height:auto !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  transform:none !important;
+
+  background:none !important;
+
+  border:0 !important;
+
+  color:#8f9aa1 !important;
+
+  font-size:11px !important;
+  font-weight:500 !important;
+
+  text-align:center !important;
+
+  white-space:nowrap !important;
+
+  box-shadow:none !important;
+}
+
+
+/* =========================================================
+   أيقونة البطاقة الخضراء بجانب إجمالي المسحوبات
+========================================================= */
+
+.partner-withdrawal-total::after{
+  content:"" !important;
+
+  position:absolute !important;
+
+  bottom:44px !important;
+
+  /* موقع الأيقونة على يسار النص */
+  left:12px !important;
+
+  width:20px !important;
+  height:15px !important;
+
+  box-sizing:border-box !important;
+
+  border:2px solid #20df72 !important;
+
+  border-radius:4px !important;
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 4px,
+      #20df72 4px,
+      #20df72 6px,
+      transparent 6px,
+      transparent 100%
+    ) !important;
+
+  box-shadow:
+    0 0 5px rgba(32,223,114,.14) !important;
+
+  transform:none !important;
+
+  z-index:10 !important;
+}
+
+
+/* نقطة صغيرة داخل أيقونة البطاقة */
+.partner-withdrawal-total{
+  --withdraw-icon:#20df72;
+}
+
+.partner-withdrawal-card .partner-withdrawal-total::after{
+  background:
+    radial-gradient(
+      circle at 14px 10px,
+      var(--withdraw-icon) 0,
+      var(--withdraw-icon) 1.5px,
+      transparent 2px
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 4px,
+      var(--withdraw-icon) 4px,
+      var(--withdraw-icon) 6px,
+      transparent 6px
+    ) !important;
+}
+
+
+/* =========================================================
+   إزالة الدائرة القديمة نهائياً
+========================================================= */
+
+.partner-withdrawal-open::before{
+  content:none !important;
+  display:none !important;
+}
+
+
+/* =========================================================
+   زر السهم
+========================================================= */
+
+.partner-withdrawal-open{
+  position:absolute !important;
+
+  left:50% !important;
+  right:auto !important;
+
+  bottom:14px !important;
+
+  transform:translateX(-50%) !important;
+
+  width:40px !important;
+  height:40px !important;
+
+  min-width:40px !important;
+  min-height:40px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  border-radius:50% !important;
+
+  border:1.5px solid rgba(32,223,114,.62) !important;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #14342a 0%,
+      #092019 54%,
+      #05140f 100%
+    ) !important;
+
+  box-shadow:
+    inset 2px 2px 5px rgba(255,255,255,.04),
+    inset -3px -4px 7px rgba(0,0,0,.55),
+    0 4px 10px rgba(0,0,0,.35) !important;
+
+  color:transparent !important;
+
+  font-size:0 !important;
+
+  overflow:hidden !important;
+
+  z-index:10 !important;
+}
+
+
+/* السهم الأخضر */
+.partner-withdrawal-open::after{
+  content:"‹" !important;
+
+  position:absolute !important;
+
+  top:50% !important;
+  left:50% !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  transform:
+    translate(-50%,-54%) !important;
+
+  color:#20df72 !important;
+
+  font-family:Arial,sans-serif !important;
+
+  font-size:32px !important;
+  font-weight:400 !important;
+
+  line-height:1 !important;
+
+  background:none !important;
+  border:0 !important;
+
+  pointer-events:none !important;
+}
+
+
+/* =========================================================
+   الضغط
+========================================================= */
+
+.partner-withdrawal-card:active{
+  transform:scale(.975) !important;
+
+  border-color:#20df72 !important;
+}
