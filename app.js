@@ -358,6 +358,8 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       box-shadow:0 10px 32px rgba(0,0,0,.18);
       border-radius:0 !important;
       position:relative !important;
+      display:block !important;
+      flex:0 0 auto !important;
     }
 
     .wc-invoice{
@@ -387,24 +389,33 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       position:absolute;
       top:0;
       right:0;
-      width:124px;
-      height:118px;
-      background:linear-gradient(135deg,#0a804b 0%, #055b35 100%);
-      border-bottom-left-radius:72px;
+      width:150px;
+      height:132px;
+      background:
+        radial-gradient(circle at 76% 28%, rgba(217,180,103,.55) 1.6px, transparent 1.8px),
+        linear-gradient(135deg,#0b8a51 0%, #055b35 100%);
+      background-size:10px 10px, auto;
+      border-bottom-left-radius:76px;
       z-index:0;
+      overflow:hidden;
     }
 
     .wc-invoice::after{
       content:"";
       position:absolute;
-      top:16px;
-      right:18px;
-      width:58px;
-      height:58px;
-      opacity:.45;
-      background-image:radial-gradient(circle,#d7b467 1.6px,transparent 1.8px);
-      background-size:10px 10px;
+      top:18px;
+      right:22px;
+      width:72px;
+      height:72px;
+      border:1.6px solid rgba(255,255,255,.26);
+      border-left:0;
+      border-bottom:0;
+      transform:rotate(45deg);
       z-index:1;
+      box-sizing:border-box;
+      box-shadow:
+        -14px 14px 0 -13px rgba(255,255,255,.18),
+        -28px 28px 0 -27px rgba(255,255,255,.12);
     }
 
     .wc-top-waves{
@@ -793,17 +804,26 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       font-weight:700;
     }
 
-    .wc-footer > div:first-child{
+    .wc-footer-phone{
+      grid-column:3;
       text-align:right;
       direction:ltr;
+      justify-self:end;
+      width:100%;
     }
 
-    .wc-footer > div:nth-child(2){
+    .wc-footer-location{
+      grid-column:2;
       text-align:center;
+      justify-self:center;
+      width:100%;
     }
 
-    .wc-footer > div:last-child{
+    .wc-footer-brand{
+      grid-column:1;
       text-align:left;
+      justify-self:start;
+      width:100%;
     }
 
     .invoice-actions{
@@ -6117,15 +6137,15 @@ function showInvoice(id) {
 
             <footer class="wc-footer">
 
-              <div>
+              <div class="wc-footer-phone">
                 0573757275
               </div>
 
-              <div>
+              <div class="wc-footer-location">
                 أبها - المملكة العربية السعودية
               </div>
 
-              <div>
+              <div class="wc-footer-brand">
                 Winter Camp
               </div>
 
@@ -6167,10 +6187,15 @@ function showInvoice(id) {
     const paper =
       $('#invoicePaper');
 
+    const content =
+      paper
+        ? paper.firstElementChild
+        : null;
+
     const actions =
       $('.invoice-actions');
 
-    if (!preview || !paper) {
+    if (!preview || !paper || !content) {
       return;
     }
 
@@ -6183,7 +6208,7 @@ function showInvoice(id) {
     const availableWidth =
       Math.max(
         220,
-        preview.clientWidth - 6
+        preview.clientWidth - 8
       );
 
     const viewportHeight =
@@ -6196,7 +6221,7 @@ function showInvoice(id) {
 
     const availableHeight =
       Math.max(
-        280,
+        300,
         viewportHeight -
           actionsHeight -
           210
@@ -6215,14 +6240,46 @@ function showInvoice(id) {
         heightScale
       );
 
-    paper.style.transform =
-      `scale(${scale})`;
+    paper.style.width =
+      `${Math.ceil(
+        paperWidth * scale
+      )}px`;
 
-    paper.style.transformOrigin =
-      'top center';
+    paper.style.minWidth =
+      `${Math.ceil(
+        paperWidth * scale
+      )}px`;
+
+    paper.style.height =
+      `${Math.ceil(
+        paperHeight * scale
+      )}px`;
+
+    paper.style.minHeight =
+      `${Math.ceil(
+        paperHeight * scale
+      )}px`;
 
     paper.style.margin =
       '0 auto';
+
+    paper.style.overflow =
+      'hidden';
+
+    paper.style.position =
+      'relative';
+
+    content.style.width =
+      `${paperWidth}px`;
+
+    content.style.height =
+      `${paperHeight}px`;
+
+    content.style.transform =
+      `scale(${scale})`;
+
+    content.style.transformOrigin =
+      'top right';
 
     preview.style.height =
       `${Math.ceil(
@@ -6231,6 +6288,9 @@ function showInvoice(id) {
 
     preview.style.maxHeight =
       `${availableHeight}px`;
+
+    preview.style.justifyContent =
+      'center';
 
   }
 
@@ -7229,7 +7289,7 @@ if (
       navigator
         .serviceWorker
         .register(
-          './sw.js?v=112'
+          './sw.js?v=113'
         )
         .catch(
           console.error
