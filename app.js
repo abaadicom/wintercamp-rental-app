@@ -19,6 +19,10 @@ const HIJRI_MONTHS = [
 const seed = {
   bookings: [],
   expenses: [],
+
+  // مسحوبات الشركاء مستقلة تماماً عن المصاريف
+  withdrawals: [],
+
   devices: [
     { id: 1, name: 'RCF ART 715-A MK5', qty: 2 },
     { id: 2, name: 'سماعة بلوتوث', qty: 1 },
@@ -35,11 +39,8 @@ let reportYear = String(currentHijri().year);
 let bookingSearch = '';
 let bookingFilter = 'all';
 
-const $ = selector =>
-  document.querySelector(selector);
-
-const $$ = selector =>
-  [...document.querySelectorAll(selector)];
+const $ = selector => document.querySelector(selector);
+const $$ = selector => [...document.querySelectorAll(selector)];
 
 
 /* =====================================================
@@ -47,22 +48,18 @@ const $$ = selector =>
 ===================================================== */
 
 function clone(obj) {
-  return JSON.parse(
-    JSON.stringify(obj)
-  );
+  return JSON.parse(JSON.stringify(obj));
 }
 
 function load() {
   try {
-    const saved =
-      localStorage.getItem(DB_KEY);
+    const saved = localStorage.getItem(DB_KEY);
 
     if (!saved) {
       return clone(seed);
     }
 
-    const data =
-      JSON.parse(saved);
+    const data = JSON.parse(saved);
 
     if (!Array.isArray(data.bookings)) {
       data.bookings = [];
@@ -72,19 +69,96 @@ function load() {
       data.expenses = [];
     }
 
+    // إضافة مسحوبات الشركاء للبيانات القديمة
+    if (!Array.isArray(data.withdrawals)) {
+      data.withdrawals = [];
+    }
+
     if (!Array.isArray(data.devices)) {
-      data.devices =
-        clone(seed.devices);
+      data.devices = clone(seed.devices);
+    }
+
+    /*
+      نقل المسحوبات القديمة من المصاريف تلقائياً.
+
+      إذا كان لديك سابقاً مصروف باسم:
+      أنا
+      انا
+      عبدالله
+      عبد الله
+      ثامر
+
+      سيتم نقله إلى مسحوبات الشركاء ولن يبقى
+      محسوباً ضمن المصاريف أو صافي الربح.
+    */
+
+    const partnerNames = [
+      'انا',
+      'أنا',
+      'عبدالله',
+      'عبد الله',
+      'ثامر'
+    ];
+
+    const oldPartnerExpenses = data.expenses.filter(expense => {
+      const item = String(expense.item || '').trim();
+
+      return partnerNames.some(name =>
+        item === name ||
+        item.includes(`(${name})`) ||
+        item.includes(name)
+      );
+    });
+
+    if (oldPartnerExpenses.length) {
+
+      oldPartnerExpenses.forEach(expense => {
+
+        const item = String(expense.item || '');
+
+        let partner = 'عبدالله';
+
+        if (item.includes('ثامر')) {
+          partner = 'ثامر';
+        }
+
+        const alreadyMoved = data.withdrawals.some(withdrawal =>
+          Number(withdrawal.originalExpenseId || 0) ===
+          Number(expense.id || 0)
+        );
+
+        if (!alreadyMoved) {
+          data.withdrawals.push({
+            id: Date.now() + Math.floor(Math.random() * 100000),
+            partner,
+            amount: Number(expense.amount || 0),
+            date: expense.date || todayISO(),
+            note: '',
+            originalExpenseId: expense.id
+          });
+        }
+      });
+
+      data.expenses = data.expenses.filter(expense => {
+        const item = String(expense.item || '').trim();
+
+        return !partnerNames.some(name =>
+          item === name ||
+          item.includes(`(${name})`) ||
+          item.includes(name)
+        );
+      });
+
+      localStorage.setItem(
+        DB_KEY,
+        JSON.stringify(data)
+      );
     }
 
     return data;
 
   } catch (error) {
-    console.error(
-      'Load error:',
-      error
-    );
-
+    console.error(error);
     return clone(seed);
   }
 }
@@ -104,28 +178,24 @@ function save() {
 function esc(text = '') {
   return String(text).replace(
     /[&<>"']/g,
-    char => ({
+    c => ({
       '&': '&amp;',
       '<': '&lt;',
       '>': '&gt;',
       '"': '&quot;',
       "'": '&#039;'
-    }[char])
+    }[c])
   );
 }
 
 function money(value) {
-  return (
-    new Intl.NumberFormat(
-      'ar-SA',
-      {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-      }
-    ).format(
-      Number(value || 0)
-    ) + ' ر.س'
-  );
+  return new Intl.NumberFormat(
+    'ar-SA',
+    {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }
+  ).format(Number(value || 0)) + ' ر.س';
 }
 
 
@@ -134,79 +204,65 @@ function money(value) {
 ===================================================== */
 
 function todayISO() {
-  const d =
-    new Date();
+  const d = new Date();
 
   return (
     d.getFullYear() +
     '-' +
-    String(
-      d.getMonth() + 1
-    ).padStart(2, '0') +
+    String(d.getMonth() + 1).padStart(2, '0') +
     '-' +
-    String(
-      d.getDate()
-    ).padStart(2, '0')
+    String(d.getDate()).padStart(2, '0')
   );
 }
 
 function getHijriParts(isoDate) {
   try {
-    const date =
-      new Date(
-        isoDate + 'T12:00:00'
-      );
 
-    const formatter =
-      new Intl.DateTimeFormat(
-        'en-u-ca-islamic-umalqura',
-        {
-          day: 'numeric',
-          month: 'numeric',
-          year: 'numeric',
-          timeZone: 'Asia/Riyadh'
-        }
-      );
+    const date = new Date(
+      isoDate + 'T12:00:00'
+    );
+
+    const formatter = new Intl.DateTimeFormat(
+      'en-u-ca-islamic-umalqura',
+      {
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric',
+        timeZone: 'Asia/Riyadh'
+      }
+    );
 
     const parts =
-      formatter.formatToParts(
-        date
-      );
+      formatter.formatToParts(date);
 
     return {
       day: Number(
         parts.find(
-          item =>
-            item.type === 'day'
+          x => x.type === 'day'
         )?.value
       ),
 
       month: Number(
         parts.find(
-          item =>
-            item.type === 'month'
+          x => x.type === 'month'
         )?.value
       ),
 
       year: Number(
         parts.find(
-          item =>
-            item.type === 'year'
+          x => x.type === 'year'
         )?.value
       )
     };
 
-  } catch (error) {
-    console.error(
-      'Hijri error:',
-      error
-    );
+  } catch {
 
     return {
       day: 1,
       month: 1,
       year: 1448
     };
+
   }
 }
 
@@ -217,10 +273,9 @@ function currentHijri() {
 }
 
 function hijriFull(isoDate) {
+
   const h =
-    getHijriParts(
-      isoDate
-    );
+    getHijriParts(isoDate);
 
   return (
     `${h.day} ` +
@@ -230,7 +285,9 @@ function hijriFull(isoDate) {
 }
 
 function dayName(isoDate) {
+
   try {
+
     return new Intl.DateTimeFormat(
       'ar-SA',
       {
@@ -244,7 +301,9 @@ function dayName(isoDate) {
     );
 
   } catch {
+
     return '';
+
   }
 }
 
@@ -260,6 +319,7 @@ function hijriToGregorian(
   hijriMonth,
   hijriDay
 ) {
+
   hijriYear =
     Number(hijriYear);
 
@@ -290,6 +350,7 @@ function hijriToGregorian(
     offset < 900;
     offset++
   ) {
+
     const date =
       new Date(start);
 
@@ -308,9 +369,7 @@ function hijriToGregorian(
       ).padStart(2, '0')}`;
 
     const h =
-      getHijriParts(
-        iso
-      );
+      getHijriParts(iso);
 
     if (
       h.year === hijriYear &&
@@ -326,17 +385,16 @@ function hijriToGregorian(
 
 
 /* =====================================================
-   حقول التاريخ
+   حقول التاريخ الهجري
 ===================================================== */
 
 function hijriDateFields(
   isoDate = todayISO(),
   prefix = 'date'
 ) {
+
   const selected =
-    getHijriParts(
-      isoDate
-    );
+    getHijriParts(isoDate);
 
   const current =
     currentHijri();
@@ -350,6 +408,7 @@ function hijriDateFields(
     day <= 30;
     day++
   ) {
+
     days += `
       <option
         value="${day}"
@@ -368,6 +427,7 @@ function hijriDateFields(
     month <= 12;
     month++
   ) {
+
     months += `
       <option
         value="${month}"
@@ -386,6 +446,7 @@ function hijriDateFields(
     year <= current.year + 5;
     year++
   ) {
+
     years += `
       <option
         value="${year}"
@@ -437,13 +498,12 @@ function totals(
   bookings = db.bookings,
   expenses = db.expenses
 ) {
+
   const revenue =
     bookings.reduce(
       (sum, item) =>
         sum +
-        Number(
-          item.agreed || 0
-        ),
+        Number(item.agreed || 0),
       0
     );
 
@@ -451,35 +511,84 @@ function totals(
     bookings.reduce(
       (sum, item) =>
         sum +
-        Number(
-          item.paid || 0
-        ),
+        Number(item.paid || 0),
       0
     );
+
+  /*
+    مهم:
+    المصاريف هنا هي المصاريف التشغيلية فقط.
+
+    مسحوبات عبدالله وثامر موجودة في:
+    db.withdrawals
+
+    لذلك لا يتم خصمها من صافي الربح.
+  */
 
   const expensesTotal =
     expenses.reduce(
       (sum, item) =>
         sum +
-        Number(
-          item.amount || 0
-        ),
+        Number(item.amount || 0),
       0
     );
 
   return {
     revenue,
     paid,
+
     remaining:
       revenue - paid,
+
     expenses:
       expensesTotal,
+
     profit:
       revenue - expensesTotal
   };
 }
 
+
+/* =====================================================
+   حساب مسحوبات الشركاء
+===================================================== */
+
+function withdrawalsTotal(
+  withdrawals = db.withdrawals
+) {
+
+  return withdrawals.reduce(
+    (sum, item) =>
+      sum +
+      Number(item.amount || 0),
+    0
+  );
+}
+
+function partnerWithdrawalTotal(
+  partner
+) {
+
+  return db.withdrawals
+    .filter(
+      item =>
+        item.partner === partner
+    )
+    .reduce(
+      (sum, item) =>
+        sum +
+        Number(item.amount || 0),
+      0
+    );
+}
+
+
+/* =====================================================
+   حالة الحجز
+===================================================== */
+
 function status(booking) {
+
   const remaining =
     Number(
       booking.agreed || 0
@@ -518,42 +627,22 @@ function status(booking) {
 function homeView() {
   const t = totals();
 
-  const upcoming =
-    [...db.bookings]
-      .filter(
-        booking =>
-          booking.date >= todayISO()
-      )
-      .sort(
-        (a, b) =>
-          a.date.localeCompare(
-            b.date
-          )
-      )
-      .slice(0, 5);
+  const upcoming = [...db.bookings]
+    .filter(b => b.date >= todayISO())
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(0, 5);
 
   return `
-
     <section class="hero">
-
       <div>
-        <h2>
-          مرحباً بك 👋
-        </h2>
-
-        <p>
-          ملخص نشاط Winter Camp
-        </p>
+        <h2>مرحباً بك 👋</h2>
+        <p>ملخص نشاط Winter Camp</p>
       </div>
-
     </section>
-
 
     <div class="cards">
 
-
       <div class="stat-card stat-revenue">
-
         <div class="stat-card-top">
 
           <span class="label">
@@ -561,12 +650,10 @@ function homeView() {
           </span>
 
           <span class="dashboard-icon green-icon">
-
             <svg viewBox="0 0 24 24">
               <path d="M4 18L10 12L14 16L21 7"/>
               <path d="M15 7H21V13"/>
             </svg>
-
           </span>
 
         </div>
@@ -578,7 +665,6 @@ function homeView() {
         <small class="stat-description">
           الحجوزات المسجلة
         </small>
-
       </div>
 
 
@@ -591,22 +677,18 @@ function homeView() {
           </span>
 
           <span class="dashboard-icon red-icon">
-
             <svg viewBox="0 0 24 24">
-
               <rect
                 x="3"
                 y="6"
                 width="18"
                 height="14"
-                rx="3"/>
+                rx="3"
+              />
 
               <path d="M3 10H21"/>
-
               <path d="M16 15H18"/>
-
             </svg>
-
           </span>
 
         </div>
@@ -631,19 +713,12 @@ function homeView() {
           </span>
 
           <span class="dashboard-icon blue-icon">
-
             <svg viewBox="0 0 24 24">
-
               <path d="M4 20V13"/>
-
               <path d="M10 20V8"/>
-
               <path d="M16 20V4"/>
-
               <path d="M22 20H2"/>
-
             </svg>
-
           </span>
 
         </div>
@@ -668,18 +743,15 @@ function homeView() {
           </span>
 
           <span class="dashboard-icon gold-icon">
-
             <svg viewBox="0 0 24 24">
-
               <circle
                 cx="12"
                 cy="12"
-                r="9"/>
+                r="9"
+              />
 
               <path d="M12 7V12L15 14"/>
-
             </svg>
-
           </span>
 
         </div>
@@ -714,11 +786,9 @@ function homeView() {
 
     ${
       upcoming.length
-
         ? upcoming
             .map(bookingCard)
             .join('')
-
         : `
           <div class="empty">
             لا توجد حجوزات قادمة
@@ -734,24 +804,19 @@ function homeView() {
 ===================================================== */
 
 function bookingCard(booking) {
+
   const [
     statusText,
     statusClass
   ] = status(booking);
 
-  const remaining =
-    Math.max(
-      0,
-      Number(
-        booking.agreed || 0
-      ) -
-      Number(
-        booking.paid || 0
-      )
-    );
+  const remaining = Math.max(
+    0,
+    Number(booking.agreed || 0) -
+    Number(booking.paid || 0)
+  );
 
   return `
-
     <article class="booking-card">
 
       <div class="booking-top">
@@ -788,6 +853,7 @@ function bookingCard(booking) {
 
           </div>
 
+
           <span class="badge ${statusClass}">
             ${statusText}
           </span>
@@ -801,6 +867,7 @@ function bookingCard(booking) {
 
           <small>
             متبقي
+
             <span class="red">
               ${money(remaining)}
             </span>
@@ -837,6 +904,7 @@ function bookingCard(booking) {
 ===================================================== */
 
 function normalizePhone(value) {
+
   return String(value || '')
     .replace(
       /[^\d٠-٩]/g,
@@ -845,22 +913,27 @@ function normalizePhone(value) {
 }
 
 function normalizeSearch(value) {
+
   return String(value || '')
     .trim()
     .toLowerCase();
 }
 
+
 function getFilteredBookings() {
+
   let bookings =
     [...db.bookings];
 
   const today =
     todayISO();
 
+
   if (
     bookingFilter ===
     'upcoming'
   ) {
+
     bookings =
       bookings.filter(
         item =>
@@ -868,16 +941,19 @@ function getFilteredBookings() {
       );
   }
 
+
   if (
     bookingFilter ===
     'past'
   ) {
+
     bookings =
       bookings.filter(
         item =>
           item.date < today
       );
   }
+
 
   const search =
     normalizeSearch(
@@ -889,7 +965,9 @@ function getFilteredBookings() {
       bookingSearch
     );
 
+
   if (search) {
+
     bookings =
       bookings.filter(
         item => {
@@ -913,9 +991,11 @@ function getFilteredBookings() {
               )
             )
           );
+
         }
       );
   }
+
 
   bookings.sort(
     (a, b) =>
@@ -933,17 +1013,20 @@ function getFilteredBookings() {
 ===================================================== */
 
 function bookingsView() {
+
   const bookings =
     getFilteredBookings();
 
+
   const title =
-    bookingFilter ===
-    'upcoming'
+    bookingFilter === 'upcoming'
       ? 'الحجوزات القادمة'
-      : bookingFilter ===
-        'past'
+
+      : bookingFilter === 'past'
         ? 'الحجوزات السابقة'
+
         : 'جميع الحجوزات';
+
 
   return `
 
@@ -958,13 +1041,17 @@ function bookingsView() {
             <circle
               cx="11"
               cy="11"
-              r="7"/>
+              r="7"
+            />
 
-            <path d="M20 20L16.5 16.5"/>
+            <path
+              d="M20 20L16.5 16.5"
+            />
 
           </svg>
 
         </span>
+
 
         <input
           id="bookingSearch"
@@ -985,13 +1072,13 @@ function bookingsView() {
         <button
           data-booking-filter="all"
           class="${
-            bookingFilter ===
-            'all'
+            bookingFilter === 'all'
               ? 'active'
               : ''
           }">
           الكل
         </button>
+
 
         <button
           data-booking-filter="upcoming"
@@ -1004,11 +1091,11 @@ function bookingsView() {
           القادمة
         </button>
 
+
         <button
           data-booking-filter="past"
           class="${
-            bookingFilter ===
-            'past'
+            bookingFilter === 'past'
               ? 'active'
               : ''
           }">
@@ -1029,7 +1116,9 @@ function bookingsView() {
       <span
         id="bookingCount"
         class="count-badge">
+
         ${bookings.length}
+
       </span>
 
     </div>
@@ -1039,9 +1128,11 @@ function bookingsView() {
 
       ${
         bookings.length
+
           ? bookings
               .map(bookingCard)
               .join('')
+
           : `
             <div class="empty">
               لا توجد نتائج مطابقة
@@ -1055,6 +1146,7 @@ function bookingsView() {
 
 
 function refreshBookingResults() {
+
   const bookings =
     getFilteredBookings();
 
@@ -1064,12 +1156,16 @@ function refreshBookingResults() {
   const count =
     $('#bookingCount');
 
+
   if (list) {
+
     list.innerHTML =
       bookings.length
+
         ? bookings
             .map(bookingCard)
             .join('')
+
         : `
           <div class="empty">
             لا توجد نتائج مطابقة
@@ -1077,20 +1173,28 @@ function refreshBookingResults() {
         `;
   }
 
+
   if (count) {
     count.textContent =
       bookings.length;
   }
+
 
   bindBookingResultEvents();
 }
 
 
 /* =====================================================
-   المصاريف
+   المصاريف + مسحوبات الشركاء
 ===================================================== */
 
 function expensesView() {
+
+  /*
+    هذه مصاريف المشروع الحقيقية فقط.
+    هي التي تخصم من صافي الربح.
+  */
+
   const expenses =
     [...db.expenses]
       .sort(
@@ -1100,13 +1204,55 @@ function expensesView() {
           )
       );
 
+
+  /*
+    المسحوبات منفصلة عن المصاريف.
+
+    عبدالله وثامر لا يدخلان
+    في حساب صافي الربح.
+  */
+
+  const withdrawals =
+    [...(db.withdrawals || [])]
+      .sort(
+        (a, b) =>
+          b.date.localeCompare(
+            a.date
+          )
+      );
+
+
+  const totalWithdrawals =
+    withdrawals.reduce(
+      (sum, item) =>
+        sum +
+        Number(
+          item.amount || 0
+        ),
+      0
+    );
+
+
   return `
+
+    <!-- =========================
+         المصاريف التشغيلية
+    ========================== -->
 
     <div class="section-head">
 
-      <h3>
-        المصاريف
-      </h3>
+      <div>
+
+        <h3>
+          المصاريف التشغيلية
+        </h3>
+
+        <small class="section-note">
+          تخصم من صافي الربح
+        </small>
+
+      </div>
+
 
       <strong class="red">
         ${money(totals().expenses)}
@@ -1130,7 +1276,9 @@ function expensesView() {
                   </strong>
 
                   <small>
-                    ${hijriWithDay(expense.date)}
+                    ${hijriWithDay(
+                      expense.date
+                    )}
                   </small>
 
                 </div>
@@ -1139,8 +1287,11 @@ function expensesView() {
                 <div>
 
                   <strong class="red">
-                    ${money(expense.amount)}
+                    ${money(
+                      expense.amount
+                    )}
                   </strong>
+
 
                   <div class="expense-actions">
 
@@ -1150,6 +1301,7 @@ function expensesView() {
                       data-edit-expense="${expense.id}">
                       تعديل
                     </button>
+
 
                     <button
                       type="button"
@@ -1163,60 +1315,219 @@ function expensesView() {
                 </div>
 
               </div>
-
             `
           ).join('')
 
         : `
-          <div class="empty">
-            لا توجد مصاريف
+          <div class="empty compact-empty">
+            لا توجد مصاريف تشغيلية
           </div>
         `
     }
+
+
+
+    <!-- =========================
+         مسحوبات الشركاء
+    ========================== -->
+
+    <section class="withdrawals-box">
+
+      <div class="withdrawals-head">
+
+        <div>
+
+          <h3>
+            مسحوبات الشركاء
+          </h3>
+
+          <small>
+            لا تدخل ضمن المصاريف ولا تخصم من صافي الربح
+          </small>
+
+        </div>
+
+
+        <strong>
+          ${money(totalWithdrawals)}
+        </strong>
+
+      </div>
+
+
+      ${
+        withdrawals.length
+
+          ? withdrawals.map(
+              withdrawal => `
+
+                <div class="withdrawal-row">
+
+                  <div class="withdrawal-person">
+
+                    <span class="partner-icon">
+                      👤
+                    </span>
+
+
+                    <div>
+
+                      <strong>
+                        ${esc(
+                          withdrawal.partner
+                        )}
+                      </strong>
+
+
+                      <small>
+                        ${hijriWithDay(
+                          withdrawal.date
+                        )}
+                      </small>
+
+
+                      ${
+                        withdrawal.note
+
+                          ? `
+                            <small class="withdrawal-note">
+                              ${esc(
+                                withdrawal.note
+                              )}
+                            </small>
+                          `
+
+                          : ''
+                      }
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="withdrawal-side">
+
+                    <strong class="gold">
+                      ${money(
+                        withdrawal.amount
+                      )}
+                    </strong>
+
+
+                    <div class="expense-actions">
+
+                      <button
+                        type="button"
+                        class="edit-mini"
+                        data-edit-withdrawal="${withdrawal.id}">
+                        تعديل
+                      </button>
+
+
+                      <button
+                        type="button"
+                        class="delete-mini"
+                        data-del-withdrawal="${withdrawal.id}">
+                        حذف
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </div>
+              `
+            ).join('')
+
+          : `
+            <div class="empty compact-empty">
+              لا توجد مسحوبات شركاء
+            </div>
+          `
+      }
+
+
+      <button
+        type="button"
+        class="add-withdrawal-btn"
+        data-add-withdrawal>
+
+        + إضافة مسحوب
+
+      </button>
+
+    </section>
+
+
+    <div class="withdrawals-info">
+
+      <strong>
+        ملاحظة محاسبية
+      </strong>
+
+      <span>
+        المصاريف التشغيلية فقط تؤثر على صافي الربح،
+        أما مسحوبات الشركاء فتُسجل بشكل مستقل.
+      </span>
+
+    </div>
   `;
 }
+
+
 /* =====================================================
    التقارير
 ===================================================== */
 
 function getAvailableHijriYears() {
+
   const current =
     currentHijri().year;
 
   const years = [];
+
 
   for (
     let year = 1446;
     year <= current + 5;
     year++
   ) {
+
     years.push(year);
+
   }
+
 
   return years;
 }
+
 
 function filterByHijriPeriod(
   items,
   month = reportMonth,
   year = reportYear
 ) {
+
   return items.filter(
     item => {
+
       const h =
         getHijriParts(
           item.date
         );
 
+
       const monthMatch =
         month === 'all' ||
         h.month ===
-        Number(month);
+          Number(month);
+
 
       const yearMatch =
         year === 'all' ||
         h.year ===
-        Number(year);
+          Number(year);
+
 
       return (
         monthMatch &&
@@ -1226,42 +1537,64 @@ function filterByHijriPeriod(
   );
 }
 
+
 function reportPeriodTitle() {
+
   if (
     reportMonth === 'all' &&
     reportYear === 'all'
   ) {
+
     return 'جميع الأشهر وجميع السنوات';
+
   }
+
 
   if (
     reportMonth === 'all'
   ) {
+
     return `جميع أشهر سنة ${reportYear} هـ`;
+
   }
+
 
   if (
     reportYear === 'all'
   ) {
+
     return (
-      `${HIJRI_MONTHS[Number(reportMonth)]}` +
-      ' - جميع السنوات'
+      `${HIJRI_MONTHS[
+        Number(reportMonth)
+      ]} - جميع السنوات`
     );
+
   }
 
+
   return (
-    `${HIJRI_MONTHS[Number(reportMonth)]} ` +
-    `${reportYear} هـ`
+    `${HIJRI_MONTHS[
+      Number(reportMonth)
+    ]} ${reportYear} هـ`
   );
 }
 
+
+/* =====================================================
+   التقرير الشهري
+===================================================== */
+
 function monthlyBreakdownView() {
+
   if (
     reportMonth !== 'all' ||
     reportYear === 'all'
   ) {
+
     return '';
+
   }
+
 
   let html = `
 
@@ -1273,20 +1606,24 @@ function monthlyBreakdownView() {
 
     </div>
 
+
     <div class="months-list">
   `;
+
 
   for (
     let month = 1;
     month <= 12;
     month++
   ) {
+
     const bookings =
       filterByHijriPeriod(
         db.bookings,
         String(month),
         reportYear
       );
+
 
     const expenses =
       filterByHijriPeriod(
@@ -1295,11 +1632,13 @@ function monthlyBreakdownView() {
         reportYear
       );
 
+
     const t =
       totals(
         bookings,
         expenses
       );
+
 
     html += `
 
@@ -1319,6 +1658,7 @@ function monthlyBreakdownView() {
 
         </div>
 
+
         <div class="month-report-money">
 
           <span class="green">
@@ -1326,11 +1666,15 @@ function monthlyBreakdownView() {
           </span>
 
           <small>
+
             المصاريف:
             ${money(t.expenses)}
+
             <br>
+
             الصافي:
             ${money(t.profit)}
+
           </small>
 
         </div>
@@ -1339,14 +1683,20 @@ function monthlyBreakdownView() {
     `;
   }
 
+
   html += `
     </div>
   `;
 
+
   return html;
 }
+/* =====================================================
+   التقرير المالي
+===================================================== */
 
 function reportsView() {
+
   const bookings =
     filterByHijriPeriod(
       db.bookings
@@ -1365,6 +1715,7 @@ function reportsView() {
 
   const years =
     getAvailableHijriYears();
+
 
   return `
 
@@ -1399,15 +1750,18 @@ function reportsView() {
             جميع الأشهر
           </option>
 
+
           ${
             HIJRI_MONTHS
               .map(
                 (month, index) => {
+
                   if (!index) {
                     return '';
                   }
 
                   return `
+
                     <option
                       value="${index}"
                       ${
@@ -1418,6 +1772,7 @@ function reportsView() {
                       }>
                       ${month}
                     </option>
+
                   `;
                 }
               )
@@ -1445,10 +1800,12 @@ function reportsView() {
             جميع السنوات
           </option>
 
+
           ${
             years
               .map(
                 year => `
+
                   <option
                     value="${year}"
                     ${
@@ -1459,6 +1816,7 @@ function reportsView() {
                     }>
                     ${year} هـ
                   </option>
+
                 `
               )
               .join('')
@@ -1526,7 +1884,9 @@ function reportsView() {
 
     </div>
 
+
     ${monthlyBreakdownView()}
+
   `;
 }
 
@@ -1536,6 +1896,7 @@ function reportsView() {
 ===================================================== */
 
 function devicesView() {
+
   return `
 
     <div class="section-head">
@@ -1545,6 +1906,7 @@ function devicesView() {
       </h3>
 
     </div>
+
 
     ${
       db.devices
@@ -1558,24 +1920,26 @@ function devicesView() {
               </strong>
 
               <small>
-                الكمية:
-                ${device.qty}
+                الكمية: ${device.qty}
               </small>
 
             </div>
+
           `
         )
         .join('')
     }
+
   `;
 }
 
 
 /* =====================================================
-   الفواتير
+   قائمة الفواتير
 ===================================================== */
 
 function invoicesView() {
+
   const bookings =
     [...db.bookings]
       .sort(
@@ -1584,6 +1948,7 @@ function invoicesView() {
             a.date
           )
       );
+
 
   return `
 
@@ -1595,40 +1960,51 @@ function invoicesView() {
 
     </div>
 
+
     ${
       bookings.length
 
-        ? bookings
-            .map(
-              booking => `
+        ? bookings.map(
+            booking => `
 
-                <div class="invoice-row">
+              <div class="invoice-row">
 
-                  <div>
+                <div>
 
-                    <strong>
-                      فاتورة
-                      #${String(booking.id).slice(-6)}
-                    </strong>
+                  <strong>
+                    فاتورة #${String(
+                      booking.id
+                    ).slice(-6)}
+                  </strong>
 
-                    <small>
-                      ${esc(booking.name)}
-                      <br>
-                      ${hijriFull(booking.date)}
-                    </small>
 
-                  </div>
+                  <small>
 
-                  <button
-                    class="small-btn primary"
-                    data-invoice="${booking.id}">
-                    عرض
-                  </button>
+                    ${esc(
+                      booking.name
+                    )}
+
+                    <br>
+
+                    ${hijriFull(
+                      booking.date
+                    )}
+
+                  </small>
 
                 </div>
-              `
-            )
-            .join('')
+
+
+                <button
+                  class="small-btn primary"
+                  data-invoice="${booking.id}">
+                  عرض
+                </button>
+
+              </div>
+
+            `
+          ).join('')
 
         : `
           <div class="empty">
@@ -1636,6 +2012,7 @@ function invoicesView() {
           </div>
         `
     }
+
   `;
 }
 
@@ -1645,6 +2022,7 @@ function invoicesView() {
 ===================================================== */
 
 function settingsView() {
+
   return `
 
     <div class="section-head">
@@ -1654,6 +2032,7 @@ function settingsView() {
       </h3>
 
     </div>
+
 
     <div class="settings-card">
 
@@ -1667,6 +2046,7 @@ function settingsView() {
 
     </div>
 
+
     <div class="settings-card">
 
       <strong>
@@ -1679,11 +2059,15 @@ function settingsView() {
 
     </div>
 
+
     <button
       id="settingsExport"
       class="submit-btn">
+
       تصدير نسخة احتياطية
+
     </button>
+
   `;
 }
 
@@ -1693,65 +2077,112 @@ function settingsView() {
 ===================================================== */
 
 function render() {
+
   const titles = {
-    home: 'الرئيسية',
-    bookings: 'الحجوزات',
-    expenses: 'المصاريف',
-    reports: 'التقارير',
-    devices: 'الأجهزة',
-    invoices: 'الفواتير',
-    settings: 'الإعدادات'
+
+    home:
+      'الرئيسية',
+
+    bookings:
+      'الحجوزات',
+
+    expenses:
+      'المصاريف',
+
+    reports:
+      'التقارير',
+
+    devices:
+      'الأجهزة',
+
+    invoices:
+      'الفواتير',
+
+    settings:
+      'الإعدادات'
+
   };
+
 
   const pageTitle =
     $('#pageTitle');
 
+
   if (pageTitle) {
+
     pageTitle.textContent =
       titles[currentPage] ||
       'الرئيسية';
+
   }
+
 
   $$('.nav-item')
     .forEach(
       button => {
+
         button.classList.toggle(
           'active',
           button.dataset.page ===
-          currentPage
+            currentPage
         );
+
       }
     );
 
+
   const views = {
-    home: homeView,
-    bookings: bookingsView,
-    expenses: expensesView,
-    reports: reportsView,
-    devices: devicesView,
-    invoices: invoicesView,
-    settings: settingsView
+
+    home:
+      homeView,
+
+    bookings:
+      bookingsView,
+
+    expenses:
+      expensesView,
+
+    reports:
+      reportsView,
+
+    devices:
+      devicesView,
+
+    invoices:
+      invoicesView,
+
+    settings:
+      settingsView
+
   };
+
 
   const main =
     $('#mainContent');
 
+
   if (main) {
+
     main.innerHTML =
       (
         views[currentPage] ||
         homeView
       )();
+
   }
+
 
   bindViewEvents();
 }
 
+
 function go(page) {
+
   currentPage =
     page;
 
   render();
+
 }
 
 
@@ -1760,9 +2191,11 @@ function go(page) {
 ===================================================== */
 
 function bindBookingResultEvents() {
+
   $$('[data-detail]')
     .forEach(
       button => {
+
         button.onclick =
           () =>
             showDetail(
@@ -1770,12 +2203,15 @@ function bindBookingResultEvents() {
                 button.dataset.detail
               )
             );
+
       }
     );
+
 
   $$('[data-invoice]')
     .forEach(
       button => {
+
         button.onclick =
           () =>
             showInvoice(
@@ -1783,42 +2219,43 @@ function bindBookingResultEvents() {
                 button.dataset.invoice
               )
             );
+
       }
     );
 }
 
+
 function bindViewEvents() {
+
+  /*
+    التنقل بين الصفحات
+  */
+
   $$('[data-go]')
     .forEach(
       button => {
+
         button.onclick =
           () =>
             go(
               button.dataset.go
             );
+
       }
     );
+
 
   bindBookingResultEvents();
 
 
-  $$('[data-del-expense]')
-    .forEach(
-      button => {
-        button.onclick =
-          () =>
-            deleteExpense(
-              Number(
-                button.dataset.delExpense
-              )
-            );
-      }
-    );
-
+  /*
+    تعديل المصاريف
+  */
 
   $$('[data-edit-expense]')
     .forEach(
       button => {
+
         button.onclick =
           () =>
             editExpense(
@@ -1826,128 +2263,279 @@ function bindViewEvents() {
                 button.dataset.editExpense
               )
             );
+
       }
     );
 
+
+  /*
+    حذف المصاريف
+  */
+
+  $$('[data-del-expense]')
+    .forEach(
+      button => {
+
+        button.onclick =
+          () =>
+            deleteExpense(
+              Number(
+                button.dataset.delExpense
+              )
+            );
+
+      }
+    );
+
+
+  /*
+    إضافة مسحوب شريك
+  */
+
+  $$('[data-add-withdrawal]')
+    .forEach(
+      button => {
+
+        button.onclick =
+          () =>
+            openWithdrawalForm();
+
+      }
+    );
+
+
+  /*
+    تعديل مسحوب شريك
+  */
+
+  $$('[data-edit-withdrawal]')
+    .forEach(
+      button => {
+
+        button.onclick =
+          () =>
+            editWithdrawal(
+              Number(
+                button.dataset.editWithdrawal
+              )
+            );
+
+      }
+    );
+
+
+  /*
+    حذف مسحوب شريك
+  */
+
+  $$('[data-del-withdrawal]')
+    .forEach(
+      button => {
+
+        button.onclick =
+          () =>
+            deleteWithdrawal(
+              Number(
+                button.dataset.delWithdrawal
+              )
+            );
+
+      }
+    );
+
+
+  /*
+    البحث في الحجوزات
+  */
 
   const searchInput =
     $('#bookingSearch');
 
+
   if (searchInput) {
+
     searchInput.addEventListener(
       'input',
       event => {
+
         bookingSearch =
           event.target.value;
 
         refreshBookingResults();
+
       }
     );
+
   }
 
+
+  /*
+    فلترة الحجوزات
+  */
 
   $$('[data-booking-filter]')
     .forEach(
       button => {
+
         button.onclick =
           () => {
+
             bookingFilter =
-              button.dataset.bookingFilter;
+              button.dataset
+                .bookingFilter;
 
             render();
+
           };
+
       }
     );
 
+
+  /*
+    فلتر الشهر في التقارير
+  */
 
   const monthFilter =
     $('#reportMonthFilter');
 
+
   if (monthFilter) {
+
     monthFilter.onchange =
       event => {
+
         reportMonth =
           event.target.value;
 
         render();
+
       };
+
   }
 
+
+  /*
+    فلتر السنة في التقارير
+  */
 
   const yearFilter =
     $('#reportYearFilter');
 
+
   if (yearFilter) {
+
     yearFilter.onchange =
       event => {
+
         reportYear =
           event.target.value;
 
         render();
+
       };
+
   }
 
+
+  /*
+    فتح شهر محدد
+  */
 
   $$('[data-report-month]')
     .forEach(
       button => {
+
         button.onclick =
           () => {
+
             reportMonth =
-              button.dataset.reportMonth;
+              button.dataset
+                .reportMonth;
 
             render();
+
           };
+
       }
     );
 
 
+  /*
+    النسخة الاحتياطية
+  */
+
   const settingsExport =
     $('#settingsExport');
 
+
   if (settingsExport) {
+
     settingsExport.onclick =
       exportData;
+
   }
+
 }
+
+
 /* =====================================================
    النوافذ
 ===================================================== */
 
-function openModal(title, content) {
+function openModal(
+  title,
+  content
+) {
+
   if ($('#modalTitle')) {
-    $('#modalTitle').textContent = title;
+
+    $('#modalTitle')
+      .textContent =
+        title;
+
   }
+
 
   if ($('#modalBody')) {
-    $('#modalBody').innerHTML = content;
+
+    $('#modalBody')
+      .innerHTML =
+        content;
+
   }
 
-  $('#modalBackdrop')
-    ?.classList
-    .remove('hidden');
 
   $('#modal')
     ?.classList
     .remove('hidden');
+
+
+  $('#modalBackdrop')
+    ?.classList
+    .remove('hidden');
+
 }
+
 
 function closeModal() {
-  $('#modalBackdrop')
-    ?.classList
-    .add('hidden');
 
   $('#modal')
     ?.classList
     .add('hidden');
+
+
+  $('#modalBackdrop')
+    ?.classList
+    .add('hidden');
+
 }
-
-
 /* =====================================================
    تفاصيل الحجز
 ===================================================== */
 
 function showDetail(id) {
+
   const booking =
     db.bookings.find(
       item =>
@@ -1955,83 +2543,136 @@ function showDetail(id) {
         Number(id)
     );
 
+
   if (!booking) {
     return;
   }
 
+
   const remaining =
     Math.max(
       0,
-      Number(booking.agreed || 0) -
-      Number(booking.paid || 0)
+      Number(
+        booking.agreed || 0
+      ) -
+      Number(
+        booking.paid || 0
+      )
     );
+
 
   openModal(
     'تفاصيل الحجز',
     `
-
       <div class="detail-list">
 
         <div>
-          <span>اسم العميل</span>
+          <span>
+            اسم العميل
+          </span>
+
           <strong>
             ${esc(booking.name)}
           </strong>
         </div>
 
+
         <div>
-          <span>رقم الجوال</span>
+          <span>
+            رقم الجوال
+          </span>
+
           <strong dir="ltr">
-            ${esc(booking.phone || '-')}
+            ${esc(
+              booking.phone || '-'
+            )}
           </strong>
         </div>
 
+
         <div>
-          <span>نوع المناسبة</span>
+          <span>
+            نوع المناسبة
+          </span>
+
           <strong>
-            ${esc(booking.eventType || '-')}
+            ${esc(
+              booking.eventType || '-'
+            )}
           </strong>
         </div>
 
+
         <div>
-          <span>الباقة / الأجهزة</span>
+          <span>
+            الباقة / الأجهزة
+          </span>
+
           <strong>
-            ${esc(booking.device || '-')}
+            ${esc(booking.device)}
           </strong>
         </div>
 
+
         <div>
-          <span>الموقع</span>
+          <span>
+            الموقع
+          </span>
+
           <strong>
             ${esc(booking.location)}
           </strong>
         </div>
 
+
         <div>
-          <span>التاريخ</span>
+          <span>
+            التاريخ
+          </span>
+
           <strong>
-            ${hijriWithDay(booking.date)}
+            ${hijriWithDay(
+              booking.date
+            )}
           </strong>
         </div>
 
+
         <div>
-          <span>المبلغ</span>
+          <span>
+            المبلغ
+          </span>
+
           <strong class="green">
-            ${money(booking.agreed)}
+            ${money(
+              booking.agreed
+            )}
           </strong>
         </div>
 
+
         <div>
-          <span>الواصل</span>
+          <span>
+            الواصل
+          </span>
+
           <strong class="blue">
-            ${money(booking.paid)}
+            ${money(
+              booking.paid
+            )}
           </strong>
         </div>
 
+
         <div>
-          <span>المتبقي</span>
+          <span>
+            المتبقي
+          </span>
+
           <strong class="red">
-            ${money(remaining)}
+            ${money(
+              remaining
+            )}
           </strong>
         </div>
 
@@ -2043,13 +2684,18 @@ function showDetail(id) {
         <button
           id="detailInvoice"
           class="small-btn primary">
+
           عرض الفاتورة
+
         </button>
+
 
         <button
           id="editBooking"
           class="small-btn">
+
           تعديل
+
         </button>
 
       </div>
@@ -2058,20 +2704,25 @@ function showDetail(id) {
       <button
         id="deleteBooking"
         class="delete-full">
+
         حذف الحجز
+
       </button>
     `
   );
 
+
   $('#detailInvoice').onclick =
     () =>
       showInvoice(id);
+
 
   $('#editBooking').onclick =
     () =>
       openBookingForm(
         booking
       );
+
 
   $('#deleteBooking').onclick =
     () => {
@@ -2081,12 +2732,14 @@ function showDetail(id) {
           'هل تريد حذف الحجز؟'
         )
       ) {
+
         db.bookings =
           db.bookings.filter(
             item =>
               Number(item.id) !==
               Number(id)
           );
+
 
         save();
 
@@ -2097,7 +2750,9 @@ function showDetail(id) {
         toast(
           'تم حذف الحجز'
         );
+
       }
+
     };
 }
 
@@ -2106,10 +2761,13 @@ function showDetail(id) {
    نموذج الحجز
 ===================================================== */
 
-function openBookingForm(existing = null) {
+function openBookingForm(
+  existing = null
+) {
 
   const booking =
     existing || {
+
       name: '',
       phone: '',
       eventType: '',
@@ -2119,30 +2777,8 @@ function openBookingForm(existing = null) {
       agreed: '',
       paid: '',
       notes: ''
+
     };
-
-
-  const packages = [
-
-    'عدد (1) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط',
-
-    'عدد (2) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط',
-
-    'عدد (1) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط + ياماها ميكسر 12 قناة M-12XU + ميكروفون صوتي ',
-
-    'عدد (2) سماعة RCF ART 715-A MK5 SPEAKER 13000824 بقوة (1400) واط + ياماها ميكسر 12 قناة M-12XU + ميكروفون صوتي '
-  ];
-
-
-  const matchingPackage =
-    packages.includes(
-      booking.device || ''
-    );
-
-  const initialMode =
-    matchingPackage
-      ? 'list'
-      : 'manual';
 
 
   openModal(
@@ -2151,22 +2787,27 @@ function openBookingForm(existing = null) {
       : 'حجز جديد',
 
     `
-
       <form
         id="bookingForm"
         class="form-grid">
 
+
         <label>
+
           اسم العميل
 
           <input
             name="name"
             required
-            value="${esc(booking.name)}">
+            value="${esc(
+              booking.name
+            )}">
+
         </label>
 
 
         <label>
+
           رقم الجوال
 
           <input
@@ -2174,165 +2815,70 @@ function openBookingForm(existing = null) {
             type="tel"
             inputmode="numeric"
             autocomplete="tel"
-            value="${esc(booking.phone || '')}"
+            value="${esc(
+              booking.phone || ''
+            )}"
             placeholder="05xxxxxxxx">
+
         </label>
 
 
         <label>
+
           نوع المناسبة
 
           <input
             name="eventType"
-            value="${esc(booking.eventType || '')}"
+            value="${esc(
+              booking.eventType || ''
+            )}"
             placeholder="مثال: زواج">
+
         </label>
 
 
         <label>
+
           نوع الأجهزة / الباقة
 
-          <span class="optional-badge">
-            اختياري
-          </span>
-
-
-          <div class="device-mode-tabs">
-
-            <button
-              type="button"
-              id="deviceListMode"
-              class="device-mode-btn ${
-                initialMode === 'list'
-                  ? 'active'
-                  : ''
-              }">
-              اختيار من القائمة
-            </button>
-
-            <button
-              type="button"
-              id="deviceManualMode"
-              class="device-mode-btn ${
-                initialMode === 'manual'
-                  ? 'active'
-                  : ''
-              }">
-              كتابة يدوية
-            </button>
-
-          </div>
-
-
-          <div
-            id="deviceListSection"
-            class="device-list-section ${
-              initialMode === 'list'
-                ? ''
-                : 'hidden'
-            }">
-
-            <button
-              type="button"
-              id="deviceListToggle"
-              class="device-list-toggle">
-
-              <span>
-                اختر نوع الأجهزة من القائمة
-              </span>
-
-              <span
-                id="deviceListArrow"
-                class="device-list-arrow">
-                ▼
-              </span>
-
-            </button>
-
-
-            <div
-              id="devicePackageList"
-              class="device-package-list hidden">
-
-
-              ${packages.map(
-                (value, index) => `
-                  <button
-                    type="button"
-                    class="device-package ${
-                      booking.device === value
-                        ? 'selected'
-                        : ''
-                    }"
-                    data-device-value="${esc(value)}">
-
-                    <span class="device-package-number">
-                      ${index + 1}
-                    </span>
-
-                    <span class="device-package-text">
-                      ${esc(value)}
-                    </span>
-
-                  </button>
-                `
-              ).join('')}
-
-            </div>
-
-          </div>
-
-
-          <div
-            id="deviceManualSection"
-            class="device-manual-section ${
-              initialMode === 'manual'
-                ? ''
-                : 'hidden'
-            }">
-
-            <input
-              id="deviceManualInput"
-              type="text"
-              value="${
-                !matchingPackage
-                  ? esc(booking.device || '')
-                  : ''
-              }"
-              placeholder="اكتب نوع الأجهزة أو تفاصيل الباقة">
-
-          </div>
-
-
           <input
-            id="deviceValue"
             name="device"
-            type="hidden"
-            value="${esc(booking.device || '')}">
+            required
+            value="${esc(
+              booking.device || ''
+            )}"
+            placeholder="مثال: سماعتين + ميكسر">
 
         </label>
 
 
         <label>
+
           الموقع
 
           <input
             name="location"
             required
-            value="${esc(booking.location || '')}"
+            value="${esc(
+              booking.location || ''
+            )}"
             placeholder="مثال: أبها - حي العرين">
+
         </label>
 
 
-        ${hijriDateFields(
-          booking.date,
-          'booking'
-        )}
+        ${
+          hijriDateFields(
+            booking.date,
+            'booking'
+          )
+        }
 
 
         <div class="form-row">
 
           <label>
+
             المبلغ المتفق عليه
 
             <input
@@ -2341,10 +2887,15 @@ function openBookingForm(existing = null) {
               inputmode="decimal"
               min="0"
               required
-              value="${booking.agreed}">
+              value="${
+                booking.agreed
+              }">
+
           </label>
 
+
           <label>
+
             الواصل
 
             <input
@@ -2352,18 +2903,25 @@ function openBookingForm(existing = null) {
               type="number"
               inputmode="decimal"
               min="0"
-              value="${booking.paid}">
+              value="${
+                booking.paid
+              }">
+
           </label>
 
         </div>
 
 
         <label>
+
           ملاحظات
 
           <textarea
             name="notes"
-            placeholder="ملاحظات اختيارية">${esc(booking.notes || '')}</textarea>
+            placeholder="ملاحظات اختيارية">${esc(
+              booking.notes || ''
+            )}</textarea>
+
         </label>
 
 
@@ -2384,228 +2942,6 @@ function openBookingForm(existing = null) {
   );
 
 
-  const deviceValue =
-    $('#deviceValue');
-
-  const deviceListMode =
-    $('#deviceListMode');
-
-  const deviceManualMode =
-    $('#deviceManualMode');
-
-  const deviceListSection =
-    $('#deviceListSection');
-
-  const deviceManualSection =
-    $('#deviceManualSection');
-
-  const deviceManualInput =
-    $('#deviceManualInput');
-
-  const deviceListToggle =
-    $('#deviceListToggle');
-
-  const devicePackageList =
-    $('#devicePackageList');
-
-  const deviceListArrow =
-    $('#deviceListArrow');
-
-
-  function setDeviceMode(mode) {
-
-    const isList =
-      mode === 'list';
-
-    deviceListMode
-      ?.classList
-      .toggle(
-        'active',
-        isList
-      );
-
-    deviceManualMode
-      ?.classList
-      .toggle(
-        'active',
-        !isList
-      );
-
-    deviceListSection
-      ?.classList
-      .toggle(
-        'hidden',
-        !isList
-      );
-
-    deviceManualSection
-      ?.classList
-      .toggle(
-        'hidden',
-        isList
-      );
-
-    if (!isList) {
-      devicePackageList
-        ?.classList
-        .add('hidden');
-
-      if (deviceListArrow) {
-        deviceListArrow.textContent =
-          '▼';
-      }
-    }
-  }
-
-
-  if (deviceListMode) {
-    deviceListMode.onclick =
-      () => {
-
-        setDeviceMode(
-          'list'
-        );
-
-        devicePackageList
-          ?.classList
-          .remove('hidden');
-
-        if (deviceListArrow) {
-          deviceListArrow.textContent =
-            '▲';
-        }
-      };
-  }
-
-
-  if (deviceManualMode) {
-    deviceManualMode.onclick =
-      () => {
-
-        setDeviceMode(
-          'manual'
-        );
-
-        if (
-          deviceManualInput &&
-          deviceValue
-        ) {
-          deviceManualInput.value =
-            deviceValue.value || '';
-        }
-
-        setTimeout(
-          () =>
-            deviceManualInput
-              ?.focus(),
-          50
-        );
-      };
-  }
-
-
-  if (deviceListToggle) {
-    deviceListToggle.onclick =
-      () => {
-
-        const isHidden =
-          devicePackageList
-            ?.classList
-            .contains('hidden');
-
-        devicePackageList
-          ?.classList
-          .toggle('hidden');
-
-        if (deviceListArrow) {
-          deviceListArrow.textContent =
-            isHidden
-              ? '▲'
-              : '▼';
-        }
-      };
-  }
-
-
-  $$('.device-package')
-    .forEach(
-      button => {
-
-        button.onclick =
-          () => {
-
-            const value =
-              button.dataset.deviceValue;
-
-            $$('.device-package')
-              .forEach(
-                item =>
-                  item.classList.remove(
-                    'selected'
-                  )
-              );
-
-            button.classList.add(
-              'selected'
-            );
-
-            if (deviceValue) {
-              deviceValue.value =
-                value;
-            }
-
-            if (deviceManualInput) {
-              deviceManualInput.value =
-                value;
-            }
-
-
-            /* إغلاق القائمة بعد الاختيار */
-
-            devicePackageList
-              ?.classList
-              .add('hidden');
-
-            if (deviceListArrow) {
-              deviceListArrow.textContent =
-                '▼';
-            }
-
-
-            if (deviceListToggle) {
-              deviceListToggle.querySelector(
-                'span'
-              ).textContent =
-                `تم اختيار الباقة رقم ${
-                  [...button.parentElement.children]
-                    .indexOf(button) + 1
-                }`;
-            }
-          };
-      }
-    );
-
-
-  if (deviceManualInput) {
-    deviceManualInput.oninput =
-      () => {
-
-        if (deviceValue) {
-          deviceValue.value =
-            deviceManualInput.value;
-        }
-
-        $$('.device-package')
-          .forEach(
-            item =>
-              item.classList.remove(
-                'selected'
-              )
-          );
-      };
-  }
-
-
   $('#bookingForm').onsubmit =
     event => {
 
@@ -2622,16 +2958,20 @@ function openBookingForm(existing = null) {
 
       const date =
         hijriToGregorian(
+
           formData.booking_year,
           formData.booking_month,
           formData.booking_day
+
         );
 
 
       if (!date) {
+
         alert(
           'التاريخ الهجري غير صحيح'
         );
+
         return;
       }
 
@@ -2669,9 +3009,11 @@ function openBookingForm(existing = null) {
         formData.id =
           Date.now();
 
+
         db.bookings.push(
           formData
         );
+
       }
 
 
@@ -2687,6 +3029,7 @@ function openBookingForm(existing = null) {
           ? 'تم تحديث الحجز'
           : 'تم حفظ الحجز'
       );
+
     };
 }
 
@@ -2695,41 +3038,52 @@ function openBookingForm(existing = null) {
    إضافة / تعديل المصروف
 ===================================================== */
 
-function openExpenseForm(existing = null) {
+function openExpenseForm(
+  existing = null
+) {
 
   const isEdit =
     Boolean(existing);
 
+
   const expense =
     existing || {
+
       item: '',
       amount: '',
       date: todayISO()
+
     };
 
 
   openModal(
+
     isEdit
       ? 'تعديل المصروف'
       : 'إضافة مصروف',
 
     `
-
       <form
         id="expenseForm"
         class="form-grid">
 
+
         <label>
+
           بند المصروف
 
           <input
             name="item"
             required
-            value="${esc(expense.item || '')}">
+            value="${esc(
+              expense.item || ''
+            )}">
+
         </label>
 
 
         <label>
+
           المبلغ
 
           <input
@@ -2738,14 +3092,20 @@ function openExpenseForm(existing = null) {
             inputmode="decimal"
             min="0"
             required
-            value="${expense.amount || ''}">
+            value="${esc(
+              expense.amount || ''
+            )}">
+
         </label>
 
 
-        ${hijriDateFields(
-          expense.date || todayISO(),
-          'expense'
-        )}
+        ${
+          hijriDateFields(
+            expense.date ||
+              todayISO(),
+            'expense'
+          )
+        }
 
 
         <button
@@ -2768,6 +3128,7 @@ function openExpenseForm(existing = null) {
   const form =
     $('#expenseForm');
 
+
   if (!form) {
     return;
   }
@@ -2781,24 +3142,30 @@ function openExpenseForm(existing = null) {
 
       const data =
         Object.fromEntries(
+
           new FormData(
             event.currentTarget
           ).entries()
+
         );
 
 
       const date =
         hijriToGregorian(
+
           data.expense_year,
           data.expense_month,
           data.expense_day
+
         );
 
 
       if (!date) {
+
         alert(
           'التاريخ الهجري غير صحيح'
         );
+
         return;
       }
 
@@ -2816,9 +3183,11 @@ function openExpenseForm(existing = null) {
 
 
       if (!item) {
+
         alert(
           'يرجى كتابة بند المصروف'
         );
+
         return;
       }
 
@@ -2827,9 +3196,11 @@ function openExpenseForm(existing = null) {
         !Number.isFinite(amount) ||
         amount < 0
       ) {
+
         alert(
           'المبلغ غير صحيح'
         );
+
         return;
       }
 
@@ -2848,10 +3219,16 @@ function openExpenseForm(existing = null) {
       } else {
 
         db.expenses.push({
-          id: Date.now(),
+
+          id:
+            Date.now(),
+
           item,
+
           amount,
+
           date
+
         });
 
       }
@@ -2865,32 +3242,35 @@ function openExpenseForm(existing = null) {
 
 
       toast(
+
         isEdit
           ? 'تم تعديل المصروف'
           : 'تم حفظ المصروف'
+
       );
+
     };
 }
 
-
-/* =====================================================
-   تعديل المصروف
-===================================================== */
 
 function editExpense(id) {
 
   const expense =
     db.expenses.find(
+
       item =>
         Number(item.id) ===
         Number(id)
+
     );
 
 
   if (!expense) {
+
     alert(
       'لم يتم العثور على المصروف'
     );
+
     return;
   }
 
@@ -2901,10 +3281,6 @@ function editExpense(id) {
 }
 
 
-/* =====================================================
-   حذف المصروف
-===================================================== */
-
 function deleteExpense(id) {
 
   if (
@@ -2912,15 +3288,18 @@ function deleteExpense(id) {
       'هل تريد حذف المصروف؟'
     )
   ) {
+
     return;
   }
 
 
   db.expenses =
     db.expenses.filter(
+
       item =>
         Number(item.id) !==
         Number(id)
+
     );
 
 
@@ -2932,21 +3311,395 @@ function deleteExpense(id) {
     'تم حذف المصروف'
   );
 }
+
+
+/* =====================================================
+   إضافة / تعديل مسحوبات الشركاء
+===================================================== */
+
+function openWithdrawalForm(
+  existing = null
+) {
+
+  const isEdit =
+    Boolean(existing);
+
+
+  const withdrawal =
+    existing || {
+
+      partner:
+        'عبدالله',
+
+      amount:
+        '',
+
+      date:
+        todayISO(),
+
+      note:
+        ''
+
+    };
+
+
+  openModal(
+
+    isEdit
+      ? 'تعديل مسحوب شريك'
+      : 'إضافة مسحوب شريك',
+
+    `
+      <form
+        id="withdrawalForm"
+        class="form-grid">
+
+
+        <label>
+
+          الشريك
+
+          <select
+            name="partner"
+            required>
+
+            <option
+              value="عبدالله"
+              ${
+                withdrawal.partner ===
+                'عبدالله'
+                  ? 'selected'
+                  : ''
+              }>
+              عبدالله
+            </option>
+
+
+            <option
+              value="ثامر"
+              ${
+                withdrawal.partner ===
+                'ثامر'
+                  ? 'selected'
+                  : ''
+              }>
+              ثامر
+            </option>
+
+          </select>
+
+        </label>
+
+
+        <label>
+
+          مبلغ المسحوب
+
+          <input
+            name="amount"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            step="0.01"
+            required
+            value="${esc(
+              withdrawal.amount || ''
+            )}">
+
+        </label>
+
+
+        <label>
+
+          ملاحظة
+          <small>
+            (اختياري)
+          </small>
+
+          <input
+            name="note"
+            value="${esc(
+              withdrawal.note || ''
+            )}"
+            placeholder="مثال: سحب شخصي">
+
+        </label>
+
+
+        ${
+          hijriDateFields(
+
+            withdrawal.date ||
+              todayISO(),
+
+            'withdrawal'
+
+          )
+        }
+
+
+        <button
+          class="submit-btn withdrawal-submit"
+          type="submit">
+
+          ${
+            isEdit
+              ? 'حفظ التعديلات'
+              : 'حفظ المسحوب'
+          }
+
+        </button>
+
+      </form>
+    `
+  );
+
+
+  const form =
+    $('#withdrawalForm');
+
+
+  if (!form) {
+    return;
+  }
+
+
+  form.onsubmit =
+    event => {
+
+      event.preventDefault();
+
+
+      const data =
+        Object.fromEntries(
+
+          new FormData(
+            event.currentTarget
+          ).entries()
+
+        );
+
+
+      const date =
+        hijriToGregorian(
+
+          data.withdrawal_year,
+          data.withdrawal_month,
+          data.withdrawal_day
+
+        );
+
+
+      if (!date) {
+
+        alert(
+          'التاريخ الهجري غير صحيح'
+        );
+
+        return;
+      }
+
+
+      const partner =
+        String(
+          data.partner || ''
+        ).trim();
+
+
+      const amount =
+        Number(
+          data.amount || 0
+        );
+
+
+      const note =
+        String(
+          data.note || ''
+        ).trim();
+
+
+      if (
+        ![
+          'عبدالله',
+          'ثامر'
+        ].includes(partner)
+      ) {
+
+        alert(
+          'يرجى اختيار الشريك'
+        );
+
+        return;
+      }
+
+
+      if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+      ) {
+
+        alert(
+          'المبلغ غير صحيح'
+        );
+
+        return;
+      }
+
+
+      if (
+        !Array.isArray(
+          db.withdrawals
+        )
+      ) {
+
+        db.withdrawals =
+          [];
+
+      }
+
+
+      if (isEdit) {
+
+        existing.partner =
+          partner;
+
+        existing.amount =
+          amount;
+
+        existing.date =
+          date;
+
+        existing.note =
+          note;
+
+      } else {
+
+        db.withdrawals.push({
+
+          id:
+            Date.now(),
+
+          partner,
+
+          amount,
+
+          date,
+
+          note
+
+        });
+
+      }
+
+
+      save();
+
+      closeModal();
+
+      render();
+
+
+      toast(
+
+        isEdit
+          ? 'تم تعديل المسحوب'
+          : 'تم حفظ مسحوب الشريك'
+
+      );
+
+    };
+}
+
+
+function editWithdrawal(id) {
+
+  const withdrawal =
+    (
+      db.withdrawals || []
+    ).find(
+
+      item =>
+        Number(item.id) ===
+        Number(id)
+
+    );
+
+
+  if (!withdrawal) {
+
+    alert(
+      'لم يتم العثور على المسحوب'
+    );
+
+    return;
+  }
+
+
+  openWithdrawalForm(
+    withdrawal
+  );
+}
+
+
+function deleteWithdrawal(id) {
+
+  if (
+    !confirm(
+      'هل تريد حذف مسحوب الشريك؟'
+    )
+  ) {
+
+    return;
+  }
+
+
+  db.withdrawals =
+    (
+      db.withdrawals || []
+    ).filter(
+
+      item =>
+        Number(item.id) !==
+        Number(id)
+
+    );
+
+
+  save();
+
+  render();
+
+  toast(
+    'تم حذف المسحوب'
+  );
+}
+
+
 /* =====================================================
    المبلغ بالحروف
 ===================================================== */
 
-function numberToArabicWords(number) {
+function numberToArabicWords(
+  number
+) {
+
   number =
     Math.floor(
-      Number(number || 0)
+      Number(
+        number || 0
+      )
     );
 
+
   if (number === 0) {
+
     return 'صفر';
+
   }
 
+
   const ones = [
+
     '',
     'واحد',
     'اثنان',
@@ -2967,9 +3720,12 @@ function numberToArabicWords(number) {
     'سبعة عشر',
     'ثمانية عشر',
     'تسعة عشر'
+
   ];
 
+
   const tens = [
+
     '',
     '',
     'عشرون',
@@ -2980,9 +3736,12 @@ function numberToArabicWords(number) {
     'سبعون',
     'ثمانون',
     'تسعون'
+
   ];
 
+
   const hundreds = [
+
     '',
     'مائة',
     'مائتان',
@@ -2993,101 +3752,187 @@ function numberToArabicWords(number) {
     'سبعمائة',
     'ثمانمائة',
     'تسعمائة'
+
   ];
 
+
   function under1000(n) {
-    const parts = [];
+
+    const parts =
+      [];
+
 
     if (n >= 100) {
+
       parts.push(
+
         hundreds[
-          Math.floor(n / 100)
+          Math.floor(
+            n / 100
+          )
         ]
+
       );
+
 
       n %= 100;
     }
 
+
     if (n > 0) {
+
       if (n < 20) {
+
         parts.push(
           ones[n]
         );
+
       } else {
+
         const unit =
           n % 10;
 
+
         const ten =
-          Math.floor(n / 10);
+          Math.floor(
+            n / 10
+          );
+
 
         if (unit) {
+
           parts.push(
+
             `${ones[unit]} و${tens[ten]}`
+
           );
+
         } else {
+
           parts.push(
             tens[ten]
           );
+
         }
+
       }
+
     }
 
-    return parts.join(' و');
+
+    return parts.join(
+      ' و'
+    );
   }
 
-  const parts = [];
 
-  if (number >= 1000000) {
+  const parts =
+    [];
+
+
+  if (
+    number >= 1000000
+  ) {
+
     const millions =
       Math.floor(
         number / 1000000
       );
 
+
     parts.push(
-      `${under1000(millions)} مليون`
+
+      `${under1000(
+        millions
+      )} مليون`
+
     );
+
 
     number %=
       1000000;
   }
 
-  if (number >= 1000) {
+
+  if (
+    number >= 1000
+  ) {
+
     const thousands =
       Math.floor(
         number / 1000
       );
 
-    if (thousands === 1) {
-      parts.push('ألف');
-    } else if (thousands === 2) {
-      parts.push('ألفان');
-    } else {
+
+    if (
+      thousands === 1
+    ) {
+
       parts.push(
-        `${under1000(thousands)} ألف`
+        'ألف'
       );
+
+    } else if (
+      thousands === 2
+    ) {
+
+      parts.push(
+        'ألفان'
+      );
+
+    } else {
+
+      parts.push(
+
+        `${under1000(
+          thousands
+        )} ألف`
+
+      );
+
     }
 
-    number %= 1000;
+
+    number %=
+      1000;
   }
 
-  if (number > 0) {
+
+  if (
+    number > 0
+  ) {
+
     parts.push(
-      under1000(number)
+      under1000(
+        number
+      )
     );
+
   }
 
-  return parts.join(' و');
+
+  return parts.join(
+    ' و'
+  );
 }
 
-function amountInWords(amount) {
+
+function amountInWords(
+  amount
+) {
+
   const value =
     Math.floor(
-      Number(amount || 0)
+      Number(
+        amount || 0
+      )
     );
 
+
   return (
-    `${numberToArabicWords(value)} ` +
-    `ريال سعودي فقط لا غير`
+    `${numberToArabicWords(
+      value
+    )} ريال سعودي فقط لا غير`
   );
 }
 
@@ -3095,8 +3940,8 @@ function amountInWords(amount) {
 /* =====================================================
    الفاتورة
 ===================================================== */
-
 function showInvoice(id) {
+
   const booking =
     db.bookings.find(
       item =>
@@ -3104,19 +3949,23 @@ function showInvoice(id) {
         Number(id)
     );
 
+
   if (!booking) {
     return;
   }
+
 
   const agreed =
     Number(
       booking.agreed || 0
     );
 
+
   const paid =
     Number(
       booking.paid || 0
     );
+
 
   const remaining =
     Math.max(
@@ -3124,16 +3973,17 @@ function showInvoice(id) {
       agreed - paid
     );
 
+
   const invoiceNumber =
     'INV-' +
     String(
       booking.id
     ).slice(-8);
 
+
   openModal(
     '',
     `
-
       <div class="invoice-preview-scroll">
 
         <div
@@ -3164,13 +4014,16 @@ function showInvoice(id) {
                 class="invoice-logo"
                 alt="Winter Camp">
 
+
               <div class="invoice-brand-en">
                 Winter Camp
               </div>
 
+
               <div class="invoice-brand-ar">
                 للصوتيات والإنتاج الصوتي
               </div>
+
 
               <div class="invoice-title">
 
@@ -3192,7 +4045,6 @@ function showInvoice(id) {
 
 
             <section class="invoice-info">
-
 
               <div class="invoice-info-row">
 
@@ -3230,7 +4082,9 @@ function showInvoice(id) {
                 </span>
 
                 <b class="invoice-info-value">
-                  ${hijriFull(booking.date)}
+                  ${hijriFull(
+                    booking.date
+                  )}
                 </b>
 
               </div>
@@ -3251,7 +4105,9 @@ function showInvoice(id) {
                 </span>
 
                 <b class="invoice-info-value">
-                  ${dayName(booking.date)}
+                  ${dayName(
+                    booking.date
+                  )}
                 </b>
 
               </div>
@@ -3260,7 +4116,6 @@ function showInvoice(id) {
 
 
             <section class="invoice-customer">
-
 
               <div class="customer-main">
 
@@ -3280,7 +4135,9 @@ function showInvoice(id) {
                   </span>
 
                   <b>
-                    ${esc(booking.name)}
+                    ${esc(
+                      booking.name
+                    )}
                   </b>
 
                 </div>
@@ -3328,7 +4185,9 @@ function showInvoice(id) {
                   </span>
 
                   <b>
-                    ${esc(booking.location)}
+                    ${esc(
+                      booking.location
+                    )}
                   </b>
 
                 </div>
@@ -3421,24 +4280,34 @@ function showInvoice(id) {
                     1
                   </td>
 
+
                   <td class="product-title">
 
                     <strong>
-                      ${esc(booking.device || '-')}
+                      ${esc(
+                        booking.device
+                      )}
                     </strong>
 
                   </td>
+
 
                   <td>
                     1
                   </td>
 
-                  <td>
-                    ${money(agreed)}
-                  </td>
 
                   <td>
-                    ${money(agreed)}
+                    ${money(
+                      agreed
+                    )}
+                  </td>
+
+
+                  <td>
+                    ${money(
+                      agreed
+                    )}
                   </td>
 
                 </tr>
@@ -3457,14 +4326,20 @@ function showInvoice(id) {
                   المبلغ بالحروف :
                 </strong>
 
+
                 <div class="amount-words-box">
-                  ${amountInWords(agreed)}
+
+                  ${amountInWords(
+                    agreed
+                  )}
+
                 </div>
+
 
                 <div class="stamp-holder">
 
                   <img
-                    src="stamp.png?v=101"
+                    src="stamp.png?v=100"
                     class="invoice-full-stamp"
                     alt="ختم Winter Camp">
 
@@ -3483,7 +4358,9 @@ function showInvoice(id) {
                   </span>
 
                   <strong>
-                    ${money(agreed)}
+                    ${money(
+                      agreed
+                    )}
                   </strong>
 
                 </div>
@@ -3496,7 +4373,9 @@ function showInvoice(id) {
                   </span>
 
                   <strong>
-                    ${money(paid)}
+                    ${money(
+                      paid
+                    )}
                   </strong>
 
                 </div>
@@ -3509,7 +4388,11 @@ function showInvoice(id) {
                   </span>
 
                   <strong class="remaining-number">
-                    ${money(remaining)}
+
+                    ${money(
+                      remaining
+                    )}
+
                   </strong>
 
                 </div>
@@ -3522,7 +4405,9 @@ function showInvoice(id) {
                   </span>
 
                   <strong>
-                    ${money(agreed)}
+                    ${money(
+                      agreed
+                    )}
                   </strong>
 
                 </div>
@@ -3535,15 +4420,20 @@ function showInvoice(id) {
             <footer class="invoice-green-footer">
 
               <div>
+
                 ☎
+
                 <span dir="ltr">
                   0573757275
                 </span>
+
               </div>
+
 
               <div>
                 ● أبها - المملكة العربية السعودية
               </div>
+
 
               <div>
                 Winter Camp
@@ -3564,21 +4454,26 @@ function showInvoice(id) {
         <button
           id="shareInvoice"
           class="invoice-share-btn">
+
           مشاركة PDF
+
         </button>
 
-        <button
-          id="printInvoice">
+
+        <button id="printInvoice">
+
           طباعة
+
         </button>
 
-        <button
-          id="closeInvoice">
+
+        <button id="closeInvoice">
+
           إغلاق
+
         </button>
 
       </div>
-
     `
   );
 
@@ -3589,9 +4484,11 @@ function showInvoice(id) {
         booking
       );
 
+
   $('#printInvoice').onclick =
     () =>
       window.print();
+
 
   $('#closeInvoice').onclick =
     closeModal;
@@ -3599,12 +4496,18 @@ function showInvoice(id) {
 
 
 /* =====================================================
-   مكتبات PDF
+   PDF
 ===================================================== */
 
-function loadExternalScript(url) {
+function loadExternalScript(
+  url
+) {
+
   return new Promise(
-    (resolve, reject) => {
+    (
+      resolve,
+      reject
+    ) => {
 
       const existing =
         [...document.scripts]
@@ -3613,28 +4516,38 @@ function loadExternalScript(url) {
               script.src === url
           );
 
+
       if (existing) {
+
         resolve();
+
         return;
       }
+
 
       const script =
         document.createElement(
           'script'
         );
 
+
       script.src =
         url;
+
 
       script.onload =
         resolve;
 
+
       script.onerror =
         reject;
 
-      document.head.appendChild(
-        script
-      );
+
+      document.head
+        .appendChild(
+          script
+        );
+
     }
   );
 }
@@ -3642,30 +4555,43 @@ function loadExternalScript(url) {
 
 async function ensurePDFLibraries() {
 
-  if (!window.html2canvas) {
+  if (
+    !window.html2canvas
+  ) {
+
     await loadExternalScript(
       'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
     );
+
   }
 
-  if (!window.jspdf) {
+
+  if (
+    !window.jspdf
+  ) {
+
     await loadExternalScript(
       'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
     );
+
   }
+
 }
 
 
-async function waitForImages(element) {
+async function waitForImages(
+  element
+) {
 
   const images =
     [
-      ...element.querySelectorAll(
-        'img'
-      )
+      ...element
+        .querySelectorAll('img')
     ];
 
+
   await Promise.all(
+
     images.map(
       image => {
 
@@ -3673,8 +4599,11 @@ async function waitForImages(element) {
           image.complete &&
           image.naturalWidth > 0
         ) {
+
           return Promise.resolve();
+
         }
+
 
         return new Promise(
           resolve => {
@@ -3684,46 +4613,54 @@ async function waitForImages(element) {
 
             image.onerror =
               resolve;
+
           }
         );
+
       }
     )
+
   );
 }
 
 
-/* =====================================================
-   مشاركة الفاتورة PDF
-===================================================== */
-
-async function shareInvoicePDF(booking) {
+async function shareInvoicePDF(
+  booking
+) {
 
   const paper =
     $('#invoicePaper');
 
+
   const button =
     $('#shareInvoice');
+
 
   if (!paper) {
     return;
   }
+
 
   const oldButtonText =
     button
       ? button.textContent
       : 'مشاركة PDF';
 
+
   let exportContainer =
     null;
+
 
   try {
 
     if (button) {
+
       button.disabled =
         true;
 
       button.textContent =
         'جاري تجهيز الفاتورة...';
+
     }
 
 
@@ -3744,29 +4681,37 @@ async function shareInvoicePDF(booking) {
         'div'
       );
 
-    exportContainer.style.position =
-      'fixed';
 
-    exportContainer.style.left =
-      '-10000px';
+    Object.assign(
+      exportContainer.style,
+      {
 
-    exportContainer.style.top =
-      '0';
+        position:
+          'fixed',
 
-    exportContainer.style.width =
-      '794px';
+        left:
+          '-10000px',
 
-    exportContainer.style.height =
-      '1123px';
+        top:
+          '0',
 
-    exportContainer.style.background =
-      '#ffffff';
+        width:
+          '794px',
 
-    exportContainer.style.zIndex =
-      '-9999';
+        height:
+          '1123px',
 
-    exportContainer.style.overflow =
-      'hidden';
+        background:
+          '#ffffff',
+
+        zIndex:
+          '-9999',
+
+        overflow:
+          'hidden'
+
+      }
+    );
 
 
     const exportPaper =
@@ -3786,11 +4731,13 @@ async function shareInvoicePDF(booking) {
       'important'
     );
 
+
     exportPaper.style.setProperty(
       'height',
       '1123px',
       'important'
     );
+
 
     exportPaper.style.setProperty(
       'min-width',
@@ -3798,11 +4745,13 @@ async function shareInvoicePDF(booking) {
       'important'
     );
 
+
     exportPaper.style.setProperty(
       'min-height',
       '1123px',
       'important'
     );
+
 
     exportPaper.style.setProperty(
       'max-width',
@@ -3810,11 +4759,13 @@ async function shareInvoicePDF(booking) {
       'important'
     );
 
+
     exportPaper.style.setProperty(
       'max-height',
       '1123px',
       'important'
     );
+
 
     exportPaper.style.setProperty(
       'margin',
@@ -3822,11 +4773,13 @@ async function shareInvoicePDF(booking) {
       'important'
     );
 
+
     exportPaper.style.setProperty(
       'padding',
       '0',
       'important'
     );
+
 
     exportPaper.style.setProperty(
       'transform',
@@ -3834,17 +4787,27 @@ async function shareInvoicePDF(booking) {
       'important'
     );
 
+
+    exportPaper.style.setProperty(
+      'transform-origin',
+      'top left',
+      'important'
+    );
+
+
     exportPaper.style.setProperty(
       'position',
       'relative',
       'important'
     );
 
+
     exportPaper.style.setProperty(
       'overflow',
       'hidden',
       'important'
     );
+
 
     exportPaper.style.setProperty(
       'box-shadow',
@@ -3856,6 +4819,7 @@ async function shareInvoicePDF(booking) {
     exportContainer.appendChild(
       exportPaper
     );
+
 
     document.body.appendChild(
       exportContainer
@@ -3878,23 +4842,52 @@ async function shareInvoicePDF(booking) {
 
     const canvas =
       await window.html2canvas(
+
         exportPaper,
+
         {
-          scale: 2,
-          width: 794,
-          height: 1123,
-          windowWidth: 794,
-          windowHeight: 1123,
+
+          scale:
+            2,
+
+          width:
+            794,
+
+          height:
+            1123,
+
+          windowWidth:
+            794,
+
+          windowHeight:
+            1123,
+
           backgroundColor:
             '#ffffff',
-          useCORS: true,
-          allowTaint: false,
-          logging: false,
-          scrollX: 0,
-          scrollY: 0,
-          x: 0,
-          y: 0
+
+          useCORS:
+            true,
+
+          allowTaint:
+            false,
+
+          logging:
+            false,
+
+          scrollX:
+            0,
+
+          scrollY:
+            0,
+
+          x:
+            0,
+
+          y:
+            0
+
         }
+
       );
 
 
@@ -3906,29 +4899,43 @@ async function shareInvoicePDF(booking) {
 
     const pdf =
       new jsPDF({
+
         orientation:
           'portrait',
+
         unit:
           'mm',
+
         format:
           'a4',
+
         compress:
           true
+
       });
 
 
     pdf.addImage(
+
       canvas.toDataURL(
         'image/jpeg',
         0.98
       ),
+
       'JPEG',
+
       0,
+
       0,
+
       210,
+
       297,
+
       undefined,
+
       'FAST'
+
     );
 
 
@@ -3950,12 +4957,16 @@ async function shareInvoicePDF(booking) {
 
     const file =
       new File(
+
         [blob],
+
         fileName,
+
         {
           type:
             'application/pdf'
         }
+
       );
 
 
@@ -3968,12 +4979,20 @@ async function shareInvoicePDF(booking) {
     ) {
 
       await navigator.share({
-        files: [file],
+
+        files:
+          [file],
+
         title:
           'فاتورة Winter Camp',
+
         text:
-          `فاتورة ${booking.name || ''}`
+          `فاتورة ${
+            booking.name || ''
+          }`
+
       });
+
 
       return;
     }
@@ -3983,9 +5002,7 @@ async function shareInvoicePDF(booking) {
       URL.createObjectURL(
         blob
       );
-
-
-    const link =
+          const link =
       document.createElement(
         'a'
       );
@@ -3993,6 +5010,7 @@ async function shareInvoicePDF(booking) {
 
     link.href =
       url;
+
 
     link.download =
       fileName;
@@ -4004,6 +5022,7 @@ async function shareInvoicePDF(booking) {
 
 
     link.click();
+
 
     link.remove();
 
@@ -4021,7 +5040,6 @@ async function shareInvoicePDF(booking) {
       'تم تجهيز الفاتورة PDF'
     );
 
-
   } catch (error) {
 
     console.error(
@@ -4029,10 +5047,10 @@ async function shareInvoicePDF(booking) {
       error
     );
 
+
     alert(
       'تعذر تجهيز الفاتورة PDF، حاول مرة أخرى.'
     );
-
 
   } finally {
 
@@ -4040,28 +5058,37 @@ async function shareInvoicePDF(booking) {
       exportContainer &&
       exportContainer.parentNode
     ) {
+
       exportContainer
         .parentNode
         .removeChild(
           exportContainer
         );
+
     }
 
 
     if (button) {
+
       button.disabled =
         false;
 
+
       button.textContent =
         oldButtonText;
+
     }
+
   }
 }
+
+
 /* =====================================================
    النسخة الاحتياطية
 ===================================================== */
 
 function exportData() {
+
   const blob =
     new Blob(
       [
@@ -4077,29 +5104,37 @@ function exportData() {
       }
     );
 
+
   const url =
     URL.createObjectURL(
       blob
     );
+
 
   const link =
     document.createElement(
       'a'
     );
 
+
   link.href =
     url;
 
+
   link.download =
     'wintercamp-backup.json';
+
 
   document.body.appendChild(
     link
   );
 
+
   link.click();
 
+
   link.remove();
+
 
   setTimeout(
     () =>
@@ -4109,6 +5144,7 @@ function exportData() {
     1000
   );
 
+
   toast(
     'تم تجهيز النسخة الاحتياطية'
   );
@@ -4116,29 +5152,36 @@ function exportData() {
 
 
 /* =====================================================
-   الإشعار
+   إشعار
 ===================================================== */
 
 function toast(message) {
+
   const element =
     $('#toast');
+
 
   if (!element) {
     return;
   }
 
+
   element.textContent =
     message;
+
 
   element.classList.remove(
     'hidden'
   );
 
+
   setTimeout(
     () => {
+
       element.classList.add(
         'hidden'
       );
+
     },
     1800
   );
@@ -4150,12 +5193,14 @@ function toast(message) {
 ===================================================== */
 
 function toggleMenu(show) {
+
   $('#sideSheet')
     ?.classList
     .toggle(
       'hidden',
       !show
     );
+
 
   $('#sheetBackdrop')
     ?.classList
@@ -4167,26 +5212,33 @@ function toggleMenu(show) {
 
 
 /* =====================================================
-   أزرار القائمة السفلية
+   الأزرار
 ===================================================== */
 
 $$('.nav-item')
   .forEach(
     button => {
+
       button.onclick =
         () =>
           go(
             button.dataset.page
           );
+
     }
   );
 
 
-/* =====================================================
-   زر +
-===================================================== */
+/*
+  الزر الأخضر +
+  في صفحة المصاريف يضيف مصروف تشغيلي فقط.
+
+  أما مسحوبات الشركاء فلها زر مستقل
+  داخل قسم "مسحوبات الشركاء".
+*/
 
 if ($('#fabBtn')) {
+
   $('#fabBtn').onclick =
     () => {
 
@@ -4194,42 +5246,56 @@ if ($('#fabBtn')) {
         currentPage ===
         'expenses'
       ) {
+
         openExpenseForm();
+
       } else {
+
         openBookingForm();
+
       }
+
     };
 }
 
 
-/* =====================================================
-   القائمة الجانبية
-===================================================== */
-
 if ($('#menuBtn')) {
+
   $('#menuBtn').onclick =
     () =>
-      toggleMenu(true);
+      toggleMenu(
+        true
+      );
+
 }
 
 
 if ($('#closeMenu')) {
+
   $('#closeMenu').onclick =
     () =>
-      toggleMenu(false);
+      toggleMenu(
+        false
+      );
+
 }
 
 
 if ($('#sheetBackdrop')) {
+
   $('#sheetBackdrop').onclick =
     () =>
-      toggleMenu(false);
+      toggleMenu(
+        false
+      );
+
 }
 
 
 $$('[data-sheet-page]')
   .forEach(
     button => {
+
       button.onclick =
         () => {
 
@@ -4237,43 +5303,47 @@ $$('[data-sheet-page]')
             false
           );
 
+
           go(
-            button.dataset.sheetPage
+            button.dataset
+              .sheetPage
           );
+
         };
+
     }
   );
 
 
-/* =====================================================
-   النوافذ
-===================================================== */
-
 if ($('#modalClose')) {
+
   $('#modalClose').onclick =
     closeModal;
+
 }
 
 
 if ($('#modalBackdrop')) {
+
   $('#modalBackdrop').onclick =
     closeModal;
+
 }
 
 
-/* =====================================================
-   النسخة الاحتياطية
-===================================================== */
-
 if ($('#exportBtn')) {
+
   $('#exportBtn').onclick =
     exportData;
+
 }
 
 
 if ($('#backupBtn')) {
+
   $('#backupBtn').onclick =
     exportData;
+
 }
 
 
@@ -4282,15 +5352,18 @@ if ($('#backupBtn')) {
 ===================================================== */
 
 if ($('#importInput')) {
+
   $('#importInput').onchange =
     async event => {
 
       const file =
         event.target.files[0];
 
+
       if (!file) {
         return;
       }
+
 
       try {
 
@@ -4308,9 +5381,9 @@ if ($('#importInput')) {
             imported.expenses
           )
         ) {
-          throw new Error(
-            'Invalid backup'
-          );
+
+          throw new Error();
+
         }
 
 
@@ -4319,10 +5392,30 @@ if ($('#importInput')) {
             imported.devices
           )
         ) {
+
           imported.devices =
             clone(
               seed.devices
             );
+
+        }
+
+
+        /*
+          مهم:
+          دعم النسخ الاحتياطية القديمة
+          التي لم يكن فيها قسم المسحوبات.
+        */
+
+        if (
+          !Array.isArray(
+            imported.withdrawals
+          )
+        ) {
+
+          imported.withdrawals =
+            [];
+
         }
 
 
@@ -4332,7 +5425,9 @@ if ($('#importInput')) {
 
         save();
 
+
         render();
+
 
         toggleMenu(
           false
@@ -4343,22 +5438,14 @@ if ($('#importInput')) {
           'تم استيراد البيانات'
         );
 
-
-      } catch (error) {
-
-        console.error(
-          'Import error:',
-          error
-        );
+      } catch {
 
         alert(
           'ملف النسخة الاحتياطية غير صالح'
         );
+
       }
 
-
-      event.target.value =
-        '';
     };
 }
 
@@ -4368,10 +5455,13 @@ if ($('#importInput')) {
 ===================================================== */
 
 if ($('#hijriToday')) {
-  $('#hijriToday').textContent =
-    hijriWithDay(
-      todayISO()
-    );
+
+  $('#hijriToday')
+    .textContent =
+      hijriWithDay(
+        todayISO()
+      );
+
 }
 
 
@@ -4380,25 +5470,26 @@ if ($('#hijriToday')) {
 ===================================================== */
 
 if (
-  'serviceWorker' in navigator
+  'serviceWorker' in
+  navigator
 ) {
+
   window.addEventListener(
     'load',
     () => {
 
-      navigator.serviceWorker
+      navigator
+        .serviceWorker
         .register(
           './sw.js?v=102'
         )
         .catch(
-          error =>
-            console.error(
-              'Service Worker:',
-              error
-            )
+          console.error
         );
+
     }
   );
+
 }
 
 
