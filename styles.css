@@ -5396,3 +5396,39 @@ button{
 .partner-withdrawal-grid .partner-withdrawal-card .partner-withdrawal-total{
   color:#f05a5a !important;
 }
+/* إصلاح تداخل الزخرفة مع اسم الشريك */
+
+.partner-name{
+  position: relative !important;
+  z-index: 5 !important;
+
+  display: block !important;
+
+  margin-top: 24px !important;
+  margin-bottom: 18px !important;
+
+  padding: 0 22px !important;
+
+  text-align: center !important;
+
+  color: var(--text) !important;
+
+  font-size: 18px !important;
+  font-weight: 800 !important;
+}
+
+/* إبقاء الزخرفة خلف الاسم بدون تغطيته */
+.partner-card::after,
+.partner-card::before{
+  z-index: 1 !important;
+  pointer-events: none !important;
+}
+
+.partner-card > *{
+  position: relative;
+  z-index: 2;
+}
+
+.partner-card .partner-name{
+  z-index: 6 !important;
+}
