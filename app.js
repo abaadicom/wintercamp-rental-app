@@ -66,6 +66,277 @@ const $$ = selector => [...document.querySelectorAll(selector)];
 
   style.textContent = `
 
+    .device-package-field{
+      display:block;
+    }
+
+    .device-package-label-line{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+    }
+
+    .optional-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:24px;
+      padding:3px 9px;
+      border:1px solid #33424a;
+      border-radius:999px;
+      color:#8f9aa1;
+      background:#0d1418;
+      font-size:11px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    .device-mode-tabs{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .device-mode-btn{
+      min-height:42px;
+      border:1px solid #2b3941;
+      border-radius:12px;
+      background:#0d1418;
+      color:#98a3a9;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .device-mode-btn.active{
+      border-color:#25c16f;
+      background:rgba(37,193,111,.10);
+      color:#dff8e9;
+      box-shadow:inset 0 0 0 1px rgba(37,193,111,.12);
+    }
+
+    .device-list-section,
+    .device-manual-section{
+      margin-top:4px;
+    }
+
+    .device-list-section.hidden,
+    .device-manual-section.hidden{
+      display:none !important;
+    }
+
+    .device-package-list{
+      display:grid;
+      gap:8px;
+    }
+
+    .device-package{
+      width:100%;
+      display:grid;
+      grid-template-columns:38px 1fr;
+      align-items:center;
+      gap:10px;
+      min-height:58px;
+      padding:9px 11px;
+      border:1px solid #2b3941;
+      border-radius:13px;
+      background:#0d1418;
+      color:#e8eeee;
+      text-align:right;
+      cursor:pointer;
+    }
+
+    .device-package.selected{
+      border-color:#25c16f;
+      background:rgba(37,193,111,.09);
+      box-shadow:inset 0 0 0 1px rgba(37,193,111,.10);
+    }
+
+    .device-package-number{
+      width:34px;
+      height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:10px;
+      background:#172129;
+      color:#25c16f;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .device-package.selected
+    .device-package-number{
+      background:#25c16f;
+      color:#07130c;
+    }
+
+    .device-package-text{
+      line-height:1.65;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .device-manual-section input{
+      width:100%;
+    }
+
+    /* إبقاء حقول الحجز متجاورة مثل التصميم الأصلي */
+    .form-row{
+      display:grid !important;
+      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+      gap:10px !important;
+      align-items:end !important;
+    }
+
+    .form-row > label{
+      min-width:0 !important;
+      width:100% !important;
+    }
+
+    .hijri-selects{
+      display:grid !important;
+      grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+      gap:8px !important;
+      width:100% !important;
+    }
+
+    .hijri-selects select{
+      min-width:0 !important;
+      width:100% !important;
+    }
+
+    /* الفاتورة */
+    .invoice-header{
+      min-height:230px !important;
+      overflow:hidden;
+    }
+
+    .invoice-logo{
+      width:270px !important;
+      height:125px !important;
+      max-width:74% !important;
+      margin:0 auto 4px !important;
+      object-fit:contain !important;
+      object-position:center !important;
+    }
+
+    .customer-extra
+    .customer-row:first-child{
+      white-space:nowrap;
+    }
+
+    .customer-extra
+    .customer-row:first-child strong,
+    .customer-extra
+    .customer-row:first-child b{
+      white-space:nowrap;
+      overflow-wrap:normal !important;
+    }
+
+    /* =====================================================
+       تحسين معاينة الفاتورة فقط
+       لا يؤثر على مقاس ملف PDF عند التصدير
+    ===================================================== */
+
+    .invoice-preview-scroll{
+      display:block !important;
+      width:100% !important;
+      max-width:100% !important;
+      overflow:hidden !important;
+      padding:6px 0 10px !important;
+      direction:ltr !important;
+    }
+
+    #invoicePaper.invoice-a4{
+      margin:0 !important;
+      transform-origin:top left !important;
+      box-shadow:0 7px 22px rgba(0,0,0,.22) !important;
+    }
+
+    /* نفس خط الصنف للكمية وسعر الوحدة والإجمالي */
+    .invoice-products tbody td,
+    .invoice-products tbody td strong,
+    .invoice-products .product-title strong{
+      font-size:15px !important;
+      font-weight:800 !important;
+      line-height:1.55 !important;
+    }
+
+    /* تقليل المسافات البيضاء بين محتوى الفاتورة */
+    .invoice-products{
+      margin-bottom:12px !important;
+    }
+
+    .invoice-lower{
+      margin-top:10px !important;
+      margin-bottom:8px !important;
+    }
+
+    .invoice-summary{
+      margin-bottom:0 !important;
+    }
+
+    .invoice-green-footer{
+      position:relative !important;
+      inset:auto !important;
+      bottom:auto !important;
+      left:auto !important;
+      right:auto !important;
+      margin-top:16px !important;
+    }
+
+    @media (max-width:600px){
+
+      .device-package{
+        grid-template-columns:34px 1fr;
+      }
+
+      .device-package-text{
+        font-size:11.5px;
+      }
+
+      .invoice-logo{
+        width:240px !important;
+        height:112px !important;
+      }
+
+
+    }
+
+  `;
+
+  document.head.appendChild(
+    style
+  );
+
+})();
+
+
+
+/* =====================================================
+   التخزين
+===================================================== */
+
+/* =====================================================
+   تصميم الفاتورة المعتمد - Winter Camp
+   الشعار في الوسط + تموجات أعلى اليسار
+   بدون توقيع وبدون ضريبة
+===================================================== */
+
+(function injectApprovedInvoiceDesign() {
+
+  if (document.getElementById('wintercamp-approved-invoice-style')) {
+    return;
+  }
+
+  const style = document.createElement('style');
+  style.id = 'wintercamp-approved-invoice-style';
+
+  style.textContent = `
+
     .invoice-preview-scroll{
       width:100% !important;
       overflow:hidden !important;
@@ -97,12 +368,11 @@ const $$ = selector => [...document.querySelectorAll(selector)];
     }
 
     .wc-invoice{
-      --wc-green:#0a6d49;
-      --wc-green-dark:#075a3d;
-      --wc-green-mid:#2e8063;
-      --wc-green-soft:#edf6f2;
-      --wc-line:#d9e2dd;
-      --wc-muted:#6c7771;
+      --wc-green:#066b3d;
+      --wc-green-dark:#04522f;
+      --wc-green-soft:#e9f4ee;
+      --wc-line:#cfdad4;
+      --wc-muted:#66736c;
 
       width:100%;
       height:100%;
@@ -110,275 +380,210 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       position:relative;
       display:flex;
       flex-direction:column;
-      padding:28px 48px 24px;
+      padding:30px 52px 24px;
       direction:rtl;
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;
-      background:#fff;
+      background:
+        radial-gradient(circle at 96% 5%, rgba(6,107,61,.09), transparent 18%),
+        #fff;
       overflow:hidden;
     }
 
-    /* تموجات أعلى اليسار */
+    .wc-invoice::before{
+      content:"";
+      position:absolute;
+      top:0;
+      right:0;
+      width:150px;
+      height:132px;
+      background:
+        radial-gradient(circle, rgba(223,188,108,.85) 1.7px, transparent 1.9px) 76px 14px / 10px 10px repeat,
+        repeating-linear-gradient(45deg, transparent 0 17px, rgba(255,255,255,.16) 17px 18px),
+        linear-gradient(135deg,#0b8a51 0%,#055b35 100%);
+      border-bottom-left-radius:76px;
+      z-index:0;
+    }
+
+    .wc-invoice::after{
+      content:"";
+      position:absolute;
+      top:27px;
+      right:40px;
+      width:56px;
+      height:56px;
+      border:1.5px solid rgba(255,255,255,.28);
+      transform:rotate(45deg);
+      z-index:1;
+      box-sizing:border-box;
+      box-shadow:
+        12px 12px 0 -11px rgba(255,255,255,.22),
+        24px 24px 0 -23px rgba(255,255,255,.14);
+    }
+
     .wc-top-waves{
       position:absolute;
-      left:-36px;
-      top:-2px;
-      width:325px;
-      height:175px;
-      opacity:.48;
-      z-index:0;
+      left:-18px;
+      top:12px;
+      width:310px;
+      height:150px;
+      opacity:.22;
       pointer-events:none;
+      z-index:0;
     }
 
     .wc-top-waves span{
       position:absolute;
       left:0;
-      width:325px;
-      height:70px;
-      border-top:1.8px solid #80b49e;
+      width:310px;
+      height:58px;
+      border-top:1.8px solid #118457;
       border-radius:50%;
-      transform:rotate(-8deg);
+      transform:rotate(-7deg);
     }
 
-    .wc-top-waves span:nth-child(1){top:0}
-    .wc-top-waves span:nth-child(2){top:11px}
-    .wc-top-waves span:nth-child(3){top:22px}
-    .wc-top-waves span:nth-child(4){top:33px}
-    .wc-top-waves span:nth-child(5){top:44px}
-    .wc-top-waves span:nth-child(6){top:55px}
-    .wc-top-waves span:nth-child(7){top:66px}
-    .wc-top-waves span:nth-child(8){top:77px}
-
-    /* الزاوية الصوتية أعلى اليمين */
-    .wc-audio-corner{
-      position:absolute;
-      top:0;
-      right:0;
-      width:220px;
-      height:190px;
-      overflow:hidden;
-      border-bottom-left-radius:118px;
-      background:
-        radial-gradient(circle at 83% 17%,rgba(255,255,255,.16) 1.5px,transparent 1.8px) 0 0/13px 13px,
-        linear-gradient(135deg,#4d8e75 0%,#3a7d63 48%,#2e6b53 100%);
-      z-index:0;
-    }
-
-    .wc-audio-corner::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        linear-gradient(115deg,rgba(255,255,255,.12),transparent 45%),
-        radial-gradient(circle at 28% 65%,rgba(255,255,255,.08),transparent 46%);
-    }
-
-    .wc-waveform{
-      position:absolute;
-      left:15px;
-      top:57px;
-      width:114px;
-      height:54px;
-      display:flex;
-      align-items:center;
-      gap:3px;
-      opacity:.95;
-    }
-
-    .wc-waveform i{
-      display:block;
-      width:2px;
-      background:rgba(255,255,255,.9);
-      border-radius:999px;
-    }
-
-    .wc-waveform i:nth-child(1){height:10px}
-    .wc-waveform i:nth-child(2){height:18px}
-    .wc-waveform i:nth-child(3){height:30px}
-    .wc-waveform i:nth-child(4){height:46px}
-    .wc-waveform i:nth-child(5){height:34px}
-    .wc-waveform i:nth-child(6){height:20px}
-    .wc-waveform i:nth-child(7){height:40px}
-    .wc-waveform i:nth-child(8){height:52px}
-    .wc-waveform i:nth-child(9){height:28px}
-    .wc-waveform i:nth-child(10){height:18px}
-    .wc-waveform i:nth-child(11){height:34px}
-    .wc-waveform i:nth-child(12){height:24px}
-    .wc-waveform i:nth-child(13){height:12px}
-    .wc-waveform i:nth-child(14){height:22px}
-    .wc-waveform i:nth-child(15){height:14px}
-
-    .wc-mixer{
-      position:absolute;
-      right:12px;
-      bottom:18px;
-      width:118px;
-      height:88px;
-      transform:rotate(-8deg);
-      opacity:.96;
-    }
-
-    .wc-mixer-line{
-      position:absolute;
-      width:10px;
-      height:64px;
-      top:8px;
-      border-left:2px solid rgba(255,255,255,.72);
-    }
-
-    .wc-mixer-line:nth-child(1){left:12px}
-    .wc-mixer-line:nth-child(2){left:38px}
-    .wc-mixer-line:nth-child(3){left:64px}
-    .wc-mixer-line:nth-child(4){left:90px}
-
-    .wc-mixer-line::after{
-      content:"";
-      position:absolute;
-      left:-6px;
-      width:13px;
-      height:7px;
-      border-radius:3px;
-      background:#f3f6f4;
-      box-shadow:0 1px 1px rgba(0,0,0,.16);
-    }
-
-    .wc-mixer-line:nth-child(1)::after{top:34px}
-    .wc-mixer-line:nth-child(2)::after{top:17px}
-    .wc-mixer-line:nth-child(3)::after{top:43px}
-    .wc-mixer-line:nth-child(4)::after{top:25px}
+    .wc-top-waves span:nth-child(1){top:5px}
+    .wc-top-waves span:nth-child(2){top:14px}
+    .wc-top-waves span:nth-child(3){top:23px}
+    .wc-top-waves span:nth-child(4){top:32px}
+    .wc-top-waves span:nth-child(5){top:41px}
+    .wc-top-waves span:nth-child(6){top:50px}
+    .wc-top-waves span:nth-child(7){top:59px}
+    .wc-top-waves span:nth-child(8){top:68px}
 
     .wc-invoice-header{
       position:relative;
       z-index:2;
       text-align:center;
-      margin-bottom:12px;
+      padding-top:2px;
+      margin-bottom:14px;
     }
 
     .wc-invoice-logo{
       display:block;
-      width:230px;
-      height:88px;
+      width:240px;
+      height:96px;
       object-fit:contain;
-      margin:0 auto;
+      margin:0 auto 2px;
     }
 
     .wc-brand-name{
-      font-size:16px;
-      font-weight:800;
-      letter-spacing:2.1px;
       color:#111;
+      font-size:17px;
+      font-weight:700;
+      letter-spacing:2.4px;
       direction:ltr;
       margin-top:-2px;
     }
 
     .wc-brand-ar{
-      margin-top:2px;
-      color:#2a342f;
-      font-size:14px;
+      font-size:15px;
       font-weight:700;
+      color:#27352e;
+      margin-top:3px;
     }
 
     .wc-invoice-title{
-      width:max-content;
       margin:10px auto 0;
-      padding:0 18px 8px;
-      border-bottom:2px solid var(--wc-green);
+      width:max-content;
       color:var(--wc-green);
       font-size:34px;
-      line-height:1;
       font-weight:900;
+      line-height:1;
+      padding:0 18px 9px;
+      border-bottom:2px solid var(--wc-green);
     }
 
     .wc-meta{
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:14px;
+      margin-bottom:14px;
       position:relative;
       z-index:2;
-      margin-bottom:15px;
     }
 
     .wc-meta-card{
-      min-height:76px;
+      min-height:78px;
       border:1px solid var(--wc-line);
-      border-radius:13px;
+      border-radius:12px;
       background:#fff;
       display:grid;
-      grid-template-columns:44px 1fr;
+      grid-template-columns:46px 1fr;
       align-items:center;
-      padding:10px 15px;
+      padding:10px 16px;
       text-align:center;
     }
 
     .wc-meta-icon{
-      width:36px;
-      height:36px;
+      width:38px;
+      height:38px;
+      border-radius:10px;
       display:flex;
       align-items:center;
       justify-content:center;
-      border-radius:9px;
-      background:var(--wc-green-soft);
       color:var(--wc-green);
-      font-size:18px;
+      background:var(--wc-green-soft);
+      font-size:20px;
       font-weight:900;
     }
 
     .wc-meta-label{
       display:block;
-      margin-bottom:4px;
-      color:var(--wc-muted);
       font-size:12px;
+      color:var(--wc-muted);
+      margin-bottom:4px;
     }
 
     .wc-meta-value{
       display:block;
-      color:#161b18;
-      font-size:15px;
+      font-size:16px;
       font-weight:900;
-      line-height:1.5;
+      color:#151b18;
+      line-height:1.45;
     }
 
-    .wc-info-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:14px;
+    .wc-customer-box{
       position:relative;
       z-index:2;
-      margin-bottom:14px;
-    }
-
-    .wc-info-card{
-      position:relative;
-      min-height:176px;
-      padding:28px 20px 14px;
       border:1px solid var(--wc-line);
       border-radius:14px;
-      background:#fff;
+      padding:25px 18px 14px;
+      margin-bottom:15px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:0;
+      min-height:172px;
     }
 
-    .wc-info-tab{
+    .wc-customer-tab{
       position:absolute;
       top:-14px;
-      right:18px;
-      min-width:118px;
-      padding:7px 16px;
-      border-radius:8px 8px 5px 5px;
-      background:linear-gradient(180deg,#0a7550,#075f41);
+      right:24px;
+      background:linear-gradient(180deg,#087746,#055c36);
       color:#fff;
-      text-align:center;
-      font-size:13px;
+      border-radius:8px 8px 5px 5px;
+      padding:7px 24px;
+      font-size:14px;
       font-weight:800;
-      box-shadow:0 4px 10px rgba(6,107,61,.12);
+      box-shadow:0 4px 10px rgba(6,107,61,.14);
+    }
+
+    .wc-customer-col{
+      padding:0 18px;
+    }
+
+    .wc-customer-col + .wc-customer-col{
+      border-right:1px dashed #d9e1dd;
     }
 
     .wc-data-row{
       display:grid;
-      grid-template-columns:105px 1fr;
+      grid-template-columns:100px 1fr;
       gap:8px;
       align-items:center;
-      min-height:42px;
+      min-height:39px;
       border-bottom:1px dashed #e1e6e3;
       font-size:13px;
-      direction:rtl;
     }
 
     .wc-data-row:last-child{
@@ -392,25 +597,23 @@ const $$ = selector => [...document.querySelectorAll(selector)];
     .wc-data-value{
       color:#151b18;
       font-weight:800;
-      text-align:right;
       overflow-wrap:anywhere;
     }
-
-    .wc-phone-value{
-      text-align:right !important;
-      direction:ltr !important;
-      unicode-bidi:isolate !important;
-    }
-
+.wc-phone-value{
+  text-align:right !important;
+  justify-self:stretch !important;
+  direction:ltr !important;
+  unicode-bidi:isolate !important;
+}
     .wc-section-title{
       display:flex;
       align-items:center;
       justify-content:center;
       gap:12px;
-      margin:0 0 7px;
       color:var(--wc-green);
       font-size:14px;
       font-weight:800;
+      margin:0 0 7px;
     }
 
     .wc-section-title::before,
@@ -429,32 +632,32 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       border:1px solid var(--wc-line);
       border-radius:12px;
       overflow:hidden;
-      margin:0 0 14px;
+      margin:0 0 15px;
       position:relative;
       z-index:2;
     }
 
     .wc-products th{
-      padding:9px 6px;
-      border-left:1px solid rgba(255,255,255,.16);
-      background:linear-gradient(180deg,#0b7651,#075f41);
+      background:linear-gradient(180deg,#087746,#055d37);
       color:#fff;
       font-size:13px;
       font-weight:800;
+      padding:10px 6px;
+      border-left:1px solid rgba(255,255,255,.16);
     }
 
     .wc-products td{
-      height:74px;
-      padding:12px 8px;
-      border-left:1px solid #d7dfdb;
-      border-top:1px solid #d7dfdb;
       background:#fff;
       color:#111;
+      padding:14px 8px;
+      height:82px;
       text-align:center;
       vertical-align:middle;
+      border-left:1px solid #d7dfdb;
+      border-top:1px solid #d7dfdb;
       font-size:15px !important;
       font-weight:800 !important;
-      line-height:1.5;
+      line-height:1.55;
     }
 
     .wc-products th:last-child,
@@ -462,9 +665,17 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       border-left:0;
     }
 
-    .wc-products .wc-item{width:46%}
-    .wc-products .wc-small{width:12%}
-    .wc-products .wc-money{width:15%}
+    .wc-products .wc-item{
+      width:46%;
+    }
+
+    .wc-products .wc-small{
+      width:12%;
+    }
+
+    .wc-products .wc-money{
+      width:15%;
+    }
 
     .wc-products .wc-item-cell{
       text-align:right;
@@ -474,12 +685,12 @@ const $$ = selector => [...document.querySelectorAll(selector)];
 
     .wc-bottom-grid{
       display:grid;
-      grid-template-columns:40% 60%;
+      grid-template-columns:43% 57%;
       gap:14px;
-      align-items:start;
       position:relative;
       z-index:2;
-      margin-bottom:0;
+      margin-bottom:12px;
+      align-items:stretch;
     }
 
     .wc-totals{
@@ -493,7 +704,7 @@ const $$ = selector => [...document.querySelectorAll(selector)];
       display:grid;
       grid-template-columns:1fr auto;
       align-items:center;
-      min-height:42px;
+      min-height:46px;
       padding:0 14px;
       border-bottom:1px solid #dce4e0;
       font-size:13px;
@@ -504,172 +715,176 @@ const $$ = selector => [...document.querySelectorAll(selector)];
     }
 
     .wc-total-row strong{
+      font-size:16px;
       color:#111;
-      font-size:15px;
     }
 
     .wc-total-row.wc-grand{
-      min-height:54px;
-      background:linear-gradient(180deg,#0b7651,#075f41);
+      min-height:60px;
+      background:linear-gradient(180deg,#087746,#055d37);
       color:#fff;
       font-weight:900;
     }
 
     .wc-total-row.wc-grand strong{
       color:#fff;
-      font-size:20px;
+      font-size:22px;
     }
 
-    .wc-amount-card{
-      min-height:114px;
-      padding:16px 18px;
+    .wc-summary-card{
       border:1px solid var(--wc-line);
       border-radius:12px;
       background:#fff;
+      padding:14px 18px;
+      min-height:206px;
       display:flex;
       flex-direction:column;
-      justify-content:center;
       align-items:center;
-      text-align:center;
+      justify-content:flex-start;
     }
 
     .wc-words-label{
-      margin-bottom:6px;
+      align-self:flex-start;
       color:#67736d;
       font-size:12px;
-      text-align:center;
+      margin-bottom:6px;
     }
 
     .wc-words{
+      width:100%;
       color:var(--wc-green);
-      font-size:16px;
+      font-size:18px;
       font-weight:900;
-      line-height:1.55;
       text-align:center;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:clip;
-    }
-
-    /* الختم في المنتصف */
-    .wc-stamp-center{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      position:relative;
-      z-index:2;
-      margin:4px 0 8px;
+      line-height:1.55;
+      margin-bottom:8px;
     }
 
     .wc-stamp{
-      display:block;
-      width:120px;
-      height:120px;
+      width:132px;
+      height:132px;
       object-fit:contain;
-      margin:0 auto;
-      filter:saturate(1.28) contrast(1.06);
+      margin-top:auto;
     }
 
     .wc-notes{
-      min-height:54px;
-      padding:9px 16px;
+      min-height:62px;
       border:1px solid var(--wc-line);
       border-radius:12px;
       background:#fff;
+      padding:10px 16px;
+      position:relative;
+      z-index:2;
+      margin-bottom:12px;
       display:grid;
       grid-template-columns:120px 1fr;
       align-items:center;
       gap:8px;
-      position:relative;
-      z-index:2;
-      margin-bottom:12px;
     }
 
     .wc-notes-label{
       color:var(--wc-green);
-      font-size:13px;
       font-weight:800;
+      font-size:13px;
     }
 
     .wc-notes-text{
       color:#202822;
       font-size:13px;
       font-weight:700;
-      text-align:center;
     }
 
     .wc-footer{
-      margin-top:auto;
-      height:58px;
-      min-height:58px;
-      position:relative;
-      z-index:2;
-      border-radius:29px;
-      background:linear-gradient(90deg,#075f41,#0b7651);
-      color:#fff;
-      font-size:12px;
-      font-weight:700;
-      direction:ltr !important;
-      overflow:hidden;
-    }
+  margin-top:auto;
+  height:58px;
+  min-height:58px;
 
-    .wc-footer::before,
-    .wc-footer::after{
-      content:"";
-      position:absolute;
-      top:50%;
-      width:64px;
-      height:64px;
-      transform:translateY(-50%);
-      opacity:.25;
-      background:
-        radial-gradient(circle,rgba(255,255,255,.95) 1.4px,transparent 1.7px);
-      background-size:10px 10px;
-    }
+  position:relative;
+  z-index:2;
 
-    .wc-footer::before{right:5px}
-    .wc-footer::after{left:5px}
+  background:linear-gradient(
+    90deg,
+    #04522f,
+    #087746
+  );
 
-    .wc-footer-brand{
-      position:absolute;
-      right:20px;
-      top:50%;
-      transform:translateY(-50%);
-      white-space:nowrap !important;
-      text-align:right;
-      direction:ltr !important;
-    }
+  color:#fff;
 
-    .wc-footer-location{
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform:translate(-50%,-50%);
-      white-space:nowrap !important;
-      text-align:center;
-      direction:rtl !important;
-    }
+  border-radius:
+    0 0 14px 14px;
 
-    .wc-footer-phone{
-      position:absolute;
-      left:20px;
-      top:50%;
-      transform:translateY(-50%);
-      display:flex;
-      align-items:center;
-      justify-content:flex-start;
-      gap:6px;
-      white-space:nowrap !important;
-      direction:ltr !important;
-    }
+  font-size:12px;
+  font-weight:700;
 
-    .wc-whatsapp-svg{
-      width:18px;
-      height:18px;
-      color:#fff;
-      flex:0 0 auto;
-    }
+  direction:ltr !important;
+}
 
+
+/* Winter Camp — أقصى اليمين */
+.wc-footer-brand{
+  position:absolute;
+
+  right:20px;
+  top:50%;
+
+  transform:translateY(-50%);
+
+  white-space:nowrap !important;
+
+  text-align:right;
+
+  direction:ltr !important;
+}
+
+
+/* أبها - المملكة العربية السعودية — الوسط */
+.wc-footer-location{
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  transform:
+    translate(-50%,-50%);
+
+  white-space:nowrap !important;
+
+  text-align:center;
+
+  direction:rtl !important;
+}
+
+
+/* واتساب + الرقم — أقصى اليسار */
+.wc-footer-phone{
+  position:absolute;
+
+  left:20px;
+  top:50%;
+
+  transform:translateY(-50%);
+
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+
+  gap:6px;
+
+  white-space:nowrap !important;
+
+  direction:ltr !important;
+}
+
+
+/* أيقونة واتساب */
+.wc-whatsapp-svg{
+  width:18px;
+  height:18px;
+
+  color:#fff;
+
+  flex:0 0 auto;
+}
     .invoice-actions{
       margin-top:14px !important;
     }
@@ -5618,19 +5833,23 @@ function showInvoice(id) {
         Number(id)
     );
 
+
   if (!booking) {
     return;
   }
+
 
   const agreed =
     Number(
       booking.agreed || 0
     );
 
+
   const paid =
     Number(
       booking.paid || 0
     );
+
 
   const remaining =
     Math.max(
@@ -5638,11 +5857,13 @@ function showInvoice(id) {
       agreed - paid
     );
 
+
   const invoiceNumber =
     'INV-' +
     String(
       booking.id
     ).slice(-8);
+
 
   openModal(
     '',
@@ -5666,22 +5887,6 @@ function showInvoice(id) {
               <span></span>
             </div>
 
-            <div class="wc-audio-corner" aria-hidden="true">
-
-              <div class="wc-waveform">
-                <i></i><i></i><i></i><i></i><i></i>
-                <i></i><i></i><i></i><i></i><i></i>
-                <i></i><i></i><i></i><i></i><i></i>
-              </div>
-
-              <div class="wc-mixer">
-                <span class="wc-mixer-line"></span>
-                <span class="wc-mixer-line"></span>
-                <span class="wc-mixer-line"></span>
-                <span class="wc-mixer-line"></span>
-              </div>
-
-            </div>
 
             <header class="wc-invoice-header">
 
@@ -5700,10 +5905,11 @@ function showInvoice(id) {
               </div>
 
               <div class="wc-invoice-title">
-                ‹ فاتورة ›
+                « فاتورة »
               </div>
 
             </header>
+
 
             <section class="wc-meta">
 
@@ -5724,6 +5930,7 @@ function showInvoice(id) {
                 </div>
 
               </div>
+
 
               <div class="wc-meta-card">
 
@@ -5751,134 +5958,118 @@ function showInvoice(id) {
 
             </section>
 
-            <section class="wc-info-grid">
 
-              <div class="wc-info-card">
+            <section class="wc-customer-box">
 
-                <div class="wc-info-tab">
-                  بيانات العميل
-                </div>
+              <div class="wc-customer-tab">
+                بيانات العميل
+              </div>
+
+
+              <div class="wc-customer-col">
 
                 <div class="wc-data-row">
-
                   <span class="wc-data-label">
                     اسم العميل
                   </span>
-
                   <span class="wc-data-value">
                     ${esc(
                       booking.name || '-'
                     )}
                   </span>
-
                 </div>
 
                 <div class="wc-data-row">
+                 <span class="wc-data-label">
+  رقم التواصل
+</span>
 
-                  <span class="wc-data-label">
-                    رقم التواصل
-                  </span>
-
-                  <span
-                    class="wc-data-value wc-phone-value"
-                    dir="ltr">
-                    ${esc(
-                      booking.phone || '-'
-                    )}
-                  </span>
-
+<span
+  class="wc-data-value wc-phone-value"
+  dir="ltr"
+>
+  ${esc(
+    booking.phone || '-'
+  )}
+</span>
                 </div>
 
                 <div class="wc-data-row">
-
                   <span class="wc-data-label">
-                    العنوان
+                    الموقع
                   </span>
-
                   <span class="wc-data-value">
                     ${esc(
                       booking.location || '-'
                     )}
                   </span>
-
                 </div>
 
               </div>
 
-              <div class="wc-info-card">
 
-                <div class="wc-info-tab">
-                  بيانات الفعالية
-                </div>
+              <div class="wc-customer-col">
 
                 <div class="wc-data-row">
-
                   <span class="wc-data-label">
-                    نوع الفعالية
+                    نوع المناسبة
                   </span>
-
                   <span class="wc-data-value">
                     ${esc(
                       booking.eventType || '-'
                     )}
                   </span>
-
                 </div>
 
                 <div class="wc-data-row">
-
                   <span class="wc-data-label">
                     تاريخ الفعالية
                   </span>
-
                   <span class="wc-data-value">
                     ${hijriFull(
                       booking.date
                     )}
                   </span>
-
                 </div>
 
                 <div class="wc-data-row">
-
                   <span class="wc-data-label">
-                    مكان الفعالية
+                    ملاحظات
                   </span>
-
                   <span class="wc-data-value">
                     ${esc(
-                      booking.location || '-'
+                      booking.notes ||
+                      'شكراً لثقتكم بنا'
                     )}
                   </span>
-
                 </div>
 
               </div>
 
             </section>
 
+
             <div class="wc-section-title">
               تفاصيل المنتجات والخدمات
             </div>
+
 
             <table class="wc-products">
 
               <thead>
                 <tr>
-                  <th class="wc-small">م</th>
-
-                  <th class="wc-item">
-                    المنتج / الخدمة
+                  <th class="wc-small">
+                    م
                   </th>
-
+                  <th class="wc-item">
+                    الصنف
+                  </th>
                   <th class="wc-small">
                     الكمية
                   </th>
-
                   <th class="wc-money">
                     سعر الوحدة
                   </th>
-
                   <th class="wc-money">
                     الإجمالي
                   </th>
@@ -5887,7 +6078,6 @@ function showInvoice(id) {
 
               <tbody>
                 <tr>
-
                   <td>
                     1
                   </td>
@@ -5913,11 +6103,11 @@ function showInvoice(id) {
                       agreed
                     )}
                   </td>
-
                 </tr>
               </tbody>
 
             </table>
+
 
             <section class="wc-bottom-grid">
 
@@ -5927,7 +6117,6 @@ function showInvoice(id) {
                   <span>
                     المبلغ المتفق عليه
                   </span>
-
                   <strong>
                     ${money(
                       agreed
@@ -5939,7 +6128,6 @@ function showInvoice(id) {
                   <span>
                     الواصل
                   </span>
-
                   <strong>
                     ${money(
                       paid
@@ -5951,7 +6139,6 @@ function showInvoice(id) {
                   <span>
                     المتبقي
                   </span>
-
                   <strong>
                     ${money(
                       remaining
@@ -5963,7 +6150,6 @@ function showInvoice(id) {
                   <span>
                     المبلغ الإجمالي
                   </span>
-
                   <strong>
                     ${money(
                       agreed
@@ -5973,7 +6159,8 @@ function showInvoice(id) {
 
               </div>
 
-              <div class="wc-amount-card">
+
+              <div class="wc-summary-card">
 
                 <div class="wc-words-label">
                   المبلغ كتابة
@@ -5985,71 +6172,69 @@ function showInvoice(id) {
                   )}
                 </div>
 
+                <img
+                  src="stamp.png?v=100"
+                  class="wc-stamp"
+                  alt="ختم Winter Camp">
+
               </div>
 
             </section>
 
-            <div class="wc-stamp-center">
-
-              <img
-                src="stamp.png?v=117"
-                class="wc-stamp"
-                alt="ختم Winter Camp">
-
-            </div>
 
             <section class="wc-notes">
 
               <div class="wc-notes-label">
-                ملاحظات
+                ملاحظات إضافية
               </div>
 
               <div class="wc-notes-text">
                 ${esc(
                   booking.notes ||
-                  'نعتز بخدمتكم ونسعى لتقديم الأفضل دائماً'
+                  'نعتز بثقتكم ونسعد بخدمتكم دائماً'
                 )}
               </div>
 
             </section>
 
+
             <footer class="wc-footer">
 
-              <div class="wc-footer-brand">
-                Winter Camp
-              </div>
+  <div class="wc-footer-brand">
+    Winter Camp
+  </div>
 
-              <div class="wc-footer-location">
-                أبها - المملكة العربية السعودية
-              </div>
+  <div class="wc-footer-location">
+    أبها - المملكة العربية السعودية
+  </div>
 
-              <div class="wc-footer-phone">
+  <div class="wc-footer-phone">
 
-                <svg
-                  class="wc-whatsapp-svg"
-                  viewBox="0 0 32 32"
-                  aria-hidden="true">
+    <svg
+      class="wc-whatsapp-svg"
+      viewBox="0 0 32 32"
+      aria-hidden="true"
+    >
+      <path
+        fill="currentColor"
+        d="M16 3C8.82 3 3 8.82 3 16c0 2.5.7 4.84 1.91 6.83L3 29l6.35-1.83A12.94 12.94 0 0 0 16 29c7.18 0 13-5.82 13-13S23.18 3 16 3Zm0 23.64c-2.05 0-4.04-.55-5.78-1.59l-.41-.24-3.77 1.09 1.01-3.68-.27-.42A10.58 10.58 0 1 1 16 26.64Zm5.8-7.94c-.32-.16-1.88-.93-2.17-1.04-.29-.11-.5-.16-.71.16-.21.32-.82 1.04-1.01 1.25-.18.21-.37.24-.69.08-.32-.16-1.34-.49-2.56-1.57-.95-.85-1.59-1.89-1.78-2.21-.18-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.18.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.71-1.72-.98-2.36-.26-.62-.52-.54-.71-.55h-.61c-.21 0-.56.08-.85.4-.29.32-1.12 1.09-1.12 2.66 0 1.57 1.15 3.09 1.31 3.3.16.21 2.26 3.45 5.48 4.84.77.33 1.36.53 1.83.68.77.24 1.47.21 2.02.13.62-.09 1.88-.77 2.15-1.51.26-.74.26-1.38.18-1.51-.08-.14-.29-.21-.61-.37Z"
+      />
+    </svg>
 
-                  <path
-                    fill="currentColor"
-                    d="M16 3C8.82 3 3 8.82 3 16c0 2.5.7 4.84 1.91 6.83L3 29l6.35-1.83A12.94 12.94 0 0 0 16 29c7.18 0 13-5.82 13-13S23.18 3 16 3Zm0 23.64c-2.05 0-4.04-.55-5.78-1.59l-.41-.24-3.77 1.09 1.01-3.68-.27-.42A10.58 10.58 0 1 1 16 26.64Zm5.8-7.94c-.32-.16-1.88-.93-2.17-1.04-.29-.11-.5-.16-.71.16-.21.32-.82 1.04-1.01 1.25-.18.21-.37.24-.69.08-.32-.16-1.34-.49-2.56-1.57-.95-.85-1.59-1.89-1.78-2.21-.18-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.18.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.71-1.72-.98-2.36-.26-.62-.52-.54-.71-.55h-.61c-.21 0-.56.08-.85.4-.29.32-1.12 1.09-1.12 2.66 0 1.57 1.15 3.09 1.31 3.3.16.21 2.26 3.45 5.48 4.84.77.33 1.36.53 1.83.68.77.24 1.47.21 2.02.13.62-.09 1.88-.77 2.15-1.51.26-.74.26-1.38.18-1.51-.08-.14-.29-.21-.61-.37Z">
-                  </path>
+    <span>
+      0573757275
+    </span>
 
-                </svg>
+  </div>
 
-                <span>
-                  0573757275
-                </span>
-
-              </div>
-
-            </footer>
+</footer>
 
           </div>
 
         </div>
 
       </div>
+
 
       <div class="invoice-actions">
 
@@ -6070,6 +6255,7 @@ function showInvoice(id) {
       </div>
     `
   );
+
 
   function fitInvoicePreview() {
 
@@ -6148,6 +6334,7 @@ function showInvoice(id) {
 
   }
 
+
   requestAnimationFrame(
     () => {
 
@@ -6167,15 +6354,18 @@ function showInvoice(id) {
     { passive:true }
   );
 
+
   $('#shareInvoice').onclick =
     () =>
       shareInvoicePDF(
         booking
       );
 
+
   $('#printInvoice').onclick =
     () =>
       window.print();
+
 
   $('#closeInvoice').onclick =
     closeModal;
