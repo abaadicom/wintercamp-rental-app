@@ -4296,3 +4296,5 @@ body{
   color: #e0a339 !important;
   background: rgba(224, 163, 57, 0.12);
 }
+/* Winter Camp electronic contracts */
+.wc-contract-form{display:grid;gap:12px;direction:rtl}.wc-contract-form label:not(.wc-check){display:grid;gap:6px;font-size:13px;font-weight:700}.wc-contract-form input:not([type=checkbox]),.wc-contract-form textarea{width:100%;min-height:43px;background:#10171b;color:#fff;border:1px solid #35444a;border-radius:10px;padding:10px}.wc-contract-summary,.wc-terms{border:1px solid #35444a;border-radius:12px;padding:12px;line-height:1.9}.wc-terms{white-space:pre-line;font-size:12px;max-height:230px;overflow:auto}.wc-check{display:flex;align-items:center;gap:8px;font-size:13px}.wc-signature{width:100%;height:150px;background:#fff;border:2px solid #25c16f;border-radius:12px;touch-action:none}.wc-contract-note{font-size:12px;color:#9da9ad;line-height:1.7}.wc-signed-image{width:100%;max-height:145px;object-fit:contain;background:#fff;border-radius:8px}.wc-print-header{text-align:center;color:#25c16f}.wc-contract-btn{font-weight:800}
