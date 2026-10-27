@@ -1,14 +1,16 @@
 const CACHE_NAME =
-  'wintercamp-v119';
+  'wintercamp-v121';
 
 const APP_FILES = [
   './',
   './index.html',
-  './styles.css?v=119',
-  './app.js?v=119',
-  './contracts.js?v=119',
-  './manifest.webmanifest?v=119',
-  './wintercamp_icon.png?v=119'
+  './styles.css?v=120',
+  './app.js?v=120',
+  './contracts.js?v=120',
+  './remote.js?v=120',
+  './sign.html',
+  './sign.js?v=120',
+  './wk-public-config.json'
 ];
 
 self.addEventListener(
