@@ -1,5 +1,5 @@
 
-/* Winter Camp v135 — client-side PDF export, no third-party services. */
+/* Winter Camp v136 — corrected full PDF data and stamp. */
 (function(){
 'use strict';
 const W=620,H=877,S=2;
@@ -74,7 +74,8 @@ async function generate(root){
  const ctx=canvas.getContext('2d');ctx.scale(S,S);
  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
  ctx.fillStyle=green;ctx.beginPath();ctx.arc(W+5,-5,65,0,Math.PI*2);ctx.fill();
- const logo=await loadImage(root.querySelector('.wc-contract-paper-head img')?.currentSrc||'invoice_logo.png');
+ const logoNode=root.querySelector('.wc-contract-paper-head img');
+ const logo=await loadImage(logoNode?.currentSrc||logoNode?.src||'invoice_logo.png')||await loadImage('invoice_logo.png')||await loadImage('logo.png');
  imageContain(ctx,logo,240,19,140,69);
  text(ctx,'WINTER CAMP',310,100,18,true,ink,'center');
  text(ctx,'وينتر كامب للصوتيات والإنتاج الصوتي',310,119,10,false,ink,'center');
@@ -100,13 +101,18 @@ async function generate(root){
   }
  }
  section('بيانات أطراف العقد');
- grid(pair(root,'.wc-contract-grid:nth-of-type(2) > div').length?pair(root,'.wc-contract-grid:nth-of-type(2) > div'):pair(root,'.wc-contract-grid').slice(0,4));
+ const groups=[...root.querySelectorAll('.wc-contract-grid')];
+ const parties=groups[0]?pair(groups[0],':scope > div'):[];
+ const rental=groups[1]?pair(groups[1],':scope > div'):[];
+ if(parties.length<4||rental.length<4)throw new Error('بيانات العقد غير مكتملة، لا يمكن إرسال ملف ناقص');
+ grid(parties);
  section('تفاصيل التأجير');
- grid(pair(root,'.wc-contract-grid').slice(4,8));
- const money=[...root.querySelectorAll('.wc-contract-money > div')].map(n=>n.textContent.trim());
+ grid(rental);
+ const money=[...root.querySelectorAll('.wc-contract-money > div')].map(n=>({label:n.childNodes[0]?.textContent?.trim()||'',value:n.querySelector('b')?.textContent?.trim()||''}));
  const bw=176;for(let i=0;i<3;i++){
   const x=406-i*184;ctx.fillStyle=light;ctx.fillRect(x,y,bw,42);
-  text(ctx,money[i]||'',x+bw/2,y+25,11,true,green,'center');
+  text(ctx,money[i]?.label||'',x+bw/2,y+15,10,false,ink,'center');
+  text(ctx,money[i]?.value||'',x+bw/2,y+31,12,true,green,'center');
  }y+=52;
  section('الشروط والأحكام');
  const terms=read(root,'.wc-contract-paper-terms');
@@ -122,8 +128,11 @@ async function generate(root){
  termLines.forEach((line,i)=>text(ctx,line,572,y+13+i*lineH,fontSize));
  ctx.restore();y+=height+9;
  const notes=read(root,'.wc-contract-notes');
- text(ctx,notes,572,y+9,10);y+=20;
- const signY=Math.max(y+6,766);
+ const noteLines=wrap(ctx,notes,526,10);
+ noteLines.forEach((line,i)=>text(ctx,line,572,y+9+i*12,10));
+ y+=Math.max(20,noteLines.length*12+6);
+ const signY=Math.max(y+6,747);
+ if(signY>780)throw new Error('العقد أطول من صفحة A4؛ لم يتم إنشاء ملف ناقص');
  ctx.strokeStyle='#9cb5a4';ctx.beginPath();ctx.moveTo(38,signY);ctx.lineTo(252,signY);ctx.moveTo(368,signY);ctx.lineTo(582,signY);ctx.stroke();
  text(ctx,'اعتماد المؤجر',573,signY+18,11,true);
  text(ctx,'Winter Camp',573,signY+35,10);
@@ -137,7 +146,9 @@ async function generate(root){
   text(ctx,read(tenant,'p'),245,signY+37,9,false,ink,'left');
  }
  text(ctx,read(tenant,'small'),245,signY+66,8,false,muted,'left');
- const stamp=await loadImage(root.querySelector('.wc-contract-stamp')?.currentSrc||'stamp.png');
+ const stampNode=root.querySelector('.wc-contract-stamp');
+ const stamp=await loadImage(stampNode?.currentSrc||stampNode?.src||'stamp.png')||await loadImage('stamp.png');
+ if(!stamp)throw new Error('تعذر تحميل صورة الختم؛ تأكد من وجود stamp.png على الموقع');
  imageContain(ctx,stamp,268,signY-9,84,84);
  ctx.fillStyle=green;ctx.fillRect(38,853,544,1.5);
  text(ctx,'WINTER CAMP · أبها، المملكة العربية السعودية',310,868,9,true,green,'center');
