@@ -1,0 +1,1 @@
+Winter Camp v122: approved remote contracts open read-only print/PDF preview. Deploy updated wk-contract-status-index.ts in Supabase to allow manager to retrieve the saved signature. Do not expose service_role keys. Existing browser data is preserved.
