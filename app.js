@@ -7362,7 +7362,7 @@ if (
       navigator
         .serviceWorker
         .register(
-          './sw.js?v=117'
+          './sw.js?v=124'
         )
         .catch(
           console.error

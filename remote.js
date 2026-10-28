@@ -7,10 +7,43 @@ const DEFAULT_CONFIG={"url": "https://tgafpdgfbynlcdoruqzu.supabase.co", "key": 
 const config=()=>{try{return {...DEFAULT_CONFIG,...JSON.parse(localStorage.getItem(SETTINGS)||'{}')}}catch{return {...DEFAULT_CONFIG}}};
 const setConfig=x=>localStorage.setItem(SETTINGS,JSON.stringify(x));
 let session=null;
+const SESSION_KEY='wk_admin_session_v124';
+// Store only a short-lived session for the current browser tab; never store a password.
+try {
+  const saved=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');
+  if(saved?.access_token && saved?.refresh_token) session=saved;
+} catch { /* storage may be unavailable */ }
+function rememberSession(s){
+  session=s;
+  try { sessionStorage.setItem(SESSION_KEY,JSON.stringify(s)); } catch {}
+}
+function forgetSession(){
+  session=null;
+  try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+}
+async function silentAuth(){
+  const c=config();
+  if(!validate(c)||!session?.access_token) return null;
+  if(session.expires_at>Date.now()/1000+90) return session.access_token;
+  if(!session.refresh_token){forgetSession();return null;}
+  try {
+    const r=await fetch(c.url+'/auth/v1/token?grant_type=refresh_token',{
+      method:'POST',
+      headers:{'Content-Type':'application/json',apikey:c.key},
+      body:JSON.stringify({refresh_token:session.refresh_token})
+    });
+    const data=await r.json();
+    if(!r.ok||!data.access_token) {forgetSession();return null;}
+    rememberSession({access_token:data.access_token,refresh_token:data.refresh_token,
+      expires_at:Math.floor(Date.now()/1000)+Number(data.expires_in||3600)});
+    return session.access_token;
+  } catch {return null;}
+}
+
 function validate(c){return /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(c.url||'') && /^(sb_publishable_|eyJ)/.test(c.key||'')}
 function setup(){const c=config();openModal('ربط Supabase — إعداد لمرة واحدة',`<div class="wc-contract-form"><p>أدخل عنوان مشروع Supabase ومفتاح <b>publishable / anon</b> العام فقط. لا تدخل service_role أو secret key.</p><label>Project URL<input id="wkUrl" dir="ltr" placeholder="https://xxxx.supabase.co" value="${escHtml(c.url)}"></label><label>Publishable / anon key<input id="wkKey" dir="ltr" type="text" value="${escHtml(c.key)}"></label><div class="card-actions"><button class="small-btn primary" id="wkCfgSave">حفظ الاتصال</button></div></div>`);$('#wkCfgSave').onclick=()=>{const x={url:$('#wkUrl').value.trim().replace(/\/$/,''),key:$('#wkKey').value.trim()};if(!validate(x)){toast('تحقق من رابط المشروع والمفتاح العام فقط');return}setConfig(x);closeModal();toast('تم حفظ إعداد الاتصال العام')};}
-async function auth(){const c=config();if(!validate(c)){setup();return null}if(session?.access_token&&session.expires_at>Date.now()/1000+60)return session.access_token;
-return new Promise(resolve=>{openModal('دخول مدير العقود',`<div class="wc-contract-form"><p>تسجيل الدخول مطلوب لإصدار الروابط فقط، ولا يؤثر على فتح البرنامج.</p><label>البريد الإلكتروني<input id="wkEmail" type="email" autocomplete="username"></label><label>كلمة المرور<input id="wkPass" type="password" autocomplete="current-password"></label><div class="card-actions"><button id="wkLogin" class="small-btn primary">دخول</button><button id="wkSettings" class="small-btn">إعدادات الاتصال</button></div><p id="wkLoginMsg"></p></div>`);$('#wkSettings').onclick=()=>{setup();resolve(null)};$('#wkLogin').onclick=async()=>{const btn=$('#wkLogin');btn.disabled=true;try{const r=await fetch(c.url+'/auth/v1/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json',apikey:c.key},body:JSON.stringify({email:$('#wkEmail').value.trim(),password:$('#wkPass').value})});const data=await r.json();if(!r.ok||!data.access_token)throw Error(data.error_description||data.msg||'فشل الدخول');session={access_token:data.access_token,expires_at:Math.floor(Date.now()/1000)+Number(data.expires_in||3600)};closeModal();resolve(session.access_token)}catch(e){$('#wkLoginMsg').textContent=e.message;btn.disabled=false}}})}
+async function auth(){const c=config();if(!validate(c)){setup();return null}const existing=await silentAuth();if(existing)return existing;
+return new Promise(resolve=>{openModal('دخول مدير العقود',`<div class="wc-contract-form"><p>تسجيل الدخول مطلوب لإصدار الروابط فقط، ولا يؤثر على فتح البرنامج.</p><label>البريد الإلكتروني<input id="wkEmail" type="email" autocomplete="username"></label><label>كلمة المرور<input id="wkPass" type="password" autocomplete="current-password"></label><div class="card-actions"><button id="wkLogin" class="small-btn primary">دخول</button><button id="wkSettings" class="small-btn">إعدادات الاتصال</button></div><p id="wkLoginMsg"></p></div>`);$('#wkSettings').onclick=()=>{setup();resolve(null)};$('#wkLogin').onclick=async()=>{const btn=$('#wkLogin');btn.disabled=true;try{const r=await fetch(c.url+'/auth/v1/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json',apikey:c.key},body:JSON.stringify({email:$('#wkEmail').value.trim(),password:$('#wkPass').value})});const data=await r.json();if(!r.ok||!data.access_token)throw Error(data.error_description||data.msg||'فشل الدخول');rememberSession({access_token:data.access_token,refresh_token:data.refresh_token,expires_at:Math.floor(Date.now()/1000)+Number(data.expires_in||3600)});closeModal();resolve(session.access_token);queueMicrotask(checkPendingContracts)}catch(e){$('#wkLoginMsg').textContent=e.message;btn.disabled=false}}})}
 async function call(fn,body){const token=await auth();if(!token)return null;const c=config();const r=await fetch(c.url+'/functions/v1/'+fn,{method:'POST',headers:{'Content-Type':'application/json',apikey:c.key,Authorization:'Bearer '+token},body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok||d.error)throw Error(d.error||'تعذر الاتصال بالخادم ('+r.status+')');return d}
 const find=id=>db.contracts?.find(x=>String(x.bookingId)===String(id));
 const booking=id=>db.bookings?.find(x=>String(x.id)===String(id));
@@ -19,6 +52,56 @@ async function send(id){const c=find(id),b=booking(id);if(!c||!b)return toast('�
 if(c.status!=='pending_remote')return toast('احفظ مسودة التوقيع عن بُعد أولًا');if(!confirm('إصدار عقد رسمي برقم من Supabase ورابط توقيع خاص؟'))return;
 try{const result=await call('wk-contract-issue',{booking_id:String(b.id),customer_name:c.name,customer_phone:c.phone,customer_id_number:c.nationalId,equipment_details:String(b.device||''),terms:c.terms,contract_details:{returnAt:c.returnAt,notes:c.notes,bookingDate:b.date,location:b.location,agreed:b.agreed,paid:b.paid}});if(!result)return;const prev={...c};Object.assign(c,{contractNumber:result.number,remoteId:result.contract_id,remoteUrl:result.signing_url,remoteExpires:result.expires_at,status:'remote_sent'});try{save()}catch(e){Object.assign(c,prev);throw Error('تم إنشاء العقد في الخادم لكن تعذر حفظ بياناته محليًا؛ لا تصدر عقدًا جديدًا قبل استعادة الرابط')};closeModal();go('contracts');whatsapp(c.phone,c.contractNumber,c.remoteUrl);toast('تم إصدار '+c.contractNumber+' وفتح واتساب')}catch(e){toast(e.message);alert(e.message)}}
 async function refresh(id){const c=find(id);if(!c?.remoteId)return toast('لم يصدر العقد بعد');try{const result=await call('wk-contract-status',{contract_id:c.remoteId});if(!result)return;if(result.status==='approved'){c.status='remote_approved';c.signedAt=result.approved_at;c.approvalMethod=result.approval_method;save();closeModal();go('contracts');toast('تم اعتماد العقد '+c.contractNumber)}else toast('حالة العقد: '+(result.status==='pending'?'بانتظار موافقة العميل':result.status))}catch(e){toast(e.message);alert(e.message)}}
+
+// Automatic status updates while this app is open. No background login prompts.
+let polling=false;
+let lastCheck=0;
+async function checkPendingContracts(){
+  if(polling||document.hidden||!navigator.onLine) return;
+  const pending=(db.contracts||[]).filter(c=>c.status==='remote_sent'&&c.remoteId);
+  if(!pending.length) return;
+  const token=await silentAuth();
+  if(!token) return;
+  const c=config();
+  polling=true;
+  try {
+    let changed=false;
+    for(const contract of pending){
+      try {
+        const response=await fetch(c.url+'/functions/v1/wk-contract-status',{
+          method:'POST',
+          headers:{'Content-Type':'application/json',apikey:c.key,Authorization:'Bearer '+token},
+          body:JSON.stringify({contract_id:contract.remoteId}),
+          cache:'no-store'
+        });
+        if(response.status===401||response.status===403){
+          // Stop silent checks if permission is revoked or the session is invalid.
+          if(response.status===401)forgetSession();
+          break;
+        }
+        if(!response.ok)continue;
+        const result=await response.json();
+        if(result.status==='approved'){
+          contract.status='remote_approved';
+          contract.signedAt=result.approved_at;
+          contract.approvalMethod=result.approval_method;
+          changed=true;
+        }
+      }catch{/* Network errors are retried on the next check. */}
+    }
+    if(changed){
+      try{save()}catch(e){console.warn('Could not save remote contract status',e);return;}
+      if(currentPage==='contracts')go('contracts');
+      toast('تم تحديث حالة العقود المعتمدة تلقائيًا');
+    }
+  } finally {polling=false;lastCheck=Date.now();}
+}
+// Checks are throttled and only run when the page is visible and a manager session exists.
+setInterval(()=>{if(Date.now()-lastCheck>=12000)checkPendingContracts();},12000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkPendingContracts();});
+window.addEventListener('focus',checkPendingContracts);
+window.addEventListener('online',checkPendingContracts);
+setTimeout(checkPendingContracts,1500);
 document.addEventListener('click',e=>{const el=e.target.closest('[data-wk-remote]');if(el){e.preventDefault();send(el.dataset.wkRemote)}});
 async function getApproved(id){return call('wk-contract-status',{contract_id:id});}
 window.WKRemote={setup,refresh,getApproved};

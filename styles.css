@@ -4333,3 +4333,20 @@ body{
   .wc-contract-lessor-approval {min-height:104px !important;}
   .wc-contract-lessor-approval .wc-contract-stamp {width:102px !important;height:102px !important;}
 }
+
+/* v124: place stamp physically to the LEFT of "اعتماد المؤجر" (RTL safe). */
+.wc-contract-lessor-approval {
+  padding-left:112px !important;
+  padding-right:8px !important;
+  padding-inline-start:unset !important;
+}
+.wc-contract-lessor-approval .wc-contract-stamp {
+  left:2px !important;
+  right:auto !important;
+  inset-inline-start:auto !important;
+  inset-inline-end:auto !important;
+}
+@media print {
+  .wc-contract-lessor-approval {padding-left:112px !important;padding-right:8px !important;}
+  .wc-contract-lessor-approval .wc-contract-stamp {left:2px !important;right:auto !important;}
+}
