@@ -1,5 +1,5 @@
 
-/* Winter Camp v136 — corrected full PDF data and stamp. */
+/* Winter Camp v137 — corrected full PDF data and stamp. */
 (function(){
 'use strict';
 const W=620,H=877,S=2;
@@ -137,15 +137,15 @@ async function generate(root){
  text(ctx,'اعتماد المؤجر',573,signY+18,11,true);
  text(ctx,'Winter Camp',573,signY+35,10);
  const tenant=root.querySelector('.wc-contract-tenant-approval');
- text(ctx,read(tenant,'b'),245,signY+18,10,true,ink,'left');
+ text(ctx,read(tenant,'b'),245,signY+18,10,true,ink,'right');
  const signImg=tenant?.querySelector('img');
  if(signImg){
   const image=await loadImage(signImg.currentSrc||signImg.src);
   imageContain(ctx,image,44,signY+24,130,35);
  }else{
-  text(ctx,read(tenant,'p'),245,signY+37,9,false,ink,'left');
+  text(ctx,read(tenant,'p'),245,signY+37,9,false,ink,'right');
  }
- text(ctx,read(tenant,'small'),245,signY+66,8,false,muted,'left');
+ text(ctx,read(tenant,'small'),245,signY+66,8,false,muted,'right');
  const stampNode=root.querySelector('.wc-contract-stamp');
  const stamp=await loadImage(stampNode?.currentSrc||stampNode?.src||'stamp.png')||await loadImage('stamp.png');
  if(!stamp)throw new Error('تعذر تحميل صورة الختم؛ تأكد من وجود stamp.png على الموقع');
