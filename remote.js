@@ -51,7 +51,49 @@ function whatsapp(phone,number,url){const digits=String(phone).replace(/\D/g,'')
 async function send(id){const c=find(id),b=booking(id);if(!c||!b)return toast('العقد أو الحجز غير موجود');if(c.status==='remote_approved')return toast('هذا العقد معتمد بالفعل');if(c.status==='remote_sent'){openModal('رابط العقد '+escHtml(c.contractNumber),`<div class="wc-contract-form"><p>العقد بانتظار موافقة العميل.</p><div class="card-actions"><button id="wkRefresh" class="small-btn primary">تحديث حالة العقد</button><button id="wkResend" class="small-btn">إعادة فتح واتساب</button></div></div>`);$('#wkRefresh').onclick=()=>refresh(id);$('#wkResend').onclick=()=>{if(!c.remoteUrl)return toast('الرابط غير محفوظ على هذا الجهاز');whatsapp(c.phone,c.contractNumber,c.remoteUrl)};return}
 if(c.status!=='pending_remote')return toast('احفظ مسودة التوقيع عن بُعد أولًا');if(!confirm('إصدار عقد رسمي برقم من Supabase ورابط توقيع خاص؟'))return;
 try{const result=await call('wk-contract-issue',{booking_id:String(b.id),customer_name:c.name,customer_phone:c.phone,customer_id_number:c.nationalId,equipment_details:String(b.device||''),terms:c.terms,contract_details:{returnAt:c.returnAt,notes:c.notes,bookingDate:b.date,location:b.location,agreed:b.agreed,paid:b.paid}});if(!result)return;const prev={...c};Object.assign(c,{contractNumber:result.number,remoteId:result.contract_id,remoteUrl:result.signing_url,remoteExpires:result.expires_at,status:'remote_sent'});try{save()}catch(e){Object.assign(c,prev);throw Error('تم إنشاء العقد في الخادم لكن تعذر حفظ بياناته محليًا؛ لا تصدر عقدًا جديدًا قبل استعادة الرابط')};closeModal();go('contracts');whatsapp(c.phone,c.contractNumber,c.remoteUrl);toast('تم إصدار '+c.contractNumber+' وفتح واتساب')}catch(e){toast(e.message);alert(e.message)}}
-async function refresh(id){const c=find(id);if(!c?.remoteId)return toast('لم يصدر العقد بعد');try{const result=await call('wk-contract-status',{contract_id:c.remoteId});if(!result)return;if(result.status==='approved'){c.status='remote_approved';c.signedAt=result.approved_at;c.approvalMethod=result.approval_method;save();closeModal();go('contracts');toast('تم اعتماد العقد '+c.contractNumber)}else toast('حالة العقد: '+(result.status==='pending'?'بانتظار موافقة العميل':result.status))}catch(e){toast(e.message);alert(e.message)}}
+async function refresh(id){const c=find(id);if(!c?.remoteId)return toast('لم يصدر العقد بعد');try{const result=await call('wk-contract-status',{contract_id:c.remoteId});if(!result)return;if(result.status==='approved'){c.status='remote_approved';c.signedAt=result.approved_at;c.approvalMethod=result.approval_method;save();announceApproval(c);closeModal();go('contracts')}else toast('حالة العقد: '+(result.status==='pending'?'بانتظار موافقة العميل':result.status))}catch(e){toast(e.message);alert(e.message)}}
+
+// Optional notifications: request permission only after an explicit user click.
+const ALERT_KEY='wk_approved_alerts_v125';
+function getAlerts(){try{return JSON.parse(localStorage.getItem(ALERT_KEY)||'[]')}catch{return []}}
+function storeAlert(contract){
+  const current=getAlerts();
+  if(current.some(x=>x.id===contract.remoteId))return;
+  current.unshift({id:contract.remoteId,number:contract.contractNumber,at:new Date().toISOString()});
+  try{localStorage.setItem(ALERT_KEY,JSON.stringify(current.slice(0,15)))}catch{}
+}
+function announceApproval(contract){
+  storeAlert(contract);
+  toast('✓ تم توقيع واعتماد العقد '+contract.contractNumber);
+  // Browser notifications are best-effort and only while the app is running.
+  if('Notification' in window && Notification.permission==='granted'){
+    try{new Notification('Winter Camp — تم توقيع العقد',{
+      body:'تم اعتماد العقد '+contract.contractNumber+' من العميل',
+      tag:'wk-'+contract.remoteId
+    })}catch{}
+  }
+}
+function notificationsPanel(){
+  const list=getAlerts();
+  return `<div class="wk-approval-alert" role="status">🔔 إشعارات العقود
+    <small>${list.length?'آخر اعتماد: '+escHtml(list[0].number):'سيظهر هنا إشعار عند اكتشاف اعتماد عقد جديد.'}</small>
+    <button type="button" class="small-btn" data-wk-notifications style="margin-top:8px">تفعيل إشعارات المتصفح</button>
+    <button type="button" class="small-btn" data-wk-login-check style="margin-top:8px">تسجيل دخول المدير / فحص الآن</button>
+  </div>`;
+}
+document.addEventListener('click',async e=>{
+  if(e.target.closest('[data-wk-notifications]')){
+    if(!('Notification' in window))return toast('إشعارات المتصفح غير متاحة هنا. إشعارات البرنامج تعمل عند فتحه.');
+    try{
+      const p=await Notification.requestPermission();
+      toast(p==='granted'?'تم تفعيل إشعارات المتصفح أثناء تشغيل البرنامج':'يمكنك متابعة إشعارات الاعتماد داخل البرنامج');
+    }catch{toast('تعذر تفعيل إشعارات المتصفح على هذا الجهاز')}
+  }
+  if(e.target.closest('[data-wk-login-check]')){
+    const token=await auth();
+    if(token)await checkPendingContracts();
+  }
+});
 
 // Automatic status updates while this app is open. No background login prompts.
 let polling=false;
@@ -66,6 +108,7 @@ async function checkPendingContracts(){
   polling=true;
   try {
     let changed=false;
+    const newlyApproved=[];
     for(const contract of pending){
       try {
         const response=await fetch(c.url+'/functions/v1/wk-contract-status',{
@@ -86,13 +129,14 @@ async function checkPendingContracts(){
           contract.signedAt=result.approved_at;
           contract.approvalMethod=result.approval_method;
           changed=true;
+          newlyApproved.push(contract);
         }
       }catch{/* Network errors are retried on the next check. */}
     }
     if(changed){
       try{save()}catch(e){console.warn('Could not save remote contract status',e);return;}
+      newlyApproved.forEach(announceApproval);
       if(currentPage==='contracts')go('contracts');
-      toast('تم تحديث حالة العقود المعتمدة تلقائيًا');
     }
   } finally {polling=false;lastCheck=Date.now();}
 }
@@ -104,5 +148,5 @@ window.addEventListener('online',checkPendingContracts);
 setTimeout(checkPendingContracts,1500);
 document.addEventListener('click',e=>{const el=e.target.closest('[data-wk-remote]');if(el){e.preventDefault();send(el.dataset.wkRemote)}});
 async function getApproved(id){return call('wk-contract-status',{contract_id:id});}
-window.WKRemote={setup,refresh,getApproved};
+window.WKRemote={setup,refresh,getApproved,notificationsPanel,checkPendingContracts};
 })();

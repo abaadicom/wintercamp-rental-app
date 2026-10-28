@@ -4350,3 +4350,85 @@ body{
   .wc-contract-lessor-approval {padding-left:112px !important;padding-right:8px !important;}
   .wc-contract-lessor-approval .wc-contract-stamp {left:2px !important;right:auto !important;}
 }
+
+/* v125: center the official stamp under the lessor approval heading,
+   including the A4 print layout. Overrides the v123/v124 absolute rules. */
+.wc-contract-signature-row .wc-contract-lessor-approval {
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  text-align:center !important;
+  padding:8px !important;
+  min-height:148px !important;
+  position:relative !important;
+}
+.wc-contract-lessor-approval .wc-contract-stamp {
+  position:static !important;
+  inset:auto !important;
+  left:auto !important;
+  right:auto !important;
+  top:auto !important;
+  width:112px !important;
+  height:112px !important;
+  max-width:100% !important;
+  object-fit:contain !important;
+  margin:0 auto !important;
+  align-self:center !important;
+}
+.wc-contract-lessor-approval p {margin:2px auto !important;}
+.wk-approval-alert {border:1px solid #24bd73;border-radius:12px;padding:12px 14px;
+  background:#123c2b;color:#fff;line-height:1.7;margin:10px 0;font-weight:700;}
+.wk-approval-alert small {display:block;color:#c9ead8;font-weight:400;}
+@media print {
+  .wc-contract-signature-row .wc-contract-lessor-approval {padding:8px !important;min-height:148px !important;}
+  .wc-contract-lessor-approval .wc-contract-stamp {position:static !important;width:112px !important;height:112px !important;margin:0 auto !important;}
+}
+
+/* v126: three distinct bottom positions across the whole paper:
+   lessor on the physical right, official stamp at paper center,
+   tenant electronic approval on the physical left. */
+.wc-contract-paper { display:flex !important; flex-direction:column !important; }
+.wc-contract-signature-row {
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) 120px minmax(0,1fr) !important;
+  direction:rtl !important;
+  align-items:start !important;
+  gap:8px !important;
+  margin-top:auto !important;
+  padding-top:18px !important;
+  width:100% !important;
+}
+.wc-contract-signature-row > div { min-width:0; padding:8px 3px !important; }
+.wc-contract-signature-row .wc-contract-lessor-approval {
+  display:block !important;
+  position:static !important;
+  text-align:right !important;
+  min-height:0 !important;
+  padding:8px 3px !important;
+}
+.wc-contract-signature-row .wc-contract-lessor-approval p {margin:4px 0 !important;}
+.wc-contract-signature-row .wc-contract-tenant-approval {text-align:left !important;}
+.wc-contract-signature-row .wc-contract-tenant-approval img {max-width:100% !important;margin-left:0 !important;}
+.wc-contract-signature-row .wc-contract-stamp-center {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-top:none !important;
+  padding:0 !important;
+  min-height:116px !important;
+}
+.wc-contract-signature-row .wc-contract-stamp-center .wc-contract-stamp {
+  display:block !important;
+  position:static !important;
+  inset:auto !important;
+  width:112px !important;
+  height:112px !important;
+  max-width:112px !important;
+  object-fit:contain !important;
+  margin:0 auto !important;
+}
+@media print {
+  .wc-contract-paper {display:flex !important;flex-direction:column !important;min-height:270mm !important;}
+  .wc-contract-signature-row {grid-template-columns:minmax(0,1fr) 120px minmax(0,1fr) !important; margin-top:auto !important;}
+}
