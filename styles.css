@@ -4304,3 +4304,32 @@ body{
 .wc-contract-preview{overflow-x:auto;background:#263239;padding:8px;border-radius:12px}.wc-contract-paper{position:relative;box-sizing:border-box;width:190mm;min-height:270mm;margin:auto;padding:13mm 14mm;background:#fff;color:#17231c;direction:rtl;font:12px/1.7 Tahoma,Arial,sans-serif;box-shadow:0 3px 18px #0002}.wc-contract-decoration{position:absolute;top:0;right:0;width:95px;height:65px;border-radius:0 0 0 65px;background:linear-gradient(135deg,#087746,#03492a)}.wc-contract-paper-head{text-align:center;position:relative}.wc-contract-paper-head img{width:145px;height:70px;object-fit:contain;margin:0 auto}.wc-contract-brand{font-weight:900;letter-spacing:2px;font-size:17px}.wc-contract-paper-head h1{font-size:23px;color:#05663c;border-bottom:2px solid #05663c;display:inline-block;margin:12px auto 16px;padding:0 14px 6px}.wc-contract-paper h3{font-size:13px;color:#05663c;border-right:4px solid #05663c;padding:4px 9px;background:#edf6f0;margin:13px 0 8px}.wc-contract-meta,.wc-contract-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.wc-contract-meta>div,.wc-contract-grid>div{border:1px solid #d4e1d9;border-radius:7px;padding:6px 10px;min-width:0}.wc-contract-paper small{display:block;color:#68776d;font-size:10px}.wc-contract-paper strong{display:block;font-size:12px;overflow-wrap:anywhere}.wc-contract-money{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}.wc-contract-money>div{text-align:center;border:1px solid #cbdcd0;background:#f1f8f3;padding:7px 3px;border-radius:7px}.wc-contract-money b{display:block;color:#05663c}.wc-contract-paper-terms{white-space:pre-line;font-size:10.5px;line-height:1.85;border:1px solid #d4e1d9;border-radius:7px;padding:10px}.wc-contract-notes{padding:9px 0}.wc-contract-signature-row{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:14px}.wc-contract-signature-row>div{border-top:1px solid #9cb5a4;padding:8px}.wc-contract-signature-row img{display:block;width:180px;height:65px;object-fit:contain}.wc-contract-paper footer{text-align:center;margin-top:15px;padding-top:7px;border-top:2px solid #05663c;color:#05663c;font-size:10px;font-weight:bold}
 @media(max-width:700px){.wc-contract-preview .wc-contract-paper{zoom:.65}}
 @media print{.wc-contract-paper{box-shadow:none!important}.wc-contract-preview{padding:0;overflow:visible;background:white}}
+
+/* v123: same logo asset and dimensions as the existing invoice; stamp next to lessor approval. */
+.wc-contract-paper-head img {
+  display:block;
+  width:240px;
+  height:96px;
+  max-width:100%;
+  object-fit:contain;
+  margin:0 auto 2px;
+}
+.wc-contract-lessor-approval {
+  position:relative;
+  min-height:104px;
+  padding-inline-start:112px !important;
+}
+.wc-contract-lessor-approval .wc-contract-stamp {
+  display:block;
+  position:absolute;
+  width:102px;
+  height:102px;
+  max-width:102px;
+  object-fit:contain;
+  inset-inline-start:2px;
+  top:3px;
+}
+@media print {
+  .wc-contract-lessor-approval {min-height:104px !important;}
+  .wc-contract-lessor-approval .wc-contract-stamp {width:102px !important;height:102px !important;}
+}
