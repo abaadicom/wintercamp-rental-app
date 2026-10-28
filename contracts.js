@@ -27,26 +27,17 @@ const oldRender=render;
 render=function(){oldRender();if(currentPage==='contracts'){$('#pageTitle').textContent='العقود الإلكترونية';$('#mainContent').innerHTML=contractsView()}wire()};
 const oldGo=go;
 go=function(page){if(page==='contracts'){currentPage=page;render()}else oldGo(page)};
-function contractsView(){return `<section class="hero"><div><h2>العقود الإلكترونية</h2><p>عقود تأجير المعدات الصوتية وترقيم تسلسلي WK</p></div></section><div class="settings-card"><strong>طرق الاعتماد</strong><small>✓ توقيع حضوري على الجوال — متاح. &nbsp; ◌ توقيع عن بُعد عبر رابط خاص — يتطلب إعداد اتصال Supabase.</small></div>${window.WKRemote?.notificationsPanel?.()||''}${db.bookings.length?[...db.bookings].sort((a,b)=>{
-  // Upcoming bookings first, nearest event date at the top.
-  // Past or invalid dates appear after future bookings.
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  const parse = value => {
-    const raw=String(value||'').trim();
-    const match=/^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(raw);
-    if(!match) return Number.NaN;
-    const d=new Date(Number(match[1]),Number(match[2])-1,Number(match[3]));
-    return d.getFullYear()===Number(match[1])&&d.getMonth()===Number(match[2])-1&&d.getDate()===Number(match[3]) ? d.getTime() : Number.NaN;
-  };
-  const ta=parse(a.date),tb=parse(b.date);
-  const rank=t=>!Number.isFinite(t)?2:t>=today.getTime()?0:1;
-  const ra=rank(ta),rb=rank(tb);
-  if(ra!==rb)return ra-rb;
-  if(ra===0)return ta-tb;
-  if(ra===1)return tb-ta;
-  return 0;
-}).map(b=>{const c=getContract(b.id);return `<article class="booking-card"><div class="booking-top"><div><div class="booking-name">${safe(b.name)}</div><div class="booking-meta">${dateText(b.date)} · ${safe(b.device)}</div></div><div class="amount">${c?safe(displayNumber(c)):'—'}</div></div><span class="badge ${c?.status==='signed'?'paid':'partial'}">${c?.status==='signed'?'معتمد حضوريًا':c?.status==='pending_remote'?'مسودة توقيع عن بُعد':c?.status==='remote_sent'?'بانتظار موافقة العميل':c?.status==='remote_approved'?'معتمد عن بُعد':c?'مسودة':'لم ينشأ عقد'}</span><div class="card-actions"><button class="small-btn primary" data-contract-booking="${safe(b.id)}">${c?'عرض العقد':'إنشاء عقد'}</button>${c && ['pending_remote','remote_sent','remote_approved'].includes(c.status)?`<button type="button" class="small-btn primary" data-wk-remote="${safe(b.id)}">${c.status==='pending_remote'?'إرسال عبر واتساب':c.status==='remote_sent'?'تحديث الحالة / الرابط':'عرض حالة الاعتماد'}</button>`:''}</div></article>`}).join(''):'<div class="empty">أضف حجزًا أولًا لإنشاء عقد مرتبط به.</div>'}`}
+function contractsView(){return `<section class="hero"><div><h2>العقود الإلكترونية</h2><p>عقود تأجير المعدات الصوتية وترقيم تسلسلي WK</p></div></section><div class="settings-card"><strong>طرق الاعتماد</strong><small>✓ توقيع حضوري على الجوال — متاح. &nbsp; ◌ توقيع عن بُعد عبر رابط خاص — يتطلب إعداد اتصال Supabase.</small></div>${window.WKRemote?.notificationsPanel?.()||''}${[...db.bookings].filter(b=>{
+  // Show bookings from today onward; leave all saved bookings and contracts intact.
+  const raw=String(b.date||'').trim();
+  const match=/^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(raw);
+  if(!match)return false;
+  const y=Number(match[1]),m=Number(match[2]),d=Number(match[3]);
+  const date=new Date(y,m-1,d);
+  if(date.getFullYear()!==y||date.getMonth()!==m-1||date.getDate()!==d)return false;
+  const today=new Date();today.setHours(0,0,0,0);
+  return date.getTime()>=today.getTime();
+}).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))).map(b=>{const c=getContract(b.id);return `<article class="booking-card"><div class="booking-top"><div><div class="booking-name">${safe(b.name)}</div><div class="booking-meta">${dateText(b.date)} · ${safe(b.device)}</div></div><div class="amount">${c?safe(displayNumber(c)):'—'}</div></div><span class="badge ${c?.status==='signed'?'paid':'partial'}">${c?.status==='signed'?'معتمد حضوريًا':c?.status==='pending_remote'?'مسودة توقيع عن بُعد':c?.status==='remote_sent'?'بانتظار موافقة العميل':c?.status==='remote_approved'?'معتمد عن بُعد':c?'مسودة':'لم ينشأ عقد'}</span><div class="card-actions"><button class="small-btn primary" data-contract-booking="${safe(b.id)}">${c?'عرض العقد':'إنشاء عقد'}</button>${c && ['pending_remote','remote_sent','remote_approved'].includes(c.status)?`<button type="button" class="small-btn primary" data-wk-remote="${safe(b.id)}">${c.status==='pending_remote'?'إرسال عبر واتساب':c.status==='remote_sent'?'تحديث الحالة / الرابط':'عرض حالة الاعتماد'}</button>`:''}</div></article>` }).join('')||'<div class="empty">لا توجد حجوزات من اليوم أو الأيام القادمة.</div>'}`}
 function wire(){document.querySelectorAll('[data-contract-booking]').forEach(el=>el.onclick=()=>openContract(el.dataset.contractBooking))}
 function addMenu(){const sheet=$('#sideSheet');const before=sheet?.querySelector('[data-sheet-page="settings"]');if(!sheet||!before||sheet.querySelector('[data-sheet-page="contracts"]'))return;const btn=document.createElement('button');btn.type='button';btn.dataset.sheetPage='contracts';btn.innerHTML='<span class="side-icon">✍️</span> العقود الإلكترونية';btn.onclick=()=>{toggleMenu(false);go('contracts')};sheet.insertBefore(btn,before)}
 function openContract(id){const b=db.bookings.find(x=>String(x.id)===String(id));if(!b)return;const c=getContract(id);if(c?.status==='signed')return showSigned(b,c);
