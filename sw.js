@@ -1,16 +1,17 @@
 const CACHE_NAME =
-  'wintercamp-v134';
+  'wintercamp-v135';
 
 const APP_FILES = [
   './',
   './index.html',
-  './styles.css?v=134',
-  './contract-print.css?v=134',
-  './app.js?v=134',
-  './contracts.js?v=134',
-  './remote.js?v=134',
+  './styles.css?v=135',
+  './contract-print.css?v=135',
+  './app.js?v=135',
+  './contracts.js?v=135',
+  './contract-pdf.js?v=135',
+  './remote.js?v=135',
   './sign.html',
-  './sign.js?v=134',
+  './sign.js?v=135',
   './wk-public-config.json'
 ];
 
