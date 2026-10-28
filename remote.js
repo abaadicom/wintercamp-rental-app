@@ -51,7 +51,7 @@ function whatsapp(phone,number,url){const digits=String(phone).replace(/\D/g,'')
 async function send(id){const c=find(id),b=booking(id);if(!c||!b)return toast('العقد أو الحجز غير موجود');if(c.status==='remote_approved')return toast('هذا العقد معتمد بالفعل');if(c.status==='remote_sent'){openModal('رابط العقد '+escHtml(c.contractNumber),`<div class="wc-contract-form"><p>العقد بانتظار موافقة العميل.</p><div class="card-actions"><button id="wkRefresh" class="small-btn primary">تحديث حالة العقد</button><button id="wkResend" class="small-btn">إعادة فتح واتساب</button></div></div>`);$('#wkRefresh').onclick=()=>refresh(id);$('#wkResend').onclick=()=>{if(!c.remoteUrl)return toast('الرابط غير محفوظ على هذا الجهاز');whatsapp(c.phone,c.contractNumber,c.remoteUrl)};return}
 if(c.status!=='pending_remote')return toast('احفظ مسودة التوقيع عن بُعد أولًا');if(!confirm('إصدار عقد رسمي برقم من Supabase ورابط توقيع خاص؟'))return;
 try{const result=await call('wk-contract-issue',{booking_id:String(b.id),customer_name:c.name,customer_phone:c.phone,customer_id_number:c.nationalId,equipment_details:String(b.device||''),terms:c.terms,contract_details:{returnAt:c.returnAt,notes:c.notes,bookingDate:b.date,location:b.location,agreed:b.agreed,paid:b.paid}});if(!result)return;const prev={...c};Object.assign(c,{contractNumber:result.number,remoteId:result.contract_id,remoteUrl:result.signing_url,remoteExpires:result.expires_at,status:'remote_sent'});try{save()}catch(e){Object.assign(c,prev);throw Error('تم إنشاء العقد في الخادم لكن تعذر حفظ بياناته محليًا؛ لا تصدر عقدًا جديدًا قبل استعادة الرابط')};closeModal();go('contracts');whatsapp(c.phone,c.contractNumber,c.remoteUrl);toast('تم إصدار '+c.contractNumber+' وفتح واتساب')}catch(e){toast(e.message);alert(e.message)}}
-async function refresh(id){const c=find(id);if(!c?.remoteId)return toast('لم يصدر العقد بعد');try{const result=await call('wk-contract-status',{contract_id:c.remoteId});if(!result)return;if(result.status==='approved'){c.status='remote_approved';c.signedAt=result.approved_at;c.approvalMethod=result.approval_method;save();announceApproval(c);closeModal();go('contracts')}else toast('حالة العقد: '+(result.status==='pending'?'بانتظار موافقة العميل':result.status))}catch(e){toast(e.message);alert(e.message)}}
+async function refresh(id){const c=find(id);if(!c?.remoteId)return toast('لم يصدر العقد بعد');try{const result=await call('wk-contract-status',{contract_id:c.remoteId});if(!result)return;if(result.status==='approved'){c.status='remote_approved';c.signedAt=result.approved_at;c.approvalMethod=result.approval_method;save();c.signature=result.approval_method==='signature'?(result.signature_data||''):'';announceApproval(c);closeModal();go('contracts')}else toast('حالة العقد: '+(result.status==='pending'?'بانتظار موافقة العميل':result.status))}catch(e){toast(e.message);alert(e.message)}}
 
 // Optional notifications: request permission only after an explicit user click.
 const ALERT_KEY='wk_approved_alerts_v125';
@@ -128,6 +128,7 @@ async function checkPendingContracts(){
           contract.status='remote_approved';
           contract.signedAt=result.approved_at;
           contract.approvalMethod=result.approval_method;
+          contract._pendingSignature=result.approval_method==='signature'?(result.signature_data||''):'';
           changed=true;
           newlyApproved.push(contract);
         }
@@ -135,7 +136,7 @@ async function checkPendingContracts(){
     }
     if(changed){
       try{save()}catch(e){console.warn('Could not save remote contract status',e);return;}
-      newlyApproved.forEach(announceApproval);
+      newlyApproved.forEach(contract=>{contract.signature=contract._pendingSignature||'';delete contract._pendingSignature;announceApproval(contract);});
       if(currentPage==='contracts')go('contracts');
     }
   } finally {polling=false;lastCheck=Date.now();}

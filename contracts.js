@@ -50,6 +50,7 @@ if(c?.status==='remote_approved'){
     c.approvalMethod=result.approval_method;
     c.signedAt=result.approved_at;
     c.signature=(result.approval_method==='signature'&&result.signature_data)||'';
+    if(result.approval_method==='signature'&&!/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(c.signature)){alert('العقد معتمد، لكن صورة توقيع المستأجر لم تصل من الخادم. لن يتم إصدار PDF ناقص.');return;}
     showSigned(b,c);
   }).catch(e=>{toast(e.message);alert(e.message)});
   return;

@@ -141,6 +141,7 @@ async function generate(root){
  const signImg=tenant?.querySelector('img');
  if(signImg){
   const image=await loadImage(signImg.currentSrc||signImg.src);
+  if(!image)throw new Error('تعذر تحميل صورة توقيع المستأجر؛ لن يتم إنشاء PDF بدون التوقيع');
   imageContain(ctx,image,44,signY+24,130,35);
  }else{
   text(ctx,read(tenant,'p'),245,signY+37,9,false,ink,'right');
