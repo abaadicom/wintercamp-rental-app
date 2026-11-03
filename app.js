@@ -4131,6 +4131,16 @@ function showDetail(id) {
         </div>
 
 
+        ${booking.nationalId ? `
+        <div>
+          <span>رقم الهوية / الإقامة</span>
+          <strong dir="ltr">
+            ${esc(booking.nationalId)}
+          </strong>
+        </div>
+        ` : ''}
+
+
         <div>
           <span>نوع المناسبة</span>
           <strong>
@@ -4284,6 +4294,8 @@ function openBookingForm(
 
       phone: '',
 
+      nationalId: '',
+
       eventType: '',
 
       device: '',
@@ -4376,6 +4388,24 @@ function openBookingForm(
               booking.phone || ''
             )}"
             placeholder="05xxxxxxxx">
+
+        </label>
+
+
+        <label>
+
+          رقم الهوية / الإقامة (اختياري)
+
+          <input
+            name="nationalId"
+            type="text"
+            inputmode="numeric"
+            maxlength="10"
+            autocomplete="off"
+            value="${esc(
+              booking.nationalId || ''
+            )}"
+            placeholder="10 أرقام، ويمكن تركها فارغة">
 
         </label>
 
@@ -4908,6 +4938,17 @@ function openBookingForm(
       }
 
 
+      const nationalId = String(
+        form.get('nationalId') || ''
+      ).trim().replace(/[٠-٩]/g, c => String(c.charCodeAt(0) - 1632))
+        .replace(/[۰-۹]/g, c => String(c.charCodeAt(0) - 1776));
+
+      if (nationalId && !/^[0-9]{10}$/.test(nationalId)) {
+        toast('رقم الهوية اختياري، وإذا أُدخل يجب أن يكون 10 أرقام');
+        return;
+      }
+
+
       const data = {
 
         id:
@@ -4924,6 +4965,8 @@ function openBookingForm(
           String(
             form.get('phone') || ''
           ).trim(),
+
+        nationalId,
 
         eventType:
           String(
