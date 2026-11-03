@@ -6039,6 +6039,17 @@ function showInvoice(id) {
 
                 <div class="wc-data-row">
                   <span class="wc-data-label">
+                    رقم الهوية / الإقامة
+                  </span>
+                  <span class="wc-data-value wc-phone-value" dir="ltr">
+                    ${esc(
+                      booking.nationalId || '-'
+                    )}
+                  </span>
+                </div>
+
+                <div class="wc-data-row">
+                  <span class="wc-data-label">
                     الموقع
                   </span>
                   <span class="wc-data-value">
