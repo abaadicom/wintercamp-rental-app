@@ -903,6 +903,55 @@ const $$ = selector => [...document.querySelectorAll(selector)];
 
 
 
+/* Expense category cards and expense-history modal only. */
+(function injectExpenseHistoryStyles() {
+  if (document.getElementById('wk-expense-history-styles')) return;
+  const style = document.createElement('style');
+  style.id = 'wk-expense-history-styles';
+  style.textContent = `
+    .expense-category-list { display:grid; gap:11px; margin-top:14px; }
+    .expense-category-card {
+      width:100%; display:flex; align-items:center; justify-content:space-between;
+      gap:14px; padding:16px 15px; text-align:right; cursor:pointer;
+      color:var(--text,#e8eeee); background:linear-gradient(145deg,#151e23,#10171b);
+      border:1px solid #2b3941; border-radius:17px; font:inherit;
+    }
+    .expense-category-card:active { border-color:var(--green,#25c16f); background:#19251f; }
+    .expense-category-info { display:grid; gap:5px; min-width:0; }
+    .expense-category-name { font-size:16px; font-weight:900; overflow-wrap:anywhere; }
+    .expense-category-meta { font-size:11px; color:var(--muted,#95a3a9); }
+    .expense-category-money { display:grid; justify-items:end; gap:5px; flex-shrink:0; }
+    .expense-category-money strong { color:var(--red,#ff6b6b); font-size:17px; }
+    .expense-category-money small { color:var(--green,#25c16f); font-size:10px; }
+    .expense-history { display:grid; gap:14px; }
+    .expense-history-summary {
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      background:#15211c; border:1px solid rgba(37,193,111,.25);
+      padding:15px; border-radius:15px;
+    }
+    .expense-history-summary span { color:#b5c8be; font-size:12px; }
+    .expense-history-summary strong { color:var(--green,#25c16f); font-size:18px; }
+    .expense-history-list { display:grid; gap:9px; max-height:55vh; overflow:auto; }
+    .expense-history-row {
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:12px; background:#151e23; border:1px solid rgba(255,255,255,.06);
+      border-radius:13px;
+    }
+    .expense-history-main { min-width:0; flex:1; display:grid; gap:5px; }
+    .expense-history-amount { font-weight:900; color:var(--red,#ff6b6b); }
+    .expense-history-date, .expense-history-note { font-size:11px; color:var(--muted,#95a3a9); overflow-wrap:anywhere; }
+    .expense-history-actions { display:flex; align-items:center; gap:12px; flex-shrink:0; }
+    .expense-history-add {
+      width:100%; min-height:45px; border:1px solid rgba(37,193,111,.4);
+      background:rgba(37,193,111,.1); color:var(--green,#25c16f);
+      border-radius:13px; font-weight:900; font-size:13px; cursor:pointer;
+    }
+    .expense-locked-name { opacity:.85; }
+  `;
+  document.head.appendChild(style);
+})();
+
+
 function clone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
@@ -2310,139 +2359,58 @@ function partnerWithdrawalTotal(
    صفحة المصاريف
 ===================================================== */
 
+function expenseGroups() {
+  const groups = new Map();
+  (db.expenses || []).forEach(expense => {
+    const name = String(expense.item || '').trim().replace(/\s+/g, ' ') || 'مصروف بدون اسم';
+    if (!groups.has(name)) {
+      groups.set(name, { name, total: 0, count: 0, latestDate: '' });
+    }
+    const group = groups.get(name);
+    group.total += Number(expense.amount || 0);
+    group.count++;
+    if (String(expense.date || '') > group.latestDate) {
+      group.latestDate = String(expense.date || '');
+    }
+  });
+  return [...groups.values()].sort((a, b) =>
+    b.latestDate.localeCompare(a.latestDate) || a.name.localeCompare(b.name, 'ar')
+  );
+}
+
 function expensesView() {
+  const groups = expenseGroups();
 
-  const expenses =
-    [...db.expenses]
-      .sort(
-        (a, b) =>
-          b.date.localeCompare(
-            a.date
-          )
-      );
-
-
-  const abdullahTotal =
-    partnerWithdrawalTotal(
-      'عبدالله'
-    );
-
-
-  const thamerTotal =
-    partnerWithdrawalTotal(
-      'ثامر'
-    );
-
+  const abdullahTotal = partnerWithdrawalTotal('عبدالله');
+  const thamerTotal = partnerWithdrawalTotal('ثامر');
 
   return `
-
     <div class="section-head">
-
       <div>
-
-        <h3>
-          المصاريف التشغيلية
-        </h3>
-
-        <small class="section-note">
-          تخصم من صافي الربح
-        </small>
-
+        <h3>المصاريف التشغيلية</h3>
+        <small class="section-note">تخصم من صافي الربح</small>
       </div>
-
-
-      <strong class="red">
-
-        ${money(
-          totals().expenses
-        )}
-
-      </strong>
-
+      <strong class="red">${money(totals().expenses)}</strong>
     </div>
 
-
-    ${
-      expenses.length
-
-        ? expenses
-            .map(
-              expense => `
-
-                <div class="expense-row">
-
-                  <div>
-
-                    <strong>
-
-                      ${esc(
-                        expense.item
-                      )}
-
-                    </strong>
-
-
-                    <small>
-
-                      ${hijriWithDay(
-                        expense.date
-                      )}
-
-                    </small>
-
-                  </div>
-
-
-                  <div>
-
-                    <strong class="red">
-
-                      ${money(
-                        expense.amount
-                      )}
-
-                    </strong>
-
-
-                    <div class="expense-actions">
-
-                      <button
-                        type="button"
-                        class="edit-mini"
-                        data-edit-expense="${expense.id}">
-
-                        تعديل
-
-                      </button>
-
-
-                      <button
-                        type="button"
-                        class="delete-mini"
-                        data-del-expense="${expense.id}">
-
-                        حذف
-
-                      </button>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              `
-            )
-            .join('')
-
-        : `
-          <div class="empty compact-empty">
-
-            لا توجد مصاريف تشغيلية
-
-          </div>
-        `
-    }
+    <div class="expense-category-list">
+      ${groups.length
+        ? groups.map(group => `
+            <button type="button" class="expense-category-card"
+              data-expense-category="${esc(encodeURIComponent(group.name))}">
+              <span class="expense-category-info">
+                <span class="expense-category-name">${esc(group.name)}</span>
+                <span class="expense-category-meta">${group.count} ${group.count === 1 ? 'عملية' : 'عمليات'} مسجلة</span>
+              </span>
+              <span class="expense-category-money">
+                <strong>${money(group.total)}</strong>
+                <small>عرض التفاصيل وإضافة مصروف ‹</small>
+              </span>
+            </button>
+          `).join('')
+        : `<div class="empty compact-empty">لا توجد مصاريف تشغيلية. اضغط زر + لإضافة مصروف جديد.</div>`
+      }
+    </div>
 
 
     <div class="partners-withdrawals-section">
@@ -3805,44 +3773,11 @@ function bindViewEvents() {
      المصاريف
   ------------------------- */
 
-  $$('[data-edit-expense]')
-
-    .forEach(
-      button => {
-
-        button.onclick =
-          () =>
-            editExpense(
-
-              Number(
-                button.dataset
-                  .editExpense
-              )
-
-            );
-
-      }
-    );
-
-
-  $$('[data-del-expense]')
-
-    .forEach(
-      button => {
-
-        button.onclick =
-          () =>
-            deleteExpense(
-
-              Number(
-                button.dataset
-                  .delExpense
-              )
-
-            );
-
-      }
-    );
+  $$('[data-expense-category]').forEach(button => {
+    button.onclick = () => {
+      showExpenseDetails(decodeURIComponent(button.dataset.expenseCategory));
+    };
+  });
 
 
   /* -------------------------
@@ -5047,197 +4982,165 @@ function openBookingForm(
    نموذج المصروف
 ===================================================== */
 
-function openExpenseForm(
-  existing = null
-) {
+function showExpenseDetails(category) {
+  const name = String(category || '').trim();
+  const expenses = (db.expenses || [])
+    .filter(item => String(item.item || '').trim().replace(/\s+/g, ' ') === name)
+    .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')) || Number(b.id) - Number(a.id));
 
-  const expense =
-    existing || {
+  if (!expenses.length) {
+    closeModal();
+    render();
+    return;
+  }
 
-      item: '',
+  const total = expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
 
-      amount: '',
+  openModal(`تفاصيل ${name}`, `
+    <div class="expense-history">
+      <div class="expense-history-summary">
+        <span>إجمالي مصاريف ${esc(name)}</span>
+        <strong>${money(total)}</strong>
+      </div>
+      <div class="expense-history-list">
+        ${expenses.map(item => `
+          <div class="expense-history-row">
+            <div class="expense-history-main">
+              <strong class="expense-history-amount">${money(item.amount)}</strong>
+              <span class="expense-history-date">${hijriWithDay(item.date)}</span>
+              ${item.note ? `<span class="expense-history-note">${esc(item.note)}</span>` : ''}
+            </div>
+            <div class="expense-history-actions">
+              <button type="button" class="edit-mini" data-expense-detail-edit="${esc(item.id)}">تعديل</button>
+              <button type="button" class="delete-mini" data-expense-detail-delete="${esc(item.id)}">حذف</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <button type="button" class="expense-history-add" id="expenseHistoryAdd">+ إضافة مصروف</button>
+    </div>
+  `);
 
-      date: todayISO()
+  $('#expenseHistoryAdd').onclick = () => openExpenseForm(null, name);
 
-    };
+  $$('[data-expense-detail-edit]').forEach(button => {
+    button.onclick = () => editExpense(Number(button.dataset.expenseDetailEdit), name);
+  });
 
+  $$('[data-expense-detail-delete]').forEach(button => {
+    button.onclick = () => deleteExpense(Number(button.dataset.expenseDetailDelete), name);
+  });
+}
+
+
+function openExpenseForm(existing = null, category = '') {
+  const expense = existing || {
+    item: category,
+    amount: '',
+    date: todayISO(),
+    note: ''
+  };
+
+  // When adding from an expense category, keep that category fixed.
+  const fixedCategory = Boolean(category);
+  const categoryName = fixedCategory ? category : '';
 
   openModal(
-
-    existing
-      ? 'تعديل المصروف'
-      : 'إضافة مصروف',
-
+    existing ? 'تعديل المصروف' : 'إضافة مصروف',
     `
-
-      <form
-        id="expenseForm"
-        class="form-grid">
-
-
+      <form id="expenseForm" class="form-grid">
         <label>
-
           اسم المصروف
-
-          <input
-            name="item"
-            required
-            value="${esc(
-              expense.item || ''
-            )}"
-            placeholder="مثال: وقود">
-
+          <input name="item" required
+            ${fixedCategory ? 'readonly class="expense-locked-name"' : ''}
+            value="${esc(expense.item || categoryName)}"
+            placeholder="مثال: محمد أو وقود">
         </label>
-
 
         <label>
-
           المبلغ
-
-          <input
-            name="amount"
-            type="number"
-            inputmode="decimal"
-            min="0"
-            step="0.01"
-            required
-            value="${expense.amount}">
-
+          <input name="amount" type="number" inputmode="decimal"
+            min="0.01" step="0.01" required
+            value="${esc(expense.amount ?? '')}">
         </label>
 
+        ${hijriDateFields(expense.date, 'expense')}
 
-        ${hijriDateFields(
-          expense.date,
-          'expense'
-        )}
+        <label>
+          بيان المصروف (اختياري)
+          <input name="note" maxlength="200"
+            value="${esc(expense.note || '')}"
+            placeholder="مثال: مشتريات أو صيانة">
+        </label>
 
-
-        <button
-          type="submit"
-          class="submit-btn">
-
-          ${
-            existing
-              ? 'حفظ التعديلات'
-              : 'إضافة المصروف'
-          }
-
+        <button type="submit" class="submit-btn">
+          ${existing ? 'حفظ التعديلات' : 'إضافة المصروف'}
         </button>
-
+        ${fixedCategory ? '<button type="button" class="expense-history-add" id="expenseFormBack">العودة للتفاصيل</button>' : ''}
       </form>
-
     `
-
   );
 
+  if (fixedCategory) {
+    $('#expenseFormBack').onclick = () => showExpenseDetails(categoryName);
+  }
 
-  $('#expenseForm').onsubmit =
-    event => {
+  $('#expenseForm').onsubmit = event => {
+    event.preventDefault();
+    const form = new FormData(event.target);
+    const date = hijriToGregorian(
+      form.get('expense_year'),
+      form.get('expense_month'),
+      form.get('expense_day')
+    );
 
-      event.preventDefault();
+    if (!date) {
+      toast('تعذر تحويل التاريخ الهجري');
+      return;
+    }
 
+    const item = fixedCategory
+      ? categoryName
+      : String(form.get('item') || '').trim().replace(/\s+/g, ' ');
+    const amount = Number(form.get('amount') || 0);
 
-      const form =
-        new FormData(
-          event.target
-        );
+    if (!item || !Number.isFinite(amount) || amount <= 0) {
+      toast('يرجى إدخال اسم المصروف ومبلغ صحيح أكبر من صفر');
+      return;
+    }
 
-
-      const date =
-        hijriToGregorian(
-
-          form.get(
-            'expense_year'
-          ),
-
-          form.get(
-            'expense_month'
-          ),
-
-          form.get(
-            'expense_day'
-          )
-
-        );
-
-
-      if (!date) {
-
-        toast(
-          'تعذر تحويل التاريخ الهجري'
-        );
-
-        return;
-
-      }
-
-
-      const data = {
-
-        id:
-          existing
-            ? existing.id
-            : Date.now(),
-
-        item:
-          String(
-            form.get('item') || ''
-          ).trim(),
-
-        amount:
-          Number(
-            form.get('amount') || 0
-          ),
-
-        date
-
-      };
-
-
-      if (existing) {
-
-        const index =
-          db.expenses.findIndex(
-            item =>
-              Number(item.id) ===
-              Number(existing.id)
-          );
-
-
-        if (
-          index !== -1
-        ) {
-
-          db.expenses[index] =
-            data;
-
-        }
-
-      } else {
-
-        db.expenses.push(
-          data
-        );
-
-      }
-
-
-      save();
-
-      closeModal();
-
-      render();
-
-
-      toast(
-        existing
-          ? 'تم تعديل المصروف'
-          : 'تم إضافة المصروف'
-      );
-
+    const data = {
+      ...(existing || {}),
+      id: existing ? existing.id : Date.now(),
+      item,
+      amount,
+      date,
+      note: String(form.get('note') || '').trim()
     };
 
+    if (existing) {
+      const index = db.expenses.findIndex(entry => Number(entry.id) === Number(existing.id));
+      if (index < 0) {
+        toast('تعذر العثور على المصروف');
+        return;
+      }
+      db.expenses[index] = data;
+    } else {
+      // Never overwrite a previous expense; every addition is a new transaction.
+      while (db.expenses.some(entry => Number(entry.id) === Number(data.id))) data.id++;
+      db.expenses.push(data);
+    }
+
+    save();
+    closeModal();
+    render();
+
+    if (fixedCategory) {
+      showExpenseDetails(categoryName);
+    }
+
+    toast(existing ? 'تم تعديل المصروف' : 'تم إضافة المصروف');
+  };
 }
 
 
@@ -5267,49 +5170,21 @@ function editExpense(id) {
 }
 
 
-function deleteExpense(id) {
+function deleteExpense(id, category = '') {
+  const expense = db.expenses.find(item => Number(item.id) === Number(id));
+  if (!expense) return;
 
-  const expense =
-    db.expenses.find(
-      item =>
-        Number(item.id) ===
-        Number(id)
-    );
+  if (!confirm(`هل تريد حذف المصروف "${expense.item}" بقيمة ${money(expense.amount)}؟`)) return;
 
-
-  if (!expense) {
-    return;
-  }
-
-
-  if (
-    !confirm(
-      `هل تريد حذف المصروف "${expense.item}"؟`
-    )
-  ) {
-
-    return;
-
-  }
-
-
-  db.expenses =
-    db.expenses.filter(
-      item =>
-        Number(item.id) !==
-        Number(id)
-    );
-
-
+  db.expenses = db.expenses.filter(item => Number(item.id) !== Number(id));
   save();
-
   render();
 
+  if (category) {
+    showExpenseDetails(category);
+  }
 
-  toast(
-    'تم حذف المصروف'
-  );
-
+  toast('تم حذف المصروف');
 }
 
 
@@ -6035,17 +5910,6 @@ function showInvoice(id) {
     booking.phone || '-'
   )}
 </span>
-                </div>
-
-                <div class="wc-data-row">
-                  <span class="wc-data-label">
-                    رقم الهوية / الإقامة
-                  </span>
-                  <span class="wc-data-value wc-phone-value" dir="ltr">
-                    ${esc(
-                      booking.nationalId || '-'
-                    )}
-                  </span>
                 </div>
 
                 <div class="wc-data-row">
